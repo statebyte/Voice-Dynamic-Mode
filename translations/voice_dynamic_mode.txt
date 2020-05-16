@@ -1,15 +1,15 @@
 "Phrases"
 {
-	"DVM"
+	"VDM"
 	{
 		"en" "Voice Mode"
 		"ru" "Голосовой режим"
 	}
 
-	"DVM_settings"
+	"VDM_settings"
 	{
-		"en" "Dynamic Voice Mode | Settings"
-		"ru" "Dynamic Voice Mode | Настройки"
+		"en" "Voice Dynamic Mode | Settings"
+		"ru" "Voice Dynamic Mode | Настройки"
 	}
 
 	"ADMINMENU_TitleSettings"
@@ -228,121 +228,121 @@
 	"CHAT_VoiceEnable"
 	{
 		"#format" "{1:t}"
-		"en" "[DVM] Voice chat - {1}"
-		"ru" "{LIGHTGREEN}[DVM] {DEFAULT}Настройки: Голосовой чат - {1}"
+		"en" "[VDM] Voice chat - {1}"
+		"ru" "{LIGHTGREEN}[VDM] {DEFAULT}Настройки: Голосовой чат - {1}"
 	}
 
 	"CHAT_ClutchMode"
 	{
 		"#format" "{1:t}"
-		"en" "[DVM] Clutch mode - {1}"
-		"ru" "{LIGHTGREEN}[DVM] {DEFAULT}Настройки: Clutch режим - {1}"
+		"en" "[VDM] Clutch mode - {1}"
+		"ru" "{LIGHTGREEN}[VDM] {DEFAULT}Настройки: Clutch режим - {1}"
 	}
 
 	"CHAT_Enable_Full_AllTalk"
 	{
 		"#format" "{1:N},{2:t}"
-		"en" "[DVM] {1}: Full All Talk - {2}"
-		"ru" "{LIGHTGREEN}[DVM] {DEFAULT}{1}: Общий голосовой чат - {2}"
+		"en" "[VDM] {1}: Full All Talk - {2}"
+		"ru" "{LIGHTGREEN}[VDM] {DEFAULT}{1}: Общий голосовой чат - {2}"
 	}
 
 	"CHAT_Reload_Config"
 	{
-		"en" "[DVM] Config reload..."
-		"ru" "{LIGHTGREEN}[DVM] {DEFAULT}Конфиг перезагружен..."
+		"en" "[VDM] Config reload..."
+		"ru" "{LIGHTGREEN}[VDM] {DEFAULT}Конфиг перезагружен..."
 	}
 
 	"CHAT_Change_Mode"
 	{
-		"en" "[DVM] Voice mode has been changed..."
-		"ru" "{LIGHTGREEN}[DVM] {DEFAULT}Голосовой режим был изменен"
+		"en" "[VDM] Voice mode has been changed..."
+		"ru" "{LIGHTGREEN}[VDM] {DEFAULT}Голосовой режим был изменен"
 	}
 
 	"CHAT_Change_Mode_Default"
 	{
-		"en" "[DVM] Voice mode has been change to default..."
-		"ru" "{LIGHTGREEN}[DVM] {DEFAULT}Голосовой режим установлен по умолчанию"
+		"en" "[VDM] Voice mode has been change to default..."
+		"ru" "{LIGHTGREEN}[VDM] {DEFAULT}Голосовой режим установлен по умолчанию"
 	}
 
 	"CHAT_Dying_Time"
 	{
 		"#format" "{1:i}"
-		"en" "[DVM] You have {1} seconds to chat with alive players..."
-		"ru" "{LIGHTGREEN}[DVM] {GRAY}У вас есть {DEFAULT}%i {GRAY}сек на общение с живыми игроками..."
+		"en" "[VDM] You have {1} seconds to chat with alive players..."
+		"ru" "{LIGHTGREEN}[VDM] {GRAY}У вас есть {DEFAULT}%i {GRAY}сек на общение с живыми игроками..."
 	}
 
 	"CHAT_Dying_Time_Timeout"
 	{
-		"en" "[DVM] Alive players can no longer hear you!!!"
-		"ru" "{LIGHTRED}[DVM] {GRAY}Живые игроки вас больше не слышат!!!"
+		"en" "[VDM] Alive players can no longer hear you!!!"
+		"ru" "{LIGHTRED}[VDM] {GRAY}Живые игроки вас больше не слышат!!!"
 	}
 
 	"CHAT_VC_Still_Off"
 	{
-		"en" "[DVM] Voice chat is still off!!!"
-		"ru" "{LIGHTRED}[DVM] {GRAY}Голосовой чат до сих пор выключен!!!"
+		"en" "[VDM] Voice chat is still off!!!"
+		"ru" "{LIGHTRED}[VDM] {GRAY}Голосовой чат до сих пор выключен!!!"
 	}
 
 	"CHAT_ClutchMode_IsActivated"
 	{
 		"#format" "{1:t}"
-		"en" "[DVM] You are left alone. Now you do not hear {1} players"
-		"ru" "{LIGHTGREEN}[DVM] {DEFAULT}Вы остались одни. Теперь Вы не слышите {1} игроков"
+		"en" "[VDM] You are left alone. Now you do not hear {1} players"
+		"ru" "{LIGHTGREEN}[VDM] {DEFAULT}Вы остались одни. Теперь Вы не слышите {1} игроков"
 	}
 
 	"CHAT_ClutchMode_IsActivated_All"
 	{
 		"#format" "{1:N},{2:t}"
-		"en" "[DVM] Player {1} now does not hear {2} player"
-		"ru" "{LIGHTGREEN}[DVM] {DEFAULT}Игрок {1} теперь не слышит {2} игроков"
+		"en" "[VDM] Player {1} now does not hear {2} player"
+		"ru" "{LIGHTGREEN}[VDM] {DEFAULT}Игрок {1} теперь не слышит {2} игроков"
 	}
 
 	"CHAT_ChangeModeCmd"
 	{
 		"#format" "{1:i}"
-		"en" "[DVM] Voice mode is set to - ({1})"
-		"ru" "{LIGHTGREEN}[DVM] {DEFAULT}Голосовой режим установлен на - ({1})"
+		"en" "[VDM] Voice mode is set to - ({1})"
+		"ru" "{LIGHTGREEN}[VDM] {DEFAULT}Голосовой режим установлен на - ({1})"
 	}
 
 	"CHAT_ChangeModeCmd_Default"
 	{
-		"en" "[DVM] Voice mode is set by default."
-		"ru" "{LIGHTGREEN}[DVM] {DEFAULT}Голосовой режим установлен по умолчанию"
+		"en" "[VDM] Voice mode is set by default."
+		"ru" "{LIGHTGREEN}[VDM] {DEFAULT}Голосовой режим установлен по умолчанию"
 	}
 
 	"CHAT_AdminAction_ChangeMode"
 	{
 		"#format" "{1:N}"
-		"en" "[DVM] {1}: changed the voice chat mode"
-		"ru" "{LIGHTGREEN}[DVM] {DEFAULT}{1}: изменил режим голосового чата"
+		"en" "[VDM] {1}: changed the voice chat mode"
+		"ru" "{LIGHTGREEN}[VDM] {DEFAULT}{1}: изменил режим голосового чата"
 	}
 
 	"CHAT_AdminAction_ChangeQuotaMode"
 	{
 		"#format" "{1:N}"
-		"en" "[DVM] {1}: changed the quota mode for voice chat"
-		"ru" "{LIGHTGREEN}[DVM] {DEFAULT}{1}: изменил режим квоты для голосового чата"
+		"en" "[VDM] {1}: changed the quota mode for voice chat"
+		"ru" "{LIGHTGREEN}[VDM] {DEFAULT}{1}: изменил режим квоты для голосового чата"
 	}
 
 	"CHAT_AdminAction_ChangeQuota"
 	{
 		"#format" "{1:N},{2:i}"
-		"en" "[DVM] {1}: changed the voice mode quota to - {2}"
-		"ru" "{LIGHTGREEN}[DVM] {DEFAULT}{1}: изменил квоту голосового режима на - {2} игроков"
+		"en" "[VDM] {1}: changed the voice mode quota to - {2}"
+		"ru" "{LIGHTGREEN}[VDM] {DEFAULT}{1}: изменил квоту голосового режима на - {2} игроков"
 	}
 
 	"CHAT_AdminAction_TalkAfterDying"
 	{
 		"#format" "{1:N},{2:i}"
-		"en" "[DVM] {1}: changed communication time after death to - {2}"
-		"ru" "{LIGHTGREEN}[DVM] {DEFAULT}{1}: изменил время общения после смерти на - {2} сек"
+		"en" "[VDM] {1}: changed communication time after death to - {2}"
+		"ru" "{LIGHTGREEN}[VDM] {DEFAULT}{1}: изменил время общения после смерти на - {2} сек"
 	}
 
 	"CHAT_AdminAction_ChangeForceCameraMode"
 	{
 		"#format" "{1:N},{2:t}"
-		"en" "[DVM] {1}: View behind the opposite team - {2}"
-		"ru" "{LIGHTGREEN}[DVM] {DEFAULT}{1}: Просмотр за противоположной командой - {2}"
+		"en" "[VDM] {1}: View behind the opposite team - {2}"
+		"ru" "{LIGHTGREEN}[VDM] {DEFAULT}{1}: Просмотр за противоположной командой - {2}"
 	}
 
 	"TheDead"
