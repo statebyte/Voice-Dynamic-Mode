@@ -20,20 +20,21 @@
 * - ConfigIsReloaded
 */
 
-static Handle		g_hGlobalForvard_OnCoreIsReady,
-					;
+static Handle		g_hGlobalForvard_OnCoreIsReady;
 
 void CreateNatives()
 {
-	CreateNative("VDM_SetMode",			Native_SetMode);
+
+	//CreateNative("VDM_SetMode",			Native_SetMode);
 	CreateNative("VDM_GetMode",			Native_GetMode);
-	CreateNative("VDM_SetPlayerMode",	Native_SetPlayerMode);
-	CreateNative("VDM_GetPlayerMode",	Native_GetPlayerMode);
+	//CreateNative("VDM_SetPlayerMode",	Native_SetPlayerMode);
+	//CreateNative("VDM_GetPlayerMode",	Native_GetPlayerMode);
+	
 }
 
 void CreateGlobalForwards()
 {
-	g_hGlobalForvard_OnCoreIsReady = CreateGlobalForward("VDM_OnCoreIsReady",			ET_Ignore);
+	g_hGlobalForvard_OnCoreIsReady = CreateGlobalForward("VDM_OnCoreIsReady", ET_Ignore);
 }
 
 void CallForward_OnCoreIsReady()

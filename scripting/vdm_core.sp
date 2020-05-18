@@ -47,6 +47,7 @@ int				g_iMode, // Текущий режим
 
 bool			g_bCoreIsReady = false,
 				g_bHookCvars,
+				g_bBlockEvents,
 				g_bLogs,
 				g_bTalkOnWarmup;
 
@@ -54,8 +55,9 @@ char			g_sPathLogs[PLATFORM_MAX_PATH];
 
 enum struct Player
 {
-	int iPlayerMode = 0;
-
+	int 	iPlayerMode;
+	bool 	bMenuIsOpen;
+	int 	iMenuType;
 }
 Player Players[MAXPLAYERS+1];
 
@@ -69,7 +71,7 @@ enum
 	F_COUNT
 }
 
-enum
+enum FeatureMenus
 {
 	MENUTYPE_MAINMENU = 0,	// Секция главного меню
 	MENUTYPE_ADMINMENU,		// Секция админ-меню
@@ -82,6 +84,7 @@ KeyValues		g_kvConfig;
 #include "VoiceDynamicMode/config.sp"
 #include "VoiceDynamicMode/api.sp"
 #include "VoiceDynamicMode/menu.sp"
+#include "VoiceDynamicMode/cmds.sp"
 
 public Plugin myinfo =
 {
@@ -115,7 +118,30 @@ public void OnPluginStart()
 	HookEvent("server_cvar", Event_Cvar, EventHookMode_Pre);
 	HookEvent("player_death", Event_OnPlayerDeath, EventHookMode_PostNoCopy);
 
+	CreateTimer(1.0, CheckTime, _, TIMER_REPEAT);
+
 	CallForward_OnCoreIsReady();
+}
+
+Action CheckTime(Handle hTimer, any data)
+{
+
+}
+
+public Action Event_OnPlayerDeath(Event hEvent, char[] name, bool dontBroadcast)
+{
+	if(IsWarmup()) return;
+}
+
+public Action Event_Cvar(Handle hEvent, const char[] name, bool dontBroadcast)
+{
+    if(!g_bBlockEvents) return Plugin_Continue;
+    char cvarname[64]; 
+    GetEventString(hEvent, "cvarname", cvarname, sizeof(cvarname));
+
+    if(!strcmp("sv_deadtalk", cvarname)) return Plugin_Handled;
+
+    return Plugin_Continue;
 }
 
 public void OnMapStart()
@@ -146,19 +172,17 @@ void GetCvars()
 	g_hCvar6 = FindConVar("sv_auto_full_alltalk_during_warmup_half_end");
 	g_hCvar7 = FindConVar("sv_talk_after_dying_time");
 
-	if(g_bHookCvars)
-	{
-		HookConVarChange(g_hCvar1, Update_CV);
-		HookConVarChange(g_hCvar2, Update_CV);
-		HookConVarChange(g_hCvar3, Update_CV);
-		HookConVarChange(g_hCvar4, Update_CV);
-		HookConVarChange(g_hCvar5, Update_CV);
-		HookConVarChange(g_hCvar7, Update_CV);
-	}
+	HookConVarChange(g_hCvar1, Update_CV);
+	HookConVarChange(g_hCvar2, Update_CV);
+	HookConVarChange(g_hCvar3, Update_CV);
+	HookConVarChange(g_hCvar4, Update_CV);
+	HookConVarChange(g_hCvar5, Update_CV);
+	HookConVarChange(g_hCvar7, Update_CV);
 }
 
 public void Update_CV(ConVar hCvar, const char[] szOldValue, const char[] szNewValue)
 {
+	if(!g_bHookCvars) return;
 	if(hCvar == g_hCvar1 || hCvar == g_hCvar2 || hCvar == g_hCvar3 || hCvar == g_hCvar4 || hCvar == g_hCvar5)
 	{
 		SetMode(g_iMainMode);

@@ -2,7 +2,7 @@
 void LoadConfig()
 {
 	//////////////////////////////////////////////////////////////////////////////////
-	BuildPath(Path_SM, g_sLogPath, sizeof(g_sLogPath), PATH_TO_LOGS);
+	BuildPath(Path_SM, g_sPathLogs, sizeof(g_sPathLogs), PATH_TO_LOGS);
 	//////////////////////////////////////////////////////////////////////////////////
 	
 	if(g_kvConfig) delete g_kvConfig;
@@ -41,8 +41,23 @@ void LoadConfig()
 void RegConsoleCmds()
 {
 	if(g_bCoreIsReady) return;
+	g_kvConfig.Rewind();
 
-	char szBuffer[256];
+	char szBuffer[256], szCommands[16][16];
+	int iSize;
+	g_kvConfig.GetString("commands", szBuffer, sizeof szBuffer);
+	iSize = ExplodeString(szBuffer, ";", szCommands, sizeof szCommands, sizeof szCommands[]);
 
-	g_kvConfig.GetString("", szBuffer, sizeof szBuffer);
+	for(int i; i <= iSize; i++)
+	{
+		RegConsoleCmd(szCommands[i], cmd_Voice);
+	}
+
+	g_kvConfig.GetString("admin_commands", szBuffer, sizeof szBuffer);
+	iSize = ExplodeString(szBuffer, ";", szCommands, sizeof szCommands, sizeof szCommands[]);
+
+	for(int i; i <= iSize; i++)
+	{
+		RegConsoleCmd(szCommands[i], cmd_Admin);
+	}
 }

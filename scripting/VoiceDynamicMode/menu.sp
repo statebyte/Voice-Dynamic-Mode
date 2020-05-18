@@ -1,4 +1,4 @@
-void OpenMenu(int iClient, int iMenu = MENUTYPE_MAINMENU)
+void OpenMenu(int iClient, FeatureMenus iMenu = MENUTYPE_MAINMENU)
 {
 	switch(iMenu)
 	{
