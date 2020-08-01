@@ -28,12 +28,11 @@ public void __pl_vdm_core_SetNTVOptional()
 	MarkNativeAsOptional("VDM_GetPlayerListenStatus");
 	MarkNativeAsOptional("VDM_CoreIsLoaded");
 	
-	// Функция главная в плагине :)
-	//MarkNativeAsOptional("VDM_AddFeature");
-
+	MarkNativeAsOptional("VDM_AddFeature");
 	MarkNativeAsOptional("VDM_RemoveFeature");
 	MarkNativeAsOptional("VDM_IsExistFeature");
 	MarkNativeAsOptional("VDM_MoveToMenu");
+	MarkNativeAsOptional("VDM_LogMessage");
 }
 #endif
 
@@ -194,6 +193,8 @@ native bool VDM_IsExistFeature(const char[] szFeature);
 * @noreturn
 */
 native void VDM_MoveToMenu(int iClient, FeatureMenus eMenuType, int iPage = 0);
+
+native void VDM_LogMessage(char szBuffer);
 
 /** Вызывается когда ядро загрузилось
 *
