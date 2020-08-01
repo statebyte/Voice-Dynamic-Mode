@@ -23,10 +23,10 @@
 * - Create modules
 */
 
-#define			VDM_VERSION         "2.0"
+#define			VDM_VERSION         "2.0 D" // D - Developer Preview | B - BETA | R - RELEASE
 #define			DEBUG_MODE 			0
 #define			MAX_MODES           8
-#define			MAX_PLAYERMODES     3
+#define			MAX_PLAYERMODES     4
 #define			PATH_TO_CONFIG      "configs/vdm_core.ini"
 #define			PATH_TO_LOGS        "logs/vdm_core.log"
 
@@ -163,6 +163,18 @@ public void OnPluginStart()
 
 Action CheckTime(Handle hTimer, any data)
 {
+	// Динамическое обновление основного режима (update_time)
+	if(g_iChangeDynamicMode > 0)
+	{
+		static int iStep;
+		if(iStep > g_iChangeDynamicMode)
+		{
+			SetMode(g_iMainMode);
+			iStep = 0;
+		}
+		else iStep++;
+	}
+	
 	for(int i = 1; i <= MaxClients; i++) if(IsClientValid(i))
 	{
 		// Обновление данных в меню
@@ -174,17 +186,6 @@ Action CheckTime(Handle hTimer, any data)
 		if(Players[i].iPlayerMode > 0)
 		{
 			SetPlayerMode(i, Players[i].iPlayerMode);
-		}
-		// Динамическое обновление основного режима (update_time)
-		if(g_iChangeDynamicMode > 0)
-		{
-			static int iStep;
-			if(iStep > g_iChangeDynamicMode)
-			{
-				SetMode(g_iMainMode);
-				iStep = 0;
-			}
-			else iStep++;
 		}
 	}
 }
