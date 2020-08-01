@@ -14,6 +14,19 @@ public SharedPlugin __pl_vdm_core=
 	#endif
 };
 
+enum VoiceMode 
+{
+	Mode_NoVoice = 0, // Голосовой чат отключён
+	Mode_Alive_Death_TeamOnly, //
+	Mode_Alive_Death_TeamsOnly,
+	Mode_TeamOnly,
+	Mode_AliveOnly,
+	Mode_AliveOnly,
+	Mode_AliveToDeathTeams,
+	Mode_AllTalk,
+	Mode_FullAllTalk
+};
+
 enum FeatureMenus
 {
 	VDMTYPE_MAINMENU = 0,	// Только для октрытия меню
@@ -21,3 +34,11 @@ enum FeatureMenus
 	VDMTYPE_SETTINGSMENU	// Секция меню настроек
 };
 
+/* Установить голосовой режим
+
+
+
+@return		true - режим был изменён
+			false - режим не поменялся (приоритет)
+*/
+public bool VDM_SetVoiceMode(VoiceMode iMode, int iPluginPriority = 0);

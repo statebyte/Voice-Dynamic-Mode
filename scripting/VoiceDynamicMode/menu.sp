@@ -3,14 +3,18 @@ void OpenMenu(int iClient, FeatureMenus iMenu = MENUTYPE_MAINMENU)
 	switch(iMenu)
 	{
 		case MENUTYPE_MAINMENU:			ShowMainMenu(iClient);
-		case MENUTYPE_ADMINMENU:		ShowAdminMenu(iClient);
 		case MENUTYPE_SETTINGSMENU:		ShowSettingsMenu(iClient);
+		case MENUTYPE_ADMINMENU:		ShowAdminMenu(iClient);
+		case MENUTYPE_SPEAKLIST:		ShowSpeakList(iClient);
+		case MENUTYPE_LISTININGLIST:	ShowListningList(iClient);
 	}
+
+	Players[iClient].iMenuType = view_as<int>(iMenu);
 }
 
 void ShowMainMenu(int iClient)
 {
-	Menu hMenu = new Menu(Handler_MainMenu);
+	Menu hMenu = new Menu(Handler_MainMenu, MenuAction_Display);
 	SetGlobalTransTarget(iClient);
 	hMenu.SetTitle("%t\n \n", "MENU_TITLE");
 
@@ -35,14 +39,45 @@ int Handler_MainMenu(Menu hMenu, MenuAction action, int iClient, int iItem)
 	switch(action)
 	{
 		case MenuAction_End: delete hMenu;
+		case MenuAction_Cancel:
+		{
+			Players[iClient].bMenuIsOpen = false;
+		}
+		case MenuAction_Display:
+		{
+			Players[iClient].bMenuIsOpen = true;
+		}
 		case MenuAction_Select:
 		{
+			char szInfo[64], szTitle[128];
+			hMenu.GetItem(iItem, szInfo, sizeof(szInfo), _, szTitle, sizeof(szTitle));
+
 			hMenu.GetItem(iItem, szInfo, sizeof(szInfo));
 			if(!strcmp(szInfo, "settings")) OpenMenu(iClient, MENUTYPE_SETTINGSMENU);
 			else if(!strcmp(szInfo, "admin")) OpenMenu(iClient, MENUTYPE_ADMINMENU);
 			else OpenMenu(iClient, MENUTYPE_MAINMENU);
 		}
 	}
+}
+
+void ShowAdminMenu(int iClient)
+{
+	
+}
+
+void ShowSettingsMenu(int iClient)
+{
+	
+}
+
+void ShowListningList(int iClient)
+{
+	
+}
+
+void ShowSpeakList(int iClient)
+{
+
 }
 
 void AddFeatureItemToMenu(Menu hMenu, FeatureMenus eType)

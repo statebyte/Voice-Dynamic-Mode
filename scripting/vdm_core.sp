@@ -41,7 +41,7 @@ int				g_iMode, // Текущий режим
 				g_iDefaultMode, // Стандартный основной режим (изменяется только конфигом)
 				g_iLastMode, // Предыдущий режим
 				g_iLastPluginPriority, // Предыдущий приоритет выставленный модулем
-				g_iPlayerMode[MAXPLAYERS+1], // Текущий режим игрока
+				g_iChangeDynamicMode,
 				g_iNotify,
 				g_iTalkAfterDyingTime;
 
@@ -55,9 +55,23 @@ char			g_sPathLogs[PLATFORM_MAX_PATH];
 
 enum struct Player
 {
+	int 	iClient;
 	int 	iPlayerMode;
 	bool 	bMenuIsOpen;
 	int 	iMenuType;
+
+	bool MenuIsOpen()
+	{
+		return this.bMenuIsOpen && GetClientMenu(this.iClient) == MenuSource_Normal;
+	}
+
+	void ClearData()
+	{
+		this.iClient = -1;
+		this.iPlayerMode = 0;
+		this.bMenuIsOpen = false;
+		this.iMenuType = -1;
+	}
 }
 Player Players[MAXPLAYERS+1];
 
@@ -74,8 +88,10 @@ enum
 enum FeatureMenus
 {
 	MENUTYPE_MAINMENU = 0,	// Секция главного меню
-	MENUTYPE_ADMINMENU,		// Секция админ-меню
-	MENUTYPE_SETTINGSMENU	// Секция меню настроек
+	MENUTYPE_SETTINGSMENU,	// Секция меню настроек
+	MENUTYPE_ADMINMENU, 	// Секция админ-меню
+	MENUTYPE_SPEAKLIST, 	// Список игроков, которые слышат вас
+	MENUTYPE_LISTININGLIST	// Список игроков, которых вы слышите
 };
 
 ArrayList		g_hItems;
@@ -88,7 +104,7 @@ KeyValues		g_kvConfig;
 
 public Plugin myinfo =
 {
-	name		=	"[VDM] Core",
+	name		=	"[Voice Dynamic Mode] Core",
 	version		=	VDM_VERSION,
 	description	=	"Simple and dynamic api for change voice mode for CS:GO servers",
 	author		=	"FIVE",
@@ -116,21 +132,40 @@ public void OnPluginStart()
 
 	HookEvent("round_start", Event_OnRoundStart, EventHookMode_PostNoCopy);
 	HookEvent("server_cvar", Event_Cvar, EventHookMode_Pre);
-	HookEvent("player_death", Event_OnPlayerDeath, EventHookMode_PostNoCopy);
 
 	CreateTimer(1.0, CheckTime, _, TIMER_REPEAT);
+
+	for(int i = 1; i <= MaxClients; i++) if(IsClientValid(i)) OnClientPutInServer(i);
 
 	CallForward_OnCoreIsReady();
 }
 
 Action CheckTime(Handle hTimer, any data)
 {
-
-}
-
-public Action Event_OnPlayerDeath(Event hEvent, char[] name, bool dontBroadcast)
-{
-	if(IsWarmup()) return;
+	for(int i = 1; i <= MaxClients; i++) if(IsClientValid(i))
+	{
+		// Обновление данных в меню
+		if(Players[i].MenuIsOpen())
+		{
+			OpenMenu(i, view_as<FeatureMenus>(Players[i].iMenuType));
+		}
+		// Обновление режима игрока
+		if(Players[i].iPlayerMode > 0)
+		{
+			SetPlayerMode(i, Players[i].iPlayerMode);
+		}
+		// Динамическое обновление режима (update_time)
+		if(g_iChangeDynamicMode > 0)
+		{
+			static int iStep;
+			if(iStep > g_iChangeDynamicMode)
+			{
+				SetMode(g_iMainMode);
+				iStep = 0;
+			}
+			else iStep++;
+		}
+	}
 }
 
 public Action Event_Cvar(Handle hEvent, const char[] name, bool dontBroadcast)
@@ -152,12 +187,19 @@ public void OnMapStart()
 
 public void Event_OnRoundStart(Event hEvent, char[] name, bool dontBroadcast)
 {
+	g_iLastPluginPriority = 0;
 	SetMode(g_iMainMode);
+}
+
+public void OnClientPutInServer(int iClient)
+{
+	Players[iClient].ClearData();
+	Players[iClient].iClient = iClient;
 }
 
 public void OnClientDisconnect(int iClient)
 {
-	g_iPlayerMode[iClient] = 0;
+	Players[iClient].ClearData();
 }
 
 void GetCvars()
@@ -190,7 +232,7 @@ public void Update_CV(ConVar hCvar, const char[] szOldValue, const char[] szNewV
 }
 
 /*
-
+TODO: Добавить ивенты pre/post + приоритеты плагинов
 */
 void SetPlayerMode(int iClient, int iMode)
 {
@@ -200,7 +242,7 @@ void SetPlayerMode(int iClient, int iMode)
 		{
 			case -1: 
 			{
-				// Для правильно работы модулей...
+				// Для правильной работы модулей...
 				// Игрок не слышыт никого...
 			}
 			case 0: SetClientListeningFlags(iClient, VOICE_NORMAL);     // Стандартный режим
@@ -209,36 +251,112 @@ void SetPlayerMode(int iClient, int iMode)
 			case 3: SetClientListeningFlags(iClient, VOICE_LISTENALL | VOICE_SPEAKALL); // Режим общего голосового чата
 		}
 
-		g_iPlayerMode[iClient] = iMode;
+		Players[iClient].iPlayerMode = iMode;
 	}
 }
 
+/*
 // Проверка зависимости голосового чата между двумя игроками в данный момент.
-int CheckPlayerListenStatus(int iClient, int iTarget = 0, int iCheckSpeak = 0)
+// Чтобы проверить что игрок слышит другого или поменять их местами чтобы увидить, кто тебя слышыт :)
+// true - iClient слышыт iTarget
+// false - iClient не слышыт iTarget
+bool CheckPlayerListenStatus(int iClient, int iTarget = 0)
 {
+	if(!IsClientValid(iTarget) || !IsClientValid(iClient)) return false;
+	
 	int iTeam = GetClientTeam(iClient),
 		iTeam2 = GetClientTeam(iTarget);
-	
-	if(iTarget > 0)
+
+	// Проверка на отключение голосового чата
+	if(Players[iClient].iPlayerMode == -1) return false;
+	// Проверка на режим разговора
+	if(Players[iTarget].iPlayerMode >= 2) return true;
+	// Проверка на прослушывание
+	if(Players[iClient].iPlayerMode == 1 || Players[iClient].iPlayerMode == 3) return true;
+
+	// Проверка по режимам
+	switch(g_iMode)
 	{
-		/*
-		return		0 - iClient не слышит iTarget
-					1 - iClient слышит iTarget
-		*/
-		switch(g_iMode)
+		case 0: 
 		{
-
+			return false;
 		}
+		case 1:
+		{
+			if(iTeam == iTeam2)
+			{
+				if(IsPlayerAlive(iClient) && !IsPlayerAlive(iTarget)) return false;
+			}
+			else return false;
+		}
+		case 2, 4: 
+		{
+			if(iTeam != iTeam2)
+			{
+				if(IsPlayerAlive(iClient) && !IsPlayerAlive(iTarget)) return false;
+			}
+		}
+		case 6:
+		{
+			if(IsPlayerAlive(iClient) != IsPlayerAlive(iTarget)) return false;
+		}
+		case 7:
+		{
+			if(iTeam2 == CS_TEAM_SPECTATOR) return false;
+		}
+		// 8 - тут всё ясно)
 	}
-	else
-	{
 
-	}
+	return true;
+}
+*/
 
-	return 0;
+// Проверка зависимости голосового чата между двумя игроками в данный момент.
+// Чтобы проверить что игрок слышит другого или поменять их местами чтобы увидить, кто тебя слышыт :)
+// true - iClient слышыт iTarget
+// false - iClient не слышыт iTarget
+bool CheckPlayerListenStatus(int iClient, int iTarget = 0)
+{
+	if(!IsClientValid(iTarget) || !IsClientValid(iClient)) return false;
+
+	// Проверка на отключение голосового чата
+	if(Players[iClient].iPlayerMode == -1) return false;
+
+	if(IsClientMuted(iClient, iTarget)) return false;
+	
+	if(GetListenOverride(iClient, iTarget) == Listen_No) return false;
+
+	return true;
 }
 
-void SetMode(int iMode, bool IsMainMode = false)
+
+bool SetVoiceMode(int iMode, int iPluginPriority)
+{
+	switch(CallForward_OnSetVoiceModePre(iMode, iPluginPriority))
+	{
+		case Plugin_Continue:
+		{
+			SetMode(iMode);
+		}
+		case Plugin_Changed:
+		{
+			if(iPluginPriority >= g_iLastPluginPriority) 
+			{
+				g_iLastPluginPriority = iPluginPriority;
+				SetMode(iMode);
+			}
+		}
+	}
+
+	CallForward_OnSetVoiceModePost(g_iMode, g_iLastPluginPriority);
+
+	if(g_iMode == g_iLastMode) return false;
+	
+	CGOPrintToChatAll("%t", "");
+	return true;
+}
+
+void SetMode(int iMode, bool bCallPreForward = false, bool bCallPostForward = false)
 {
 	switch(iMode)
 	{
@@ -276,10 +394,10 @@ bool IsWarmup()
 	return view_as<bool>(GameRules_GetProp("m_bWarmupPeriod"));
 }
 
-bool VDM_LogMessage(char[] sBuffer, int iMaxBufSize)
+bool VDM_LogMessage(char[] sBuffer, any ...)
 {
 	if(g_bLogs)
 	{
-		
+		LogToFile(g_sPathLogs, sBuffer);
 	}
 }
