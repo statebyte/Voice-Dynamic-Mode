@@ -141,6 +141,15 @@ public void OnPluginStart()
 	
 	LoadConfig();
 	GetCvars();
+	
+	if (LibraryExists("adminmenu"))
+    {
+        TopMenu hTopMenu;
+        if ((hTopMenu = GetAdminTopMenu()) != null)
+        {
+            OnAdminMenuReady(hTopMenu);
+        }
+    }
 
 	HookEvent("round_start", Event_OnRoundStart, EventHookMode_PostNoCopy);
 	HookEvent("server_cvar", Event_Cvar, EventHookMode_Pre);
