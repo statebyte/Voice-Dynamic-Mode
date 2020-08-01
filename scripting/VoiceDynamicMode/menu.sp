@@ -55,29 +55,30 @@ int Handler_MainMenu(Menu hMenu, MenuAction action, int iClient, int iItem)
 			hMenu.GetItem(iItem, szInfo, sizeof(szInfo));
 			if(!strcmp(szInfo, "settings")) OpenMenu(iClient, MENUTYPE_SETTINGSMENU);
 			else if(!strcmp(szInfo, "admin")) OpenMenu(iClient, MENUTYPE_ADMINMENU);
-			else OpenMenu(iClient, MENUTYPE_MAINMENU);
+			else if(!strcmp(szInfo, "YouHear")) OpenMenu(iClient, MENUTYPE_LISTININGLIST);
+			else if(!strcmp(szInfo, "HearYou")) OpenMenu(iClient, MENUTYPE_SPEAKLIST);
 		}
 	}
 }
 
 void ShowAdminMenu(int iClient)
 {
-	
+	NullMenu(iClient);
 }
 
 void ShowSettingsMenu(int iClient)
 {
-	
+	NullMenu(iClient);
 }
 
 void ShowListningList(int iClient)
 {
-	
+	NullMenu(iClient);
 }
 
 void ShowSpeakList(int iClient)
 {
-
+	NullMenu(iClient);
 }
 
 void AddFeatureItemToMenu(Menu hMenu, FeatureMenus eType)
@@ -90,12 +91,12 @@ void AddFeatureItemToMenu(Menu hMenu, FeatureMenus eType)
 		{
 			g_hItems.GetString(i, SZF(szBuffer));
 			hMenu.AddItem(szBuffer, szBuffer);
-			FPS_Debug("AddFeatureItemToMenu >> F_TYPE: %i >> F: %s", eType, szBuffer)
+			VDM_Debug("AddFeatureItemToMenu >> F_TYPE: %i >> F: %s", eType, szBuffer)
 		}
 	}
 }
 
-int FeatureHandler(Menu hMenu, MenuAction action, int iClient, int iItem, FeatureMenus eType)
+int FeatureHandler(Menu hMenu, MenuAction action, int iClient, int iItem, FeatureMenus eMenuType)
 {
 	static char szItem[128];
 	
@@ -174,3 +175,8 @@ int FeatureHandler(Menu hMenu, MenuAction action, int iClient, int iItem, Featur
 	return 0;
 }
 
+void NullMenu(int iClient)
+{
+	PrintToChatAll("Вызов меню...");
+	OpenMenu(iClient, MENUTYPE_MAINMENU);
+}

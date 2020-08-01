@@ -1,5 +1,9 @@
+/**
+FOR PLUGIN - VDM Core
+*/
+
 #if defined _vdm_core_included
- #endinput
+#endinput
 #endif
 #define _vdm_core_included
 
@@ -14,10 +18,33 @@ public SharedPlugin __pl_vdm_core=
 	#endif
 };
 
+#if !defined REQUIRE_PLUGIN
+public void __pl_vdm_core_SetNTVOptional()
+{
+	MarkNativeAsOptional("VDM_SetVoiceMode");
+	MarkNativeAsOptional("VDM_GetVoiceMode");
+	MarkNativeAsOptional("VDM_SetPlayerMode");
+	MarkNativeAsOptional("VDM_GetPlayerMode");
+	MarkNativeAsOptional("VDM_GetPlayerListenStatus");
+	MarkNativeAsOptional("VDM_CoreIsLoaded");
+	
+	// Функция главная в плагине :)
+	//MarkNativeAsOptional("VDM_AddFeature");
+
+	MarkNativeAsOptional("VDM_RemoveFeature");
+	MarkNativeAsOptional("VDM_IsExistFeature");
+	MarkNativeAsOptional("VDM_MoveToMenu");
+}
+#endif
+
+/** Основные режимы
+*
+* См. описание в конфиге
+*/
 enum VoiceMode 
 {
 	Mode_NoVoice = 0, // Голосовой чат отключён
-	Mode_Alive_Death_TeamOnly, //
+	Mode_Alive_Death_TeamOnly,
 	Mode_Alive_Death_TeamsOnly,
 	Mode_TeamOnly,
 	Mode_AliveOnly,
@@ -27,18 +54,155 @@ enum VoiceMode
 	Mode_FullAllTalk
 };
 
+/** Секции меню
+*/
 enum FeatureMenus
 {
-	VDMTYPE_MAINMENU = 0,	// Только для октрытия меню
-	VDMTYPE_ADMINMENU,		// Секция админ-меню
-	VDMTYPE_SETTINGSMENU	// Секция меню настроек
+	MENUTYPE_NONE = 0,
+	MENUTYPE_MAINMENU,		// Секция главного меню (только для открытия).
+	MENUTYPE_SETTINGSMENU,	// Секция меню настроек.
+	MENUTYPE_ADMINMENU, 	// Секция админ-меню.
+	MENUTYPE_SPEAKLIST, 	// Список игроков, которые слышат вас (только для открытия).
+	MENUTYPE_LISTININGLIST	// Список игроков, которых вы слышите (только для открытия).
 };
 
-/* Установить голосовой режим
-
-
-
-@return		true - режим был изменён
-			false - режим не поменялся (приоритет)
+/** Проверка на готовность ядра
+*
+* @return					true - загружено.
+*							false - не готово.
 */
-public bool VDM_SetVoiceMode(VoiceMode iMode, int iPluginPriority = 0);
+public bool VDM_IsLoaded();
+
+/** Установить голосовой режим
+*
+* @param iMode				См. VoiceMode
+*
+* @return					true - режим был изменён.
+*							false - режим не поменялся (приоритет).
+*/
+public bool VDM_SetVoiceMode(VoiceMode iMode, bool IsWarmupCheck = false);
+
+/** Получить голосовой режим
+*
+* @param iModeType 			0 - текущий режим.
+* 							1 - основной режим.
+* 							2 - стандартный режим.
+* 							3 - предыдущий режим.
+*
+* @return					Возвращает номер режима.
+*/
+public VoiceMode VDM_GetVoiceMode(int iModeType = 0);
+
+/** Проверка зависимостей между двумя игроками.
+* Подходит для проверки кикие игроки слышат игрока и наоборот, кого слышыт игрок.
+*
+* @param iClient			Индекс игрока, который должен слушать
+* @param iTarget			Индекс игрока, который должен говорить
+*
+* @return					true - iClient слышыт iTarget.
+*							false - iClient не слышыт iTarget.
+*/
+public bool VDM_GetPlayerListenStatus(int iClient, int iTarget);
+
+/** Установить голосовой режим игроку
+* 
+* @param iClient			Индекс игрока.
+* @param iMode				См. VDM_GetPlayerMode
+*
+* @return					true - режим был изменён.
+*							false - режим не поменялся (приоритет).
+*/
+public bool VDM_SetPlayerMode(int iClient, int iMode);
+
+/** Установить голосовой режим игроку
+*
+* @param iClient			Индекс игрока.
+*
+* @return					-1 - стандартный голосовой режим отключён.
+*							0 - Стандартный режим.
+*							1 - Режим прослушивания
+*							2 - Режим разговора
+*							3 - Режим общего голосового чата
+*/
+public int VDM_GetPlayerMode(int iClient);
+
+/**	Вызывается, при нажатии пункта.
+*
+* @param iClient			Индекс игрока.
+*
+* @return					true - Вернет обратно в меню.
+*/
+typedef VDM_ItemSelectCallback		= function bool (int iClient);
+
+/**	Вызывается, при отображении пункта.
+*
+* @param iClient			Индекс игрока.
+* @param szDisplay			Буфер с названием пункта.
+* @param iMaxLength			Размер буфера.
+*
+* @return					true - Установит новое название с szDisplay.
+*/
+typedef VDM_ItemDisplayCallback		= function bool (int iClient, char[] szDisplay, int iMaxLength);
+
+/**	Вызывается, при обращении к пункту.
+*
+* @param iClient			Индекс игрока.
+* @param iStyle				Текущий стиль пункта.
+*
+* @return					Новый стиль для пункта (ITEMDRAW_DEFAULT, ITEMDRAW_DISABLED, ITEMDRAW_RAWLINE).
+*/
+typedef VDM_ItemDrawCallback		= function int (int iClient, int iStyle);
+
+/** Зарегистрировать функцию плагина для работы с ядром
+* ВАЖНО! Для правильно работы приоритетов, регестрируйте первую функцию для работы с измением режимов.
+*
+* @param szFeature			Название функции. (Используйте уникальное название)
+* @param eMenuType			Секция меню.
+* @param iPluginPriority	Приоритет функции (-1 - автоматический приоритет выставляемый ядром).
+* @param OnItemSelect		Обратный вызов при нажатии пункта.
+* @param OnItemDisplay		Обратный вызов при отображении пункта.
+* @param OnItemDraw			Обратный вызов при обращении к пункту.
+*
+* @return					true - функция зарегистрирована
+*							false - функция не зарегистрирована (одинаковое название уже зарегистрированной функци)
+*/
+public bool VDM_AddFeature(const char[] szFeature, FeatureMenus	eMenuType, int iPluginPriority = 0, VDM_ItemSelectCallback OnItemSelect	= INVALID_FUNCTION, VDM_ItemDisplayCallback	OnItemDisplay = INVALID_FUNCTION, VDM_ItemDrawCallback OnItemDraw = INVALID_FUNCTION);
+
+/** Удаляет функцию
+*
+* @param szFeature			Название функции.
+*
+* @noreturn
+*/
+native void VDM_RemoveFeature(const char[] szFeature);
+
+/** Получает статус функции
+*
+* @param szFeature			Название функции.
+*
+* @return					true - Существует.
+* 							false - Не существует.
+*/
+native bool VDM_IsExistFeature(const char[] szFeature);
+
+/** Открывает меню
+*
+* @param iClient			Индекс игрока.
+* @param eMenuType			Секция меню.
+* @param iPage				Страница меню для открытия (GetMenuSelectionPosition()).
+*
+* @noreturn
+*/
+native void VDM_MoveToMenu(int iClient, FeatureMenus eMenuType, int iPage = 0);
+
+/** Вызывается когда ядро загрузилось
+*
+* @noreturn
+*/
+forward void VDM_CoreIsReady();
+forward void VDM_ConfigIsReloaded();
+forward Action VDM_SetVoiceModePre(int& iMode, int& iPluginPriority);
+forward void VDM_SetVoiceModePost(int iMode, int iPluginPriority);
+forward Action VDM_SetPlayerModePre(int iClient, int& iMode, int& iPluginPriority);
+forward void VDM_SetPlayerModePost(int iClient, int iMode, int iPluginPriority);
+forward void OnConfigIsReloaded();

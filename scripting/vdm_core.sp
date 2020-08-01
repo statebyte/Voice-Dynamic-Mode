@@ -3,7 +3,6 @@
 
 #include <sourcemod>
 #include <sdktools>
-#include <csgo_colors>
 
 /**
 * ----------------------------- INFO ---------------------------------
@@ -23,10 +22,18 @@
 */
 
 #define			VDM_VERSION         "2.0"
+#define			DEBUG_MODE 			0
 #define			MAX_MODES           8
 #define			MAX_PLAYERMODES     3
 #define			PATH_TO_CONFIG      "configs/vdm_core.ini"
 #define			PATH_TO_LOGS        "logs/vdm_core.log"
+
+#if DEBUG_MODE == 1
+	#define VDM_Debug(%0)		LogToFile(g_sPathLogs, %0);
+#else
+	#define VDM_Debug(%0)
+#endif
+
 
 ConVar			g_hCvar1,
 				g_hCvar2,
@@ -42,10 +49,9 @@ int				g_iMode, // Текущий режим
 				g_iLastMode, // Предыдущий режим
 				g_iLastPluginPriority, // Предыдущий приоритет выставленный модулем
 				g_iChangeDynamicMode,
-				g_iNotify,
 				g_iTalkAfterDyingTime;
 
-bool			g_bCoreIsReady = false,
+bool			g_bCoreIsLoaded = false,
 				g_bHookCvars,
 				g_bBlockEvents,
 				g_bLogs,
@@ -79,6 +85,7 @@ enum
 {
 	F_MENUTYPE = 1,
 	F_PLUGIN,
+	F_PRIORITY_TYPE,
 	F_SELECT,
 	F_DISPLAY,
 	F_DRAW,
@@ -87,14 +94,15 @@ enum
 
 enum FeatureMenus
 {
-	MENUTYPE_MAINMENU = 0,	// Секция главного меню
+	MENUTYPE_NONE = 0,		// Без секции меню
+	MENUTYPE_MAINMENU,		// Секция главного меню
 	MENUTYPE_SETTINGSMENU,	// Секция меню настроек
 	MENUTYPE_ADMINMENU, 	// Секция админ-меню
 	MENUTYPE_SPEAKLIST, 	// Список игроков, которые слышат вас
 	MENUTYPE_LISTININGLIST	// Список игроков, которых вы слышите
 };
 
-ArrayList		g_hItems;
+ArrayList		g_hItems, g_hNameItems;
 KeyValues		g_kvConfig;
 
 #include "VoiceDynamicMode/config.sp"
@@ -126,6 +134,7 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 public void OnPluginStart()
 {
 	g_hItems = new ArrayList(ByteCountToCells(128));
+	g_hNameItems = new ArrayList(ByteCountToCells(128));
 	
 	LoadConfig();
 	GetCvars();
@@ -154,7 +163,7 @@ Action CheckTime(Handle hTimer, any data)
 		{
 			SetPlayerMode(i, Players[i].iPlayerMode);
 		}
-		// Динамическое обновление режима (update_time)
+		// Динамическое обновление основного режима (update_time)
 		if(g_iChangeDynamicMode > 0)
 		{
 			static int iStep;
@@ -238,6 +247,9 @@ void SetPlayerMode(int iClient, int iMode)
 {
 	if(IsClientValid(iClient))
 	{
+		if(iMode < -1) iMode = -1;
+		if(iMode > 3) iMode = 3;
+
 		switch(iMode)
 		{
 			case -1: 
@@ -319,8 +331,8 @@ bool CheckPlayerListenStatus(int iClient, int iTarget = 0)
 {
 	if(!IsClientValid(iTarget) || !IsClientValid(iClient)) return false;
 
-	// Проверка на отключение голосового чата
-	if(Players[iClient].iPlayerMode == -1) return false;
+	// Проверка на отключение голосового чата (или нахождение в другом канале)
+	if(Players[iClient].iPlayerMode == -1 && Players[iClient].iPlayerMode != Players[iTarget].iPlayerMode) return false;
 
 	if(IsClientMuted(iClient, iTarget)) return false;
 	
@@ -329,34 +341,7 @@ bool CheckPlayerListenStatus(int iClient, int iTarget = 0)
 	return true;
 }
 
-
-bool SetVoiceMode(int iMode, int iPluginPriority)
-{
-	switch(CallForward_OnSetVoiceModePre(iMode, iPluginPriority))
-	{
-		case Plugin_Continue:
-		{
-			SetMode(iMode);
-		}
-		case Plugin_Changed:
-		{
-			if(iPluginPriority >= g_iLastPluginPriority) 
-			{
-				g_iLastPluginPriority = iPluginPriority;
-				SetMode(iMode);
-			}
-		}
-	}
-
-	CallForward_OnSetVoiceModePost(g_iMode, g_iLastPluginPriority);
-
-	if(g_iMode == g_iLastMode) return false;
-	
-	CGOPrintToChatAll("%t", "");
-	return true;
-}
-
-void SetMode(int iMode, bool bCallPreForward = false, bool bCallPostForward = false)
+void SetMode(int iMode)
 {
 	switch(iMode)
 	{

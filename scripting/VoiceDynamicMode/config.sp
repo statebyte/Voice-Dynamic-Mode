@@ -28,8 +28,6 @@ void LoadConfig()
 	g_iTalkAfterDyingTime = g_kvConfig.GetNum("talk_after_dying_time", 0);
 	g_bTalkOnWarmup = view_as<bool>(g_kvConfig.GetNum("talk_on_warmup", 0));
 
-	g_iNotify = g_kvConfig.GetNum("notify", 0);
-
 	g_bBlockEvents = view_as<bool>(g_kvConfig.GetNum("block_events", 0));
 	g_bLogs = view_as<bool>(g_kvConfig.GetNum("logs", 0));
 
@@ -40,7 +38,7 @@ void LoadConfig()
 
 void RegConsoleCmds()
 {
-	if(g_bCoreIsReady) return;
+	if(g_bCoreIsLoaded) return;
 	g_kvConfig.Rewind();
 
 	char szBuffer[256], szCommands[16][16];
