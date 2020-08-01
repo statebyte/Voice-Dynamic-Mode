@@ -3,6 +3,8 @@
 
 #include <sourcemod>
 #include <sdktools>
+#undef REQUIRE_PLUGIN
+#include <adminmenu>
 
 /**
 * ----------------------------- INFO ---------------------------------
@@ -83,8 +85,8 @@ Player Players[MAXPLAYERS+1];
 
 enum
 {
-	F_MENUTYPE = 1,
-	F_PLUGIN,
+	F_PLUGIN = 1,
+	F_MENUTYPE,
 	F_PRIORITY_TYPE,
 	F_SELECT,
 	F_DISPLAY,
@@ -102,6 +104,7 @@ enum FeatureMenus
 	MENUTYPE_LISTININGLIST	// Список игроков, которых вы слышите
 };
 
+TopMenu     	g_hTopMenu = null;
 ArrayList		g_hItems, g_hNameItems;
 KeyValues		g_kvConfig;
 

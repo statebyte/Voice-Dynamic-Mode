@@ -12,6 +12,48 @@ void OpenMenu(int iClient, FeatureMenus iMenu = MENUTYPE_MAINMENU)
 	Players[iClient].iMenuType = view_as<int>(iMenu);
 }
 
+public void OnLibraryRemoved(const char[] szName)
+{
+    if (!strcmp(szName, "adminmenu"))
+    {
+        g_hTopMenu = null;
+    }
+}
+
+public void OnAdminMenuReady(Handle aTopMenu)
+{
+    TopMenu hTopMenu = TopMenu.FromHandle(aTopMenu);
+
+    if (hTopMenu == g_hTopMenu)
+    {
+        return;
+    }
+
+    g_hTopMenu = hTopMenu;
+
+    TopMenuObject hMyCategory = g_hTopMenu.FindCategory(ADMINMENU_SERVERCOMMANDS);
+    
+    if (hMyCategory != INVALID_TOPMENUOBJECT)
+    {
+        g_hTopMenu.AddItem("voice_dynamic_mode", Handler_MenuVoiceSettings, hMyCategory, "voice_admin", ADMFLAG_ROOT, "Settings voice mode");
+    }
+}
+
+public void Handler_MenuVoiceSettings(TopMenu hMenu, TopMenuAction action, TopMenuObject object_id, int iClient, char[] sBuffer, int maxlength)
+{
+    switch (action)
+    {
+        case TopMenuAction_DisplayOption:
+        {
+            FormatEx(sBuffer, maxlength, TranslationPhraseExists("ADMINMENU_TitleSettings") ? "%t" : "s", "ADMINMENU_TitleSettings");
+        }
+        case TopMenuAction_SelectOption:
+        {
+            ShowAdminMenu(iClient);
+        }
+    }
+}
+
 void ShowMainMenu(int iClient)
 {
 	Menu hMenu = new Menu(Handler_MainMenu, MenuAction_Display);
