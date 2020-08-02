@@ -10,28 +10,29 @@
 * - IsFeatureExist
 * - MoveToMenu
 * - CoreIsLoaded
+* - LogMessage
 *
 * Forwards:
 * - OnCoreIsReady
+* - OnConfigReloaded
 * - OnSetVoiceModePre
 * - OnSetVoiceModePost
 * - OnSetPlayerModePre
 * - OnSetPlayerModePost
-* - OnConfigIsReloaded
 */
 
 static Handle		g_hGlobalForvard_OnCoreIsReady,
 					g_hGlobalForvard_OnSetVoiceModePre,
-					g_hGlobalForvard_OnSetVoiceModePost;
-					//g_hGlobalForvard_OnSetPlayerModePre,
-					//g_hGlobalForvard_OnSetPlayerModePost,
-					//g_hGlobalForvard_OnConfigIsReloaded;
+					g_hGlobalForvard_OnSetVoiceModePost,
+					g_hGlobalForvard_OnSetPlayerModePre,
+					g_hGlobalForvard_OnSetPlayerModePost,
+					g_hGlobalForvard_OnConfigReloaded;
 
 void CreateNatives()
 {
 	CreateNative("VDM_SetVoiceMode",			Native_SetVoiceMode);
 	CreateNative("VDM_GetVoiceMode",			Native_GetVoiceMode);
-	//CreateNative("VDM_SetPlayerMode",			Native_SetPlayerMode);
+	CreateNative("VDM_SetPlayerMode",			Native_SetPlayerMode);
 	CreateNative("VDM_GetPlayerMode",			Native_GetPlayerMode);
 	CreateNative("VDM_GetPlayerListenStatus",	Native_GetPlayerListenStatus);
 
@@ -47,8 +48,13 @@ void CreateNatives()
 void CreateGlobalForwards()
 {
 	g_hGlobalForvard_OnCoreIsReady = CreateGlobalForward("VDM_OnCoreIsReady", ET_Ignore);
-	g_hGlobalForvard_OnSetVoiceModePre = CreateGlobalForward("VDM_OnSetVoiceModePre", ET_Hook, Param_CellByRef, Param_CellByRef);
-	g_hGlobalForvard_OnSetVoiceModePost = CreateGlobalForward("VDM_OnSetVoiceModePost", ET_Ignore, Param_Cell, Param_Cell);
+	g_hGlobalForvard_OnConfigReloaded = CreateGlobalForward("VDM_OnConfigReloaded", ET_Ignore, Param_Cell);
+
+	g_hGlobalForvard_OnSetVoiceModePre = CreateGlobalForward("VDM_OnSetVoiceModePre", ET_Hook, Param_CellByRef);
+	g_hGlobalForvard_OnSetVoiceModePost = CreateGlobalForward("VDM_OnSetVoiceModePost", ET_Ignore, Param_Cell);
+
+	g_hGlobalForvard_OnSetPlayerModePre = CreateGlobalForward("VDM_OnSetPlayerModePre", ET_Hook, Param_Cell, Param_CellByRef);
+	g_hGlobalForvard_OnSetPlayerModePost = CreateGlobalForward("VDM_OnSetPlayerModePost", ET_Ignore, Param_Cell, Param_Cell);
 }
 
 int Native_CoreIsLoaded(Handle hPlugin, int iNumParams)
@@ -61,15 +67,15 @@ int Native_CoreIsLoaded(Handle hPlugin, int iNumParams)
 int Native_SetVoiceMode(Handle hPlugin, int iNumParams)
 {
 	int iMode = GetNativeCell(1);
-	int iPluginPriority = GetPluginPriority(hPlugin);
 	bool IsWarmupCheck = GetNativeCell(2);
+	int iPluginPriority = GetPluginPriority(hPlugin);
 
 	if(IsWarmupCheck)
 	{
 		if(IsWarmup()) return 0;
 	}
 
-	switch(CallForward_OnSetVoiceModePre(iMode, iPluginPriority))
+	switch(CallForward_OnSetVoiceModePre(iMode))
 	{
 		case Plugin_Continue:
 		{
@@ -85,7 +91,7 @@ int Native_SetVoiceMode(Handle hPlugin, int iNumParams)
 		}
 	}
 
-	CallForward_OnSetVoiceModePost(g_iMode, g_iLastPluginPriority);
+	CallForward_OnSetVoiceModePost(g_iMode);
 
 	if(g_iMode == g_iLastMode) return 0;
 
@@ -114,6 +120,33 @@ int Native_GetPlayerListenStatus(Handle hPlugin, int iNumParams)
 	int iClient = GetNativeCell(1);
 	int iTarget = GetNativeCell(2);
 	return CheckPlayerListenStatus(iClient, iTarget);
+}
+
+int Native_SetPlayerMode(Handle hPlugin, int iNumParams)
+{
+	int iClient = GetNativeCell(1);
+	int iMode = GetNativeCell(2);
+	int iPluginPriority = GetPluginPriority(hPlugin);
+	
+	switch(CallForward_OnSetPlayerModePre(iClient, iMode))
+	{
+		case Plugin_Continue:
+		{
+			SetPlayerMode(iClient, iMode);
+		}
+		case Plugin_Changed:
+		{
+			if(iPluginPriority >= Players[iClient].iLastPluginPriority) 
+			{
+				Players[iClient].iLastPluginPriority = iPluginPriority;
+				SetPlayerMode(iClient, iMode);
+			}
+		}
+	}
+
+	CallForward_OnSetPlayerModePost(iClient, iMode);
+
+	return 1;
 }
 
 int Native_GetPlayerMode(Handle hPlugin, int iNumParams)
@@ -149,12 +182,12 @@ int Native_AddFeature(Handle hPlugin, int iNumParams)
 			return 1;
 		}
 
-		ThrowNativeError(SP_ERROR_NATIVE, "[VDM] Feature '%s' already exists.", szFeature);
+		ThrowNativeError(SP_ERROR_NATIVE, "[VDM] Core - Feature '%s' already exists.", szFeature);
 		return 0;
 	}
 	else
 	{
-		ThrowNativeError(SP_ERROR_NATIVE, "[VDM] Empty feature name.");
+		ThrowNativeError(SP_ERROR_NATIVE, "[VDM] Core - Empty feature name.");
 		return 0;
 	}
 }
@@ -175,11 +208,11 @@ int Native_RemoveFeature(Handle hPlugin, int iNumParams)
 			return 0;
 		}
 		
-		ThrowNativeError(SP_ERROR_NATIVE, "[VDM] Feature '%s' not found.", szFeature);
+		ThrowNativeError(SP_ERROR_NATIVE, "[VDM] Core - Feature '%s' not found.", szFeature);
 	}
 	else
 	{
-		ThrowNativeError(SP_ERROR_NATIVE, "[VDM] Empty feature name.");
+		ThrowNativeError(SP_ERROR_NATIVE, "[VDM] Core - Empty feature name.");
 	}
 	return 0;
 }
@@ -195,7 +228,7 @@ int Native_IsExistFeature(Handle hPlugin, int iNumParams)
 		return (g_hNameItems.FindString(szFeature) != -1);
 	}
 
-	ThrowNativeError(SP_ERROR_NATIVE, "[VDM] Empty feature name.");
+	ThrowNativeError(SP_ERROR_NATIVE, "[VDM] Core - Empty feature name.");
 	return 0;
 }
 
@@ -234,21 +267,37 @@ int GetPluginPriority(Handle hPlugin)
 }
 
 // forward Action VDM_OnSetVoiceModePre(int iClient, int &iMode);
-Action CallForward_OnSetVoiceModePre(int iMode, int& iPluginPriority = 0)
+Action CallForward_OnSetVoiceModePre(int iMode)
 {
 	Action Result = Plugin_Continue;
 	Call_StartForward(g_hGlobalForvard_OnSetVoiceModePre);
 	Call_PushCellRef(iMode);
-	Call_PushCellRef(iPluginPriority);
 	Call_Finish(Result);
 	return Result;
 }
 
-void CallForward_OnSetVoiceModePost(int iMode, int iPluginPriority = 0)
+void CallForward_OnSetVoiceModePost(int iMode)
 {
 	Call_StartForward(g_hGlobalForvard_OnSetVoiceModePost);
 	Call_PushCell(iMode);
-	Call_PushCell(iPluginPriority);
+	Call_Finish();
+}
+
+Action CallForward_OnSetPlayerModePre(int iClient, int iMode)
+{
+	Action Result = Plugin_Continue;
+	Call_StartForward(g_hGlobalForvard_OnSetPlayerModePre);
+	Call_PushCell(iClient);
+	Call_PushCell(iMode);
+	Call_Finish();
+	return Result;
+}
+
+void CallForward_OnSetPlayerModePost(int iClient, int iMode)
+{
+	Call_StartForward(g_hGlobalForvard_OnSetPlayerModePost);
+	Call_PushCell(iClient);
+	Call_PushCell(iMode);
 	Call_Finish();
 }
 
@@ -257,5 +306,13 @@ void CallForward_OnCoreIsReady()
 	g_bCoreIsLoaded = true;
 	
 	Call_StartForward(g_hGlobalForvard_OnCoreIsReady);
+	Call_PushCell(g_kvConfig);
+	Call_Finish();
+}
+
+void CallForward_OnConfigReloaded()
+{
+	Call_StartForward(g_hGlobalForvard_OnConfigReloaded);
+	Call_PushCell(g_kvConfig);
 	Call_Finish();
 }

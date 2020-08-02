@@ -26,12 +26,13 @@ public void __pl_vdm_core_SetNTVOptional()
 	MarkNativeAsOptional("VDM_SetPlayerMode");
 	MarkNativeAsOptional("VDM_GetPlayerMode");
 	MarkNativeAsOptional("VDM_GetPlayerListenStatus");
-	MarkNativeAsOptional("VDM_CoreIsLoaded");
 	
 	MarkNativeAsOptional("VDM_AddFeature");
 	MarkNativeAsOptional("VDM_RemoveFeature");
 	MarkNativeAsOptional("VDM_IsExistFeature");
 	MarkNativeAsOptional("VDM_MoveToMenu");
+
+	MarkNativeAsOptional("VDM_CoreIsLoaded");
 	MarkNativeAsOptional("VDM_LogMessage");
 }
 #endif
@@ -65,23 +66,25 @@ enum FeatureMenus
 	MENUTYPE_LISTININGLIST	// Список игроков, которых вы слышите (только для открытия).
 };
 
+////////////////////////////////// NATIVES //////////////////////////////////////////////
+
 /** Проверка на готовность ядра
 *
 * @return					true - загружено.
 *							false - не готово.
 */
-public bool VDM_IsLoaded();
+native bool VDM_CoreIsLoaded();
 
-/** Установить голосовой режим
+/** Установить голосовой режим сервера
 *
 * @param iMode				См. VoiceMode
 *
 * @return					true - режим был изменён.
 *							false - режим не поменялся (приоритет).
 */
-public bool VDM_SetVoiceMode(VoiceMode iMode, bool IsWarmupCheck = false);
+native bool VDM_SetVoiceMode(VoiceMode iMode, bool IsWarmupCheck = false);
 
-/** Получить голосовой режим
+/** Получить голосовой режим сервера
 *
 * @param iModeType 			0 - текущий режим.
 * 							1 - основной режим.
@@ -90,7 +93,7 @@ public bool VDM_SetVoiceMode(VoiceMode iMode, bool IsWarmupCheck = false);
 *
 * @return					Возвращает номер режима.
 */
-public VoiceMode VDM_GetVoiceMode(int iModeType = 0);
+native VoiceMode VDM_GetVoiceMode(int iModeType = 0);
 
 /** Проверка зависимостей между двумя игроками.
 * Подходит для проверки кикие игроки слышат игрока и наоборот, кого слышыт игрок.
@@ -101,7 +104,7 @@ public VoiceMode VDM_GetVoiceMode(int iModeType = 0);
 * @return					true - iClient слышыт iTarget.
 *							false - iClient не слышыт iTarget.
 */
-public bool VDM_GetPlayerListenStatus(int iClient, int iTarget);
+native bool VDM_GetPlayerListenStatus(int iClient, int iTarget);
 
 /** Установить голосовой режим игроку
 * 
@@ -111,7 +114,7 @@ public bool VDM_GetPlayerListenStatus(int iClient, int iTarget);
 * @return					true - режим был изменён.
 *							false - режим не поменялся (приоритет).
 */
-public bool VDM_SetPlayerMode(int iClient, int iMode);
+native bool VDM_SetPlayerMode(int iClient, int iMode);
 
 /** Установить голосовой режим игроку
 *
@@ -123,7 +126,7 @@ public bool VDM_SetPlayerMode(int iClient, int iMode);
 *							2 - Режим разговора
 *							3 - Режим общего голосового чата
 */
-public int VDM_GetPlayerMode(int iClient);
+native int VDM_GetPlayerMode(int iClient);
 
 /**	Вызывается, при нажатии пункта.
 *
@@ -165,7 +168,7 @@ typedef VDM_ItemDrawCallback		= function int (int iClient, int iStyle);
 * @return					true - функция зарегистрирована
 *							false - функция не зарегистрирована (одинаковое название уже зарегистрированной функци)
 */
-public bool VDM_AddFeature(const char[] szFeature, FeatureMenus	eMenuType, int iPluginPriority = 0, VDM_ItemSelectCallback OnItemSelect	= INVALID_FUNCTION, VDM_ItemDisplayCallback	OnItemDisplay = INVALID_FUNCTION, VDM_ItemDrawCallback OnItemDraw = INVALID_FUNCTION);
+native bool VDM_AddFeature(const char[] szFeature, FeatureMenus	eMenuType, int iPluginPriority = 0, VDM_ItemSelectCallback OnItemSelect	= INVALID_FUNCTION, VDM_ItemDisplayCallback	OnItemDisplay = INVALID_FUNCTION, VDM_ItemDrawCallback OnItemDraw = INVALID_FUNCTION);
 
 /** Удаляет функцию
 *
@@ -196,14 +199,56 @@ native void VDM_MoveToMenu(int iClient, FeatureMenus eMenuType, int iPage = 0);
 
 native void VDM_LogMessage(char szBuffer);
 
+////////////////////////////////// FORWARDS //////////////////////////////////////////////
+
 /** Вызывается когда ядро загрузилось
+*
+* @param g_hConfig			Конфиг.
 *
 * @noreturn
 */
-forward void VDM_CoreIsReady();
-forward void VDM_ConfigIsReloaded();
-forward Action VDM_SetVoiceModePre(int& iMode, int& iPluginPriority);
-forward void VDM_SetVoiceModePost(int iMode, int iPluginPriority);
-forward Action VDM_SetPlayerModePre(int iClient, int& iMode, int& iPluginPriority);
-forward void VDM_SetPlayerModePost(int iClient, int iMode, int iPluginPriority);
-forward void OnConfigIsReloaded();
+forward void VDM_OnCoreIsReady(KeyValues g_hConfig);
+
+/** Вызывается когда настройки перезагрузились
+*
+* @param g_hConfig			Конфиг.
+*
+* @noreturn
+*/
+forward void VDM_OnConfigReloaded(KeyValues g_hConfig);
+
+/** Вызывается при установке голосового режима сервера
+*
+* @param iMode				Индекс режима
+*
+* @return					Plugin_Stop или Plugin_Handled  - запретит установку режима (плагинам с низким приоритетом);
+*							Plugin_Continue  - разрешит установку режима без изменений;
+*							Plugin_Changed - разрешит установку режима с изменениями.
+*/
+forward Action VDM_OnSetVoiceModePre(int& iMode);
+
+/** Вызывается после установки голосового режима сервера
+*
+* @param iMode				Индекс режима
+*
+* @noreturn
+*/
+forward void VDM_OnSetVoiceModePost(int iMode);
+
+/** Вызывается при установке голосового режима игроку
+*
+* @param iMode				Индекс режима
+*
+* @return					Plugin_Stop или Plugin_Handled  - запретит установку режима (плагинам с низким приоритетом);
+*							Plugin_Continue  - разрешит установку режима без изменений;
+*							Plugin_Changed - разрешит установку режима с изменениями.
+*/
+forward Action VDM_OnSetPlayerModePre(int iClient, int& iMode);
+
+/** Вызывается после установки голосового режима игроку
+*
+* @param iMode				Индекс режима
+*
+* @noreturn
+*/
+forward void VDM_OnSetPlayerModePost(int iClient, int iMode);

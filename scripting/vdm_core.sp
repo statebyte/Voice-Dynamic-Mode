@@ -29,6 +29,7 @@
 #define			MAX_PLAYERMODES     4
 #define			PATH_TO_CONFIG      "configs/vdm_core.ini"
 #define			PATH_TO_LOGS        "logs/vdm_core.log"
+#define			RELOAD_COMMAND      "sm_vdm_reload"
 
 #if DEBUG_MODE == 1
 	#define VDM_Debug(%0)		LogToFile(g_sPathLogs, %0);
@@ -65,6 +66,7 @@ enum struct Player
 {
 	int 	iClient;
 	int 	iPlayerMode;
+	int		iLastPluginPriority;
 	bool 	bMenuIsOpen;
 	int 	iMenuType;
 
@@ -211,6 +213,8 @@ public void Event_OnRoundStart(Event hEvent, char[] name, bool dontBroadcast)
 {
 	g_iLastPluginPriority = 0;
 	SetMode(g_iMainMode);
+
+	for(int i = 1; i <= MaxClients; i++) if(IsClientValid(i)) Players[i].iLastPluginPriority = 0;
 }
 
 public void OnClientPutInServer(int iClient)

@@ -34,8 +34,7 @@ void LoadConfig()
 	g_bLogs = view_as<bool>(g_kvConfig.GetNum("logs", 0));
 
 	RegConsoleCmds();
-
-	delete g_kvConfig;
+	CallForward_OnConfigReloaded();
 }
 
 void RegConsoleCmds()
