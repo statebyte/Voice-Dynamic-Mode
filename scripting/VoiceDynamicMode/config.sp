@@ -59,4 +59,7 @@ void RegConsoleCmds()
 	{
 		RegConsoleCmd(szCommands[i], cmd_Admin);
 	}
+
+	RegConsoleCmd(DUMP_COMMAND, cmd_Dump);
+	RegConsoleCmd(RELOAD_COMMAND, cmd_Reload);
 }

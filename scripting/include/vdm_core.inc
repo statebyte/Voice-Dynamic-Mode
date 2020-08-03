@@ -1,5 +1,13 @@
-/**
-FOR PLUGIN - VDM Core
+/** ----------------------------- INFO -----------------------------
+* Plugin Name: 		[Voice Dynamic Mode] Core
+* File Name: 		vdm_core.smx
+* Support Games:    CS:GO ONLY
+* Author:           FIVE (Discord: FIVE#8169)
+* Source:           https://github.com/theelsaud/Voice-Dynamic-Mode
+* Support:          https://discord.gg/ajW69wN
+* Official theme:   http://hlmod.ru
+* License:          GNU General Public License v3.0
+* ------------------------------------------------------------------
 */
 
 #if defined _vdm_core_included
@@ -37,13 +45,13 @@ public void __pl_vdm_core_SetNTVOptional()
 }
 #endif
 
-/** Основные режимы
+/** Индексы основных режимом
 *
-* См. описание в конфиге
+* См. описание в конфиге или в функции SetMode
 */
 enum VoiceMode 
 {
-	Mode_NoVoice = 0, // Голосовой чат отключён
+	Mode_NoVoice = 0,
 	Mode_Alive_Death_TeamOnly,
 	Mode_Alive_Death_TeamsOnly,
 	Mode_TeamOnly,
@@ -51,7 +59,8 @@ enum VoiceMode
 	Mode_AliveOnly,
 	Mode_AliveToDeathTeams,
 	Mode_AllTalk,
-	Mode_FullAllTalk
+	Mode_FullAllTalk,
+	Mode_Counts
 };
 
 /** Секции меню
@@ -197,13 +206,17 @@ native bool VDM_IsExistFeature(const char[] szFeature);
 */
 native void VDM_MoveToMenu(int iClient, FeatureMenus eMenuType, int iPage = 0);
 
+/** Логирование в общий файл с ядром.
+*
+* @noreturn
+*/
 native void VDM_LogMessage(char szBuffer);
 
 ////////////////////////////////// FORWARDS //////////////////////////////////////////////
 
 /** Вызывается когда ядро загрузилось
 *
-* @param g_hConfig			Конфиг.
+* @param g_hConfig			Конфиг в KV структуре.
 *
 * @noreturn
 */
@@ -211,7 +224,7 @@ forward void VDM_OnCoreIsReady(KeyValues g_hConfig);
 
 /** Вызывается когда настройки перезагрузились
 *
-* @param g_hConfig			Конфиг.
+* @param g_hConfig			Конфиг в KV структуре.
 *
 * @noreturn
 */
