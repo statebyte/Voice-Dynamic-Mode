@@ -30,6 +30,7 @@
 #define			PATH_TO_CONFIG      "configs/vdm_core.ini"
 #define			PATH_TO_LOGS        "logs/vdm_core.log"
 #define			RELOAD_COMMAND      "sm_vdm_reload"
+#define			DUMP_COMMAND      	"sm_vdm_dump"
 
 #if DEBUG_MODE == 1
 	#define VDM_Debug(%0)		LogToFile(g_sPathLogs, %0);
@@ -69,6 +70,7 @@ enum struct Player
 	int		iLastPluginPriority;
 	bool 	bMenuIsOpen;
 	int 	iMenuType;
+	bool	bLastAdminMenu;
 
 	bool MenuIsOpen()
 	{
@@ -87,7 +89,7 @@ Player Players[MAXPLAYERS+1];
 
 enum
 {
-	F_PLUGIN = 1,
+	F_PLUGIN = 0,
 	F_MENUTYPE,
 	F_PRIORITY_TYPE,
 	F_SELECT,
@@ -141,6 +143,7 @@ public void OnPluginStart()
 	g_hItems = new ArrayList(ByteCountToCells(128));
 	g_hNameItems = new ArrayList(ByteCountToCells(128));
 	
+	LoadTranslations("vdm_core.phrases");
 	LoadConfig();
 	GetCvars();
 	
@@ -346,7 +349,7 @@ bool CheckPlayerListenStatus(int iClient, int iTarget = 0)
 // false - iClient не слышыт iTarget
 bool CheckPlayerListenStatus(int iClient, int iTarget = 0)
 {
-	if(!IsClientValid(iTarget) || !IsClientValid(iClient)) return false;
+	if(iClient == iTarget || !IsClientValid(iTarget) || !IsClientValid(iClient)) return false;
 
 	// Проверка на отключение голосового чата (или нахождение в другом канале)
 	if(Players[iClient].iPlayerMode == -1 && Players[iClient].iPlayerMode != Players[iTarget].iPlayerMode) return false;
@@ -362,21 +365,53 @@ void SetMode(int iMode)
 {
 	switch(iMode)
 	{
-		case 0: SetCvar(0, 0, 0, 0, 0); // голосовой чат выключен
-		case 1: SetCvar(1, 0, 0, 0, 0); // живые игроки могут общатся только с живыми игроками своей команды | мертвые игроки могут общатся только c мертвыми игроками своей команды
-		case 2: SetCvar(1, 0, 1, 0, 0); // живые игроки могут общатся только с живыми игроками своей команды | мертвые игроки могут общатся с мертвыми игроками своей и противоположной команды
-		case 3: SetCvar(1, 1, 0, 0, 0); // живые игроки могут общатся только со своей командой (живой и мертвой)
-		case 4: SetCvar(1, 1, 1, 0, 0); // живые игроки могут общатся только со своей командой (живой и мертвой) | мертвые игроки будут слышать живых игроков своей команды и мертвых игроков своей и противоположной команды
-		case 5: SetCvar(1, 0, 0, 1, 0); // живые игроки могут общатся только с живыми игроками своей и противоположной команды | мертвые игроки могут общатся только c мертвыми игроками своей команды
-		case 6: SetCvar(1, 0, 1, 1, 0); // живые игроки могут общатся только с живыми игроками своей и противоположной команды | мертвые игроки могут общатся только c мертвыми игроками своей и противоположной команды
-		case 7: SetCvar(1, 1, 1, 1, 0); // обший голосовой чат
-		case 8: SetCvar(1, 1, 1, 1, 1); // общий голосовой чат | + наблюдатели (спектаторов)
+		// Mode_NoVoice
+		// голосовой чат выключен
+		case 0: SetCvar(0, 0, 0, 0, 0);
+
+		// Mode_Alive_Death_TeamOnly
+		// живые игроки могут общатся только с живыми игроками своей команды
+		// мертвые игроки могут общатся только c мертвыми игроками своей команды
+		case 1: SetCvar(1, 0, 0, 0, 0);
+
+		// Mode_Alive_Death_TeamsOnly
+		// живые игроки могут общатся только с живыми игроками своей команды
+		// мертвые игроки могут общатся с мертвыми игроками своей и противоположной команды
+		case 2: SetCvar(1, 0, 1, 0, 0); 
+
+		// Mode_TeamOnly
+		// живые игроки могут общатся только со своей командой (живой и мертвой)
+		case 3: SetCvar(1, 1, 0, 0, 0); 
+
+		// Mode_AliveOnly
+		// живые игроки могут общатся только со своей командой (живой и мертвой)
+		// мертвые игроки будут слышать живых игроков своей команды и мертвых игроков своей и противоположной команды
+		case 4: SetCvar(1, 1, 1, 0, 0); 
+
+		// Mode_AliveOnly
+		// живые игроки могут общатся только с живыми игроками своей и противоположной команды 
+		// мертвые игроки могут общатся только c мертвыми игроками своей команды
+		case 5: SetCvar(1, 0, 0, 1, 0); 
+
+		// Mode_AliveToDeathTeams
+		// живые игроки могут общатся только с живыми игроками своей и противоположной команды 
+		// мертвые игроки могут общатся только c мертвыми игроками своей и противоположной команды
+		case 6: SetCvar(1, 0, 1, 1, 0); 
+
+		// Mode_AllTalk
+		// обший голосовой чат
+		case 7: SetCvar(1, 1, 1, 1, 0); 
+
+		// Mode_FullAllTalk
+		// общий голосовой чат | + наблюдатели (спектаторов)
+		case 8: SetCvar(1, 1, 1, 1, 1); 
 	}
 
 	g_iLastMode = g_iMode;
 	g_iMode = iMode;
 }
 
+// sv_alltalk, sv_deadtalk, sv_talk_enemy_dead, sv_talk_enemy_living, sv_full_alltalk
 void SetCvar(int iValue1, int iValue2, int iValue3, int iValue4, int iValue5)
 {
 	g_hCvar1.SetInt(iValue1);
