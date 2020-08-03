@@ -6,6 +6,24 @@
 		"ru" "Голосовой режим"
 	}
 
+	"MENU_TITLE"
+	{
+		"en" "[VDM] Voice Mode"
+		"ru" "[VDM] Голосовой режим"
+	}
+
+	"SettingsMenu"
+	{
+		"en" "My settings"
+		"ru" "Мои настройки"
+	}
+
+	"AdminMenu"
+	{
+		"en" "Admin Menu"
+		"ru" "Меню администратора"
+	}
+
 	"VDM_settings"
 	{
 		"en" "Voice Dynamic Mode | Settings"
@@ -355,5 +373,17 @@
 	{
 		"en" "of all"
 		"ru" "всех"
+	}
+
+	"ReloadConfig"
+	{
+		"en" "Reload Config"
+		"ru" "Перезагрузить настройки"
+	}
+
+	"ReloadModules"
+	{
+		"en" "Reload Modules"
+		"ru" "Перезагрузить модули"
 	}
 }
