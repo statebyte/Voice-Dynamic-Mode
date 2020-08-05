@@ -3,6 +3,7 @@
 
 #include <sourcemod>
 #include <sdktools>
+#include <csgo_colors>
 #undef REQUIRE_PLUGIN
 #include <adminmenu>
 

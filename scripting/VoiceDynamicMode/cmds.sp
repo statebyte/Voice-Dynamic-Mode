@@ -12,8 +12,8 @@ Action cmd_Admin(int iClient, int iArgs)
 
 Action cmd_Reload(int iClient, int iArgs)
 {
-	ReloadConfig();
-	ReloadModules();
+	ReloadConfig(iClient);
+	ReloadModules(iClient);
 }
 
 Action cmd_Dump(int iClient, int iArgs)
@@ -38,13 +38,15 @@ Action cmd_Dump(int iClient, int iArgs)
 	VDM_LogMessage("Общее кол-во модулей: %i", iSize);
 }
 
-void ReloadConfig()
+void ReloadConfig(int iClient)
 {
 	LoadConfig();
 	CallForward_OnConfigReloaded();
+	CGOPrintToChat(iClient, "{GREEN}[VDM] {DEFAULT}Настройки перезагружены");
 }
 
-void ReloadModules()
+void ReloadModules(int iClient)
 {
 	CallForward_OnCoreIsReady();
+	CGOPrintToChat(iClient, "{GREEN}[VDM] {DEFAULT}Модули перезагружены");
 }

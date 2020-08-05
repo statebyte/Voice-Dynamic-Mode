@@ -194,12 +194,12 @@ int Handler_AdminMenu(Menu hMenu, MenuAction action, int iClient, int iItem)
 
 			if(!strcmp(szInfo, "reloadconfig")) 
 			{
-				ReloadConfig();
+				ReloadConfig(iClient);
 				OpenMenu(iClient, MENUTYPE_ADMINMENU);
 			}
 			if(!strcmp(szInfo, "reloadmodules")) 
 			{
-				ReloadModules();
+				ReloadModules(iClient);
 				OpenMenu(iClient, MENUTYPE_ADMINMENU);
 			}
 		}
