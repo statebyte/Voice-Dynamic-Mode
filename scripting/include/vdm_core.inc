@@ -220,7 +220,7 @@ native void VDM_LogMessage(char szBuffer);
 *
 * @noreturn
 */
-forward void VDM_OnCoreIsReady(KeyValues g_hConfig);
+forward void VDM_OnCoreIsReady();
 
 /** Вызывается когда настройки перезагрузились
 *

@@ -47,7 +47,7 @@ void CreateNatives()
 
 void CreateGlobalForwards()
 {
-	g_hGlobalForvard_OnCoreIsReady = CreateGlobalForward("VDM_OnCoreIsReady", ET_Ignore, Param_Cell);
+	g_hGlobalForvard_OnCoreIsReady = CreateGlobalForward("VDM_OnCoreIsReady", ET_Ignore);
 	g_hGlobalForvard_OnConfigReloaded = CreateGlobalForward("VDM_OnConfigReloaded", ET_Ignore, Param_Cell);
 
 	g_hGlobalForvard_OnSetVoiceModePre = CreateGlobalForward("VDM_OnSetVoiceModePre", ET_Hook, Param_CellByRef);
@@ -306,7 +306,6 @@ void CallForward_OnCoreIsReady()
 	g_bCoreIsLoaded = true;
 	
 	Call_StartForward(g_hGlobalForvard_OnCoreIsReady);
-	Call_PushCell(g_kvConfig);
 	Call_Finish();
 }
 
