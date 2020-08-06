@@ -192,7 +192,7 @@ int Handler_AdminMenu(Menu hMenu, MenuAction action, int iClient, int iItem)
 			char szInfo[64];
 			hMenu.GetItem(iItem, szInfo, sizeof(szInfo));
 
-			if(!strcmp(szInfo, "reloadconfig")) 
+			if(!strcmp(szInfo, "reloadconfig"))
 			{
 				ReloadConfig(iClient);
 				OpenMenu(iClient, MENUTYPE_ADMINMENU);

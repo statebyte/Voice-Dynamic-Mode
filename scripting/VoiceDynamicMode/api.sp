@@ -30,6 +30,7 @@ static Handle		g_hGlobalForvard_OnCoreIsReady,
 
 void CreateNatives()
 {
+	CreateNative("VDM_GetVersion",				Native_GetVersion);
 	CreateNative("VDM_SetVoiceMode",			Native_SetVoiceMode);
 	CreateNative("VDM_GetVoiceMode",			Native_GetVoiceMode);
 	CreateNative("VDM_SetPlayerMode",			Native_SetPlayerMode);
@@ -55,6 +56,11 @@ void CreateGlobalForwards()
 
 	g_hGlobalForvard_OnSetPlayerModePre = CreateGlobalForward("VDM_OnSetPlayerModePre", ET_Hook, Param_Cell, Param_CellByRef);
 	g_hGlobalForvard_OnSetPlayerModePost = CreateGlobalForward("VDM_OnSetPlayerModePost", ET_Ignore, Param_Cell, Param_Cell);
+}
+
+int Native_GetVersion(Handle hPlugin, int iArgs)
+{
+	return VDM_INT_VERSION;
 }
 
 int Native_CoreIsLoaded(Handle hPlugin, int iNumParams)
@@ -170,12 +176,12 @@ int Native_AddFeature(Handle hPlugin, int iNumParams)
 		if(g_hNameItems.FindString(szFeature) == -1)
 		{
 			any aArray[6];
-			aArray[0] = hPlugin;
-			aArray[1] = GetNativeCell(2); // eMenuType
-			aArray[2] = GetNativeCell(3); // iPluginPriority
-			aArray[3] = GetNativeCell(4); // OnItemSelect
-			aArray[4] = GetNativeCell(5); // OnItemDisplay
-			aArray[5] = GetNativeCell(6); // OnItemDraw
+			aArray[F_PLUGIN] = 			hPlugin;
+			aArray[F_MENUTYPE] = 		GetNativeCell(2); // eMenuType
+			aArray[F_PRIORITY_TYPE] = 	GetNativeCell(3); // iPluginPriority
+			aArray[F_SELECT] = 			GetNativeCell(4); // OnItemSelect
+			aArray[F_DISPLAY] = 		GetNativeCell(5); // OnItemDisplay
+			aArray[F_DRAW] = 			GetNativeCell(6); // OnItemDraw
 
 			g_hNameItems.PushString(szFeature);
 			g_hItems.PushArray(aArray);

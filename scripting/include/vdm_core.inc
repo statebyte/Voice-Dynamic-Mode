@@ -29,6 +29,7 @@ public SharedPlugin __pl_vdm_core=
 #if !defined REQUIRE_PLUGIN
 public void __pl_vdm_core_SetNTVOptional()
 {
+	MarkNativeAsOptional("VDM_GetVersion");
 	MarkNativeAsOptional("VDM_SetVoiceMode");
 	MarkNativeAsOptional("VDM_GetVoiceMode");
 	MarkNativeAsOptional("VDM_SetPlayerMode");
@@ -51,16 +52,16 @@ public void __pl_vdm_core_SetNTVOptional()
 */
 enum VoiceMode 
 {
-	Mode_NoVoice = 0,
-	Mode_Alive_Death_TeamOnly,
-	Mode_Alive_Death_TeamsOnly,
-	Mode_TeamOnly,
-	Mode_AliveOnly,
-	Mode_AliveOnly,
-	Mode_AliveToDeathTeams,
-	Mode_AllTalk,
-	Mode_FullAllTalk,
-	Mode_Counts
+	VMODE_NOVOICE = 0,
+	VMODE_ALIVE_OR_DEAD_TEAM,
+	VMODE_ALIVE_OR_DEAD_ENEMY,
+	VMODE_TEAM_ONLY,
+	VMODE_ALIVE_ONLY,
+	VMODE_ALIVE_DEAD_WITH_ENEMY,
+	VMODE_ALIVE_OR_DEAD_TEAM_WITH_ENEMY,
+	VMODE_ALLTALK,
+	VMODE_FULL_ALLTALK,
+	VMODE_COUNT
 };
 
 /** Секции меню
@@ -76,6 +77,12 @@ enum FeatureMenus
 };
 
 ////////////////////////////////// NATIVES //////////////////////////////////////////////
+
+/** Получить номер версии ядра
+*
+* @return					Номер версии
+*/
+native int VDM_GetVersion();
 
 /** Проверка на готовность ядра
 *

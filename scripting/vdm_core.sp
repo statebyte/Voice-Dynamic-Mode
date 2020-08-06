@@ -25,7 +25,9 @@
 */
 
 #define			VDM_VERSION         "2.0 D" // D - Developer Preview | B - BETA | R - RELEASE
+#define 		VDM_INT_VERSION 	020000
 #define			DEBUG_MODE 			0
+
 #define			MAX_MODES           8
 #define			MAX_PLAYERMODES     4
 #define			PATH_TO_CONFIG      "configs/vdm_core.ini"
