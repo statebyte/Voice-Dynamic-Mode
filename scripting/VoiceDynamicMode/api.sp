@@ -39,7 +39,7 @@ void CreateNatives()
 
 	CreateNative("VDM_AddFeature",				Native_AddFeature);
 	CreateNative("VDM_RemoveFeature",			Native_RemoveFeature);
-	CreateNative("VDM_IsFeatureExist",			Native_IsExistFeature);
+	CreateNative("VDM_IsExistFeature",			Native_IsExistFeature);
 	CreateNative("VDM_MoveToMenu",				Native_MoveToMenu);
 
 	CreateNative("VDM_CoreIsLoaded",			Native_CoreIsLoaded);
@@ -72,7 +72,7 @@ int Native_CoreIsLoaded(Handle hPlugin, int iNumParams)
 // bool bCallPreForward = false, bool bCallPostForward = false
 int Native_SetVoiceMode(Handle hPlugin, int iNumParams)
 {
-	int iMode = GetNativeCell(1);
+	int iMode = view_as<int>(GetNativeCell(1));
 	bool IsWarmupCheck = GetNativeCell(2);
 	int iPluginPriority = GetPluginPriority(hPlugin);
 
