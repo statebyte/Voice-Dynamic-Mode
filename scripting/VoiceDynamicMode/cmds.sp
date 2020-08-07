@@ -47,6 +47,9 @@ void ReloadConfig(int iClient)
 
 void ReloadModules(int iClient)
 {
+	g_hNameItems.Clear();
+	g_hItems.Clear();
+	
 	CallForward_OnCoreIsReady();
 	CGOPrintToChat(iClient, "{GREEN}[VDM] {DEFAULT}Модули перезагружены");
 }
