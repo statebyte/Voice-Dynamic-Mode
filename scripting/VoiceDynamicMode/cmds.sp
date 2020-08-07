@@ -7,6 +7,11 @@ Action cmd_Voice(int iClient, int iArgs)
 Action cmd_Admin(int iClient, int iArgs)
 {
 	if(!iClient) return;
+	if(!CheckAdminAccess(iClient))
+	{
+		CGOPrintToChat(iClient, "{GREEN}[VDM] {DEFAULT}У вас нет доступа к этой команде!");
+		return;
+	}
 	OpenMenu(iClient, MENUTYPE_ADMINMENU);
 }
 

@@ -36,7 +36,7 @@ public void OnAdminMenuReady(Handle aTopMenu)
 	
 	if (hMyCategory != INVALID_TOPMENUOBJECT)
 	{
-		g_hTopMenu.AddItem("voice_dynamic_mode", Handler_MenuVoiceSettings, hMyCategory, "voice_admin", ADMFLAG_ROOT, "Settings voice mode");
+		g_hTopMenu.AddItem("voice_dynamic_mode", Handler_MenuVoiceSettings, hMyCategory, "voice_admin", ReadFlagString(g_sAdminFlag), "Settings voice mode");
 	}
 }
 
@@ -65,15 +65,21 @@ void ShowMainMenu(int iClient)
 	hMenu.SetTitle("%t\n \n", "MENU_TITLE");
 
 	char szBuffer[128], szPhrase[128];
-	FormatEx(szBuffer, sizeof szBuffer, "%t", "SettingsMenu");
+	if(CheckAdminAccess(iClient)) FormatEx(szBuffer, sizeof szBuffer, "%t", "SettingsMenu");
+	else FormatEx(szBuffer, sizeof szBuffer, "%t\n \n", "SettingsMenu");
+
 	if(GetCountMenuItems(MENUTYPE_SETTINGSMENU) > 0) hMenu.AddItem("settings", szBuffer);
 	else hMenu.AddItem("settings", szBuffer, ITEMDRAW_DISABLED);
 
-	FormatEx(szBuffer, sizeof szBuffer, "%t\n \n", "AdminMenu");
-	hMenu.AddItem("admin", szBuffer);
-	//if(GetCountMenuItems(MENUTYPE_ADMINMENU) > 0) hMenu.AddItem("admin", szBuffer);
-	//else hMenu.AddItem("admin", szBuffer, ITEMDRAW_DISABLED);
+	if(CheckAdminAccess(iClient))
+	{
+		FormatEx(szBuffer, sizeof szBuffer, "%t\n \n", "AdminMenu");
+		hMenu.AddItem("admin", szBuffer);
 
+		//if(GetCountMenuItems(MENUTYPE_ADMINMENU) > 0) hMenu.AddItem("admin", szBuffer);
+		//else hMenu.AddItem("admin", szBuffer, ITEMDRAW_DISABLED);
+	}
+	
 	GetStringVoiceMode(iClient, 0, szPhrase, sizeof(szPhrase));
 	FormatEx(szBuffer, sizeof szBuffer, "%t\n%s\n \n", "YouHear", szPhrase);
 	hMenu.AddItem("YouHear", szBuffer);
@@ -81,7 +87,6 @@ void ShowMainMenu(int iClient)
 	GetStringVoiceMode(iClient, 1, szPhrase, sizeof(szPhrase));
 	FormatEx(szBuffer, sizeof szBuffer, "%t\n%s\n \n", "HearYou", szPhrase);
 	hMenu.AddItem("HearYou", szBuffer);
-
 
 
 	hMenu.ExitButton = true;

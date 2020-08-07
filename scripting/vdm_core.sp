@@ -64,7 +64,7 @@ bool			g_bCoreIsLoaded = false,
 				g_bLogs,
 				g_bTalkOnWarmup;
 
-char			g_sPathLogs[PLATFORM_MAX_PATH];
+char			g_sPathLogs[PLATFORM_MAX_PATH], g_sAdminFlag[1];
 
 enum struct Player
 {
@@ -440,4 +440,12 @@ bool VDM_LogMessage(char[] sBuffer, any ...)
 	{
 		LogToFile(g_sPathLogs, sBuffer);
 	}
+}
+
+bool CheckAdminAccess(int iClient)
+{
+	int iFlagBits = GetUserFlagBits(iClient);
+	
+	if(iFlagBits & ReadFlagString("z") || iFlagBits & ReadFlagString(g_sAdminFlag)) return true;
+	else return false;
 }
