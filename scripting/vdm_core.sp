@@ -64,7 +64,9 @@ bool			g_bCoreIsLoaded = false,
 				g_bLogs,
 				g_bTalkOnWarmup;
 
-char			g_sPathLogs[PLATFORM_MAX_PATH], g_sAdminFlag[1];
+char			g_sPathLogs[PLATFORM_MAX_PATH], 
+				g_sAdminFlag[2], 
+				g_sPrefix[32];
 
 enum struct Player
 {
@@ -177,7 +179,7 @@ Action CheckTime(Handle hTimer, any data)
 		static int iStep;
 		if(iStep > g_iChangeDynamicMode)
 		{
-			SetMode(g_iMainMode);
+			SetMode(g_iMode);
 			iStep = 0;
 		}
 		else iStep++;
@@ -219,6 +221,7 @@ public void Event_OnRoundStart(Event hEvent, char[] name, bool dontBroadcast)
 {
 	g_iLastPluginPriority = 0;
 	SetMode(g_iMainMode);
+	CallForward_OnSetVoiceModePost(g_iMainMode, true);
 
 	for(int i = 1; i <= MaxClients; i++) if(IsClientValid(i)) Players[i].iLastPluginPriority = 0;
 }
@@ -260,6 +263,7 @@ public void Update_CV(ConVar hCvar, const char[] szOldValue, const char[] szNewV
 	if(hCvar == g_hCvar1 || hCvar == g_hCvar2 || hCvar == g_hCvar3 || hCvar == g_hCvar4 || hCvar == g_hCvar5)
 	{
 		SetMode(g_iMainMode);
+		CallForward_OnSetVoiceModePost(g_iMainMode);
 	}
 }
 
@@ -380,34 +384,34 @@ void SetMode(int iMode)
 		// Mode_Alive_Death_TeamsOnly
 		// живые игроки могут общатся только с живыми игроками своей команды
 		// мертвые игроки могут общатся с мертвыми игроками своей и противоположной команды
-		case 2: SetCvar(1, 0, 1, 0, 0); 
+		case 2: SetCvar(1, 0, 1, 0, 0);
 
 		// Mode_TeamOnly
 		// живые игроки могут общатся только со своей командой (живой и мертвой)
-		case 3: SetCvar(1, 1, 0, 0, 0); 
+		case 3: SetCvar(1, 1, 0, 0, 0);
 
 		// Mode_AliveOnly
 		// живые игроки могут общатся только со своей командой (живой и мертвой)
 		// мертвые игроки будут слышать живых игроков своей команды и мертвых игроков своей и противоположной команды
-		case 4: SetCvar(1, 1, 1, 0, 0); 
+		case 4: SetCvar(1, 1, 1, 0, 0);
 
 		// Mode_AliveOnly
 		// живые игроки могут общатся только с живыми игроками своей и противоположной команды 
 		// мертвые игроки могут общатся только c мертвыми игроками своей команды
-		case 5: SetCvar(1, 0, 0, 1, 0); 
+		case 5: SetCvar(1, 0, 0, 1, 0);
 
 		// Mode_AliveToDeathTeams
 		// живые игроки могут общатся только с живыми игроками своей и противоположной команды 
 		// мертвые игроки могут общатся только c мертвыми игроками своей и противоположной команды
-		case 6: SetCvar(1, 0, 1, 1, 0); 
+		case 6: SetCvar(1, 0, 1, 1, 0);
 
 		// Mode_AllTalk
 		// обший голосовой чат
-		case 7: SetCvar(1, 1, 1, 1, 0); 
+		case 7: SetCvar(1, 1, 1, 1, 0);
 
 		// Mode_FullAllTalk
 		// общий голосовой чат | + наблюдатели (спектаторов)
-		case 8: SetCvar(1, 1, 1, 1, 1); 
+		case 8: SetCvar(1, 1, 1, 1, 1);
 	}
 
 	g_iLastMode = g_iMode;
@@ -434,11 +438,13 @@ bool IsWarmup()
 	return view_as<bool>(GameRules_GetProp("m_bWarmupPeriod"));
 }
 
-bool VDM_LogMessage(char[] sBuffer, any ...)
+bool VDM_LogMessage(char[] sMessage, any ...)
 {
 	if(g_bLogs)
 	{
-		LogToFile(g_sPathLogs, sBuffer);
+		char szBuffer[2048];
+		VFormat(szBuffer, sizeof szBuffer, sMessage, 2);
+		LogToFile(g_sPathLogs, szBuffer);
 	}
 }
 
@@ -449,3 +455,18 @@ bool CheckAdminAccess(int iClient)
 	if(iFlagBits & ReadFlagString("z") || iFlagBits & ReadFlagString(g_sAdminFlag)) return true;
 	else return false;
 }
+
+/*
+int GetMode()
+{
+	int iValue1 = g_hCvar1.SetInt(iValue1),
+		iValue2 = g_hCvar2.SetInt(iValue2),
+		iValue3 = g_hCvar3.SetInt(iValue3),
+		iValue4 = g_hCvar4.SetInt(iValue4),
+		iValue5 = g_hCvar5.SetInt(iValue5);
+	
+	if(iValue1 == 0 && iValue2 == 0 && iValue3 == 0 && iValue4 == 0 && iValue5 == 0)
+	elseif
+	etc...
+}
+*/
