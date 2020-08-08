@@ -30,11 +30,13 @@ void LoadConfig()
 
 	g_iChangeDynamicMode = g_kvConfig.GetNum("update_time", 0);
 
-	g_kvConfig.GetString("admin_menu_flag", g_sAdminFlag, sizeof(g_sAdminFlag)+1, "z");
+	g_kvConfig.GetString("admin_menu_flag", g_sAdminFlag, sizeof(g_sAdminFlag), "z");
 	if(!g_sAdminFlag[0]) g_sAdminFlag[0] = 'z';
+	g_kvConfig.GetString("prefix", g_sPrefix, sizeof(g_sPrefix), "VDM");
 	//PrintToServer("--- %s", g_sAdminFlag);
 
 	g_bBlockEvents = view_as<bool>(g_kvConfig.GetNum("block_events", 0));
+	g_bHookCvars = view_as<bool>(g_kvConfig.GetNum("hook_events", 0));
 	g_bLogs = view_as<bool>(g_kvConfig.GetNum("logs", 0));
 
 	RegConsoleCmds();

@@ -1,10 +1,10 @@
-void OpenMenu(int iClient, FeatureMenus eMenuType = MENUTYPE_MAINMENU, bool bLastAdminMenu = false)
+void OpenMenu(int iClient, FeatureMenus eMenuType = MENUTYPE_MAINMENU, int iPage = 0, bool bLastAdminMenu = false)
 {
 	switch(eMenuType)
 	{
 		case MENUTYPE_MAINMENU:			ShowMainMenu(iClient);
-		case MENUTYPE_SETTINGSMENU:		ShowSettingsMenu(iClient);
-		case MENUTYPE_ADMINMENU:		ShowAdminMenu(iClient);
+		case MENUTYPE_SETTINGSMENU:		ShowSettingsMenu(iClient, iPage);
+		case MENUTYPE_ADMINMENU:		ShowAdminMenu(iClient, iPage);
 		case MENUTYPE_SPEAKLIST:		ShowSpeakList(iClient);
 		case MENUTYPE_LISTININGLIST:	ShowListningList(iClient);
 	}
@@ -58,11 +58,11 @@ public void Handler_MenuVoiceSettings(TopMenu hMenu, TopMenuAction action, TopMe
 
 void ShowMainMenu(int iClient)
 {
-	NullMenu(iClient);
+	//NullMenu(iClient);
 	
 	Menu hMenu = new Menu(Handler_MainMenu);
 	SetGlobalTransTarget(iClient);
-	hMenu.SetTitle("%t\n \n", "MENU_TITLE");
+	hMenu.SetTitle("%s %t\n \n", g_sPrefix, "MENU_TITLE");
 
 	char szBuffer[128], szPhrase[128];
 	if(CheckAdminAccess(iClient)) FormatEx(szBuffer, sizeof szBuffer, "%t", "SettingsMenu");
@@ -153,13 +153,13 @@ int Handler_MainMenu(Menu hMenu, MenuAction action, int iClient, int iItem)
 	}
 }
 
-void ShowAdminMenu(int iClient)
+void ShowAdminMenu(int iClient, int iPage = 0)
 {
-	NullMenu(iClient);
+	//NullMenu(iClient);
 	
 	Menu hMenu = new Menu(Handler_AdminMenu, MenuAction_Display|MenuAction_DisplayItem|MenuAction_DrawItem);
 	SetGlobalTransTarget(iClient);
-	hMenu.SetTitle("%t\n \n", "ADMINMENU_TitleSettings");
+	hMenu.SetTitle("%s %t\n \n", g_sPrefix, "ADMINMENU_TitleSettings");
 
 	char szBuffer[128];
 	FormatEx(szBuffer, sizeof szBuffer, "%t", "ReloadConfig");
@@ -171,7 +171,7 @@ void ShowAdminMenu(int iClient)
 
 	hMenu.ExitButton = true;
 	hMenu.ExitBackButton = true;
-	hMenu.Display(iClient, MENU_TIME_FOREVER);
+	hMenu.DisplayAt(iClient, iPage, MENU_TIME_FOREVER);
 }
 
 int Handler_AdminMenu(Menu hMenu, MenuAction action, int iClient, int iItem)
@@ -213,16 +213,16 @@ int Handler_AdminMenu(Menu hMenu, MenuAction action, int iClient, int iItem)
 	return FeatureHandler(hMenu, action, iClient, iItem, MENUTYPE_ADMINMENU);
 }
 
-void ShowSettingsMenu(int iClient)
+void ShowSettingsMenu(int iClient, int iPage = 0)
 {
 	NullMenu(iClient);
 
-	Menu hMenu = new Menu(Handler_SettingsMenu);
+	Menu hMenu = new Menu(Handler_SettingsMenu, MenuAction_Display|MenuAction_DisplayItem|MenuAction_DrawItem);
 	AddFeatureItemToMenu(hMenu, MENUTYPE_SETTINGSMENU);
 
 	hMenu.ExitButton = true;
 	hMenu.ExitBackButton = true;
-	hMenu.Display(iClient, MENU_TIME_FOREVER);
+	hMenu.DisplayAt(iClient, iPage, MENU_TIME_FOREVER);
 }
 
 int Handler_SettingsMenu(Menu hMenu, MenuAction action, int iClient, int iItem)
@@ -245,7 +245,7 @@ int Handler_SettingsMenu(Menu hMenu, MenuAction action, int iClient, int iItem)
 
 void ShowListningList(int iClient)
 {
-	NullMenu(iClient);
+	//NullMenu(iClient);
 	
 	Menu hMenu = new Menu(Handler_ListningListMenu);
 	SetGlobalTransTarget(iClient);
@@ -293,7 +293,7 @@ int Handler_ListningListMenu(Menu hMenu, MenuAction action, int iClient, int iIt
 
 void ShowSpeakList(int iClient)
 {
-	NullMenu(iClient);
+	//NullMenu(iClient);
 	
 	Menu hMenu = new Menu(Handler_SpeakListMenu);
 	SetGlobalTransTarget(iClient);
@@ -397,7 +397,7 @@ int FeatureHandler(Menu hMenu, MenuAction action, int iClient, int iItem, Featur
 
 							if(bResult)
 							{
-								OpenMenu(iClient, eMenuType);
+								OpenMenu(iClient, eMenuType, GetMenuSelectionPosition());
 							}
 						}
 					}

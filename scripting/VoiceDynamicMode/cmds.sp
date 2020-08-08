@@ -1,7 +1,7 @@
 Action cmd_Voice(int iClient, int iArgs)
 {
 	if(!iClient) return;
-	OpenMenu(iClient);
+	OpenMenu(iClient, MENUTYPE_MAINMENU);
 }
 
 Action cmd_Admin(int iClient, int iArgs)
@@ -9,7 +9,8 @@ Action cmd_Admin(int iClient, int iArgs)
 	if(!iClient) return;
 	if(!CheckAdminAccess(iClient))
 	{
-		CGOPrintToChat(iClient, "{GREEN}[VDM] {DEFAULT}У вас нет доступа к этой команде!");
+		PrintToConsole(iClient, "[VDM] У вас нет доступа к этой команде!");
+		CGOPrintToChat(iClient, "{GREEN}%s {DEFAULT}У вас нет доступа к этой команде!", g_sPrefix);
 		return;
 	}
 	OpenMenu(iClient, MENUTYPE_ADMINMENU);
@@ -47,7 +48,7 @@ void ReloadConfig(int iClient)
 {
 	LoadConfig();
 	CallForward_OnConfigReloaded();
-	CGOPrintToChat(iClient, "{GREEN}[VDM] {DEFAULT}Настройки перезагружены");
+	CGOPrintToChat(iClient, "{GREEN}%s {DEFAULT}Настройки перезагружены", g_sPrefix);
 }
 
 void ReloadModules(int iClient)
@@ -56,5 +57,5 @@ void ReloadModules(int iClient)
 	g_hItems.Clear();
 	
 	CallForward_OnCoreIsReady();
-	CGOPrintToChat(iClient, "{GREEN}[VDM] {DEFAULT}Модули перезагружены");
+	CGOPrintToChat(iClient, "{GREEN}%s {DEFAULT}Модули перезагружены", g_sPrefix);
 }
