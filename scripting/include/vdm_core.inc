@@ -30,6 +30,9 @@ public SharedPlugin __pl_vdm_core=
 public void __pl_vdm_core_SetNTVOptional()
 {
 	MarkNativeAsOptional("VDM_GetVersion");
+	MarkNativeAsOptional("VDM_GetConfig");
+	//MarkNativeAsOptional("VDM_GetPluginPrefix");
+
 	MarkNativeAsOptional("VDM_SetVoiceMode");
 	MarkNativeAsOptional("VDM_GetVoiceMode");
 	MarkNativeAsOptional("VDM_SetPlayerMode");
@@ -50,7 +53,7 @@ public void __pl_vdm_core_SetNTVOptional()
 *
 * См. описание в конфиге или в функции SetMode
 */
-enum VoiceMode 
+enum 
 {
 	VMODE_NOVOICE = 0,
 	VMODE_ALIVE_OR_DEAD_TEAM,
@@ -84,6 +87,12 @@ enum FeatureMenus
 */
 native int VDM_GetVersion();
 
+/** Получить конфиг
+*
+* @return					Handle KeyValus
+*/
+native KeyValues VDM_GetConfig();
+
 /** Проверка на готовность ядра
 *
 * @return					true - загружено.
@@ -93,12 +102,14 @@ native bool VDM_CoreIsLoaded();
 
 /** Установить голосовой режим сервера
 *
-* @param iMode				См. VoiceMode
+* @param iMode				См. enum VoiceMode
+* @param iModeType			См. VDM_GetVoiceMode
+* @param bIsWarmupCheck		Проверка на разминку
 *
 * @return					true - режим был изменён.
 *							false - режим не поменялся (приоритет).
 */
-native bool VDM_SetVoiceMode(VoiceMode iMode, bool IsWarmupCheck = false);
+native bool VDM_SetVoiceMode(int iMode, int iModeType = 0, bool bIsWarmupCheck = false);
 
 /** Получить голосовой режим сервера
 *
@@ -109,7 +120,7 @@ native bool VDM_SetVoiceMode(VoiceMode iMode, bool IsWarmupCheck = false);
 *
 * @return					Возвращает номер режима.
 */
-native VoiceMode VDM_GetVoiceMode(int iModeType = 0);
+native int VDM_GetVoiceMode(int iModeType = 0);
 
 /** Проверка зависимостей между двумя игроками.
 * Подходит для проверки кикие игроки слышат игрока и наоборот, кого слышыт игрок.
@@ -175,8 +186,8 @@ typedef VDM_ItemDrawCallback		= function int (int iClient, int iStyle);
 * ВАЖНО! Для правильно работы приоритетов, регестрируйте первую функцию для работы с измением режимов.
 *
 * @param szFeature			Название функции. (Используйте уникальное название)
-* @param eMenuType			Секция меню.
 * @param iPluginPriority	Приоритет функции (-1 - автоматический приоритет выставляемый ядром).
+* @param eMenuType			Секция меню.
 * @param OnItemSelect		Обратный вызов при нажатии пункта.
 * @param OnItemDisplay		Обратный вызов при отображении пункта.
 * @param OnItemDraw			Обратный вызов при обращении к пункту.
@@ -184,7 +195,7 @@ typedef VDM_ItemDrawCallback		= function int (int iClient, int iStyle);
 * @return					true - функция зарегистрирована
 *							false - функция не зарегистрирована (одинаковое название уже зарегистрированной функци)
 */
-native bool VDM_AddFeature(const char[] szFeature, FeatureMenus	eMenuType, int iPluginPriority = 0, VDM_ItemSelectCallback OnItemSelect	= INVALID_FUNCTION, VDM_ItemDisplayCallback	OnItemDisplay = INVALID_FUNCTION, VDM_ItemDrawCallback OnItemDraw = INVALID_FUNCTION);
+native bool VDM_AddFeature(const char[] szFeature, int iPluginPriority = 0, FeatureMenus eMenuType = MENUTYPE_NONE, VDM_ItemSelectCallback OnItemSelect	= INVALID_FUNCTION, VDM_ItemDisplayCallback	OnItemDisplay = INVALID_FUNCTION, VDM_ItemDrawCallback OnItemDraw = INVALID_FUNCTION);
 
 /** Удаляет функцию
 *
@@ -250,10 +261,11 @@ forward Action VDM_OnSetVoiceModePre(int& iMode);
 /** Вызывается после установки голосового режима сервера
 *
 * @param iMode				Индекс режима
+* @param bRoundStart		Выдан ли ядром в начале раунда? 
 *
 * @noreturn
 */
-forward void VDM_OnSetVoiceModePost(int iMode);
+forward void VDM_OnSetVoiceModePost(int iMode, bool bRoundStart);
 
 /** Вызывается при установке голосового режима игроку
 *

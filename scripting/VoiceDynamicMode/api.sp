@@ -31,6 +31,8 @@ static Handle		g_hGlobalForvard_OnCoreIsReady,
 void CreateNatives()
 {
 	CreateNative("VDM_GetVersion",				Native_GetVersion);
+	CreateNative("VDM_GetConfig",				Native_GetConfig);
+
 	CreateNative("VDM_SetVoiceMode",			Native_SetVoiceMode);
 	CreateNative("VDM_GetVoiceMode",			Native_GetVoiceMode);
 	CreateNative("VDM_SetPlayerMode",			Native_SetPlayerMode);
@@ -52,11 +54,17 @@ void CreateGlobalForwards()
 	g_hGlobalForvard_OnConfigReloaded = CreateGlobalForward("VDM_OnConfigReloaded", ET_Ignore, Param_Cell);
 
 	g_hGlobalForvard_OnSetVoiceModePre = CreateGlobalForward("VDM_OnSetVoiceModePre", ET_Hook, Param_CellByRef);
-	g_hGlobalForvard_OnSetVoiceModePost = CreateGlobalForward("VDM_OnSetVoiceModePost", ET_Ignore, Param_Cell);
+	g_hGlobalForvard_OnSetVoiceModePost = CreateGlobalForward("VDM_OnSetVoiceModePost", ET_Ignore, Param_Cell, Param_Cell);
 
 	g_hGlobalForvard_OnSetPlayerModePre = CreateGlobalForward("VDM_OnSetPlayerModePre", ET_Hook, Param_Cell, Param_CellByRef);
 	g_hGlobalForvard_OnSetPlayerModePost = CreateGlobalForward("VDM_OnSetPlayerModePost", ET_Ignore, Param_Cell, Param_Cell);
 }
+
+int Native_GetConfig(Handle hPlugin, int numParams)
+{
+	return view_as<int>(g_kvConfig);
+}
+
 
 int Native_GetVersion(Handle hPlugin, int iArgs)
 {
@@ -72,6 +80,8 @@ int Native_CoreIsLoaded(Handle hPlugin, int iNumParams)
 // bool bCallPreForward = false, bool bCallPostForward = false
 int Native_SetVoiceMode(Handle hPlugin, int iNumParams)
 {
+	g_iLastPluginPriority = 0;
+
 	int iMode = view_as<int>(GetNativeCell(1));
 	bool IsWarmupCheck = GetNativeCell(2);
 	int iPluginPriority = GetPluginPriority(hPlugin);
@@ -80,6 +90,9 @@ int Native_SetVoiceMode(Handle hPlugin, int iNumParams)
 	{
 		if(IsWarmup()) return 0;
 	}
+
+	if(iMode > MAX_MODES) iMode = MAX_MODES;
+	else if(iMode < 0) iMode = 0;
 
 	switch(CallForward_OnSetVoiceModePre(iMode))
 	{
@@ -133,6 +146,7 @@ int Native_SetPlayerMode(Handle hPlugin, int iNumParams)
 	int iClient = GetNativeCell(1);
 	int iMode = GetNativeCell(2);
 	int iPluginPriority = GetPluginPriority(hPlugin);
+	Players[iClient].iLastPluginPriority = 0;
 	
 	switch(CallForward_OnSetPlayerModePre(iClient, iMode))
 	{
@@ -177,8 +191,8 @@ int Native_AddFeature(Handle hPlugin, int iNumParams)
 		{
 			any aArray[6];
 			aArray[F_PLUGIN] = 			hPlugin;
-			aArray[F_MENUTYPE] = 		GetNativeCell(2); // eMenuType
-			aArray[F_PRIORITY_TYPE] = 	GetNativeCell(3); // iPluginPriority
+			aArray[F_PRIORITY_TYPE] = 	GetNativeCell(2); // iPluginPriority
+			aArray[F_MENUTYPE] = 		GetNativeCell(3); // eMenuType
 			aArray[F_SELECT] = 			GetNativeCell(4); // OnItemSelect
 			aArray[F_DISPLAY] = 		GetNativeCell(5); // OnItemDisplay
 			aArray[F_DRAW] = 			GetNativeCell(6); // OnItemDraw
@@ -282,10 +296,11 @@ Action CallForward_OnSetVoiceModePre(int iMode)
 	return Result;
 }
 
-void CallForward_OnSetVoiceModePost(int iMode)
+void CallForward_OnSetVoiceModePost(int iMode, bool bRoundStart = false)
 {
 	Call_StartForward(g_hGlobalForvard_OnSetVoiceModePost);
 	Call_PushCell(iMode);
+	Call_PushCell(bRoundStart);
 	Call_Finish();
 }
 
