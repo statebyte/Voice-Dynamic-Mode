@@ -8,8 +8,8 @@
 
 	"MENU_TITLE"
 	{
-		"en" "[VDM] Voice Mode"
-		"ru" "[VDM] Голосовой режим"
+		"en" "Voice Mode"
+		"ru" "Голосовой режим"
 	}
 
 	"SettingsMenu"
@@ -24,16 +24,16 @@
 		"ru" "Меню администратора"
 	}
 
-	"VDM_settings"
-	{
-		"en" "Voice Dynamic Mode | Settings"
-		"ru" "Voice Dynamic Mode | Настройки"
-	}
-
 	"ADMINMENU_TitleSettings"
 	{
 		"en" "Settings voice mode"
 		"ru" "Настройки голосового режима"
+	}
+
+	"MENU_TitleSettings"
+	{
+		"en" "My Settings"
+		"ru" "Мои настройки"
 	}
 
 	"ReloadConfig"

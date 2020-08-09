@@ -50,6 +50,10 @@ ConVar			g_hCvar1,
 				g_hCvar6,
 				g_hCvar7;
 
+TopMenu     	g_hTopMenu = null;
+ArrayList		g_hItems, g_hNameItems;
+KeyValues		g_kvConfig;
+
 int				g_iMode, // Текущий режим
 				g_iMainMode, // Основной режим (может быть изменён)
 				g_iDefaultMode, // Стандартный основной режим (изменяется только конфигом)
@@ -67,6 +71,28 @@ bool			g_bCoreIsLoaded = false,
 char			g_sPathLogs[PLATFORM_MAX_PATH], 
 				g_sAdminFlag[2], 
 				g_sPrefix[32];
+
+
+enum
+{
+	F_PLUGIN = 0,
+	F_MENUTYPE,
+	F_PRIORITY_TYPE,
+	F_SELECT,
+	F_DISPLAY,
+	F_DRAW,
+	F_COUNT
+}
+
+enum FeatureMenus
+{
+	MENUTYPE_NONE = 0,		// Без секции меню
+	MENUTYPE_MAINMENU,		// Секция главного меню
+	MENUTYPE_SETTINGSMENU,	// Секция меню настроек
+	MENUTYPE_ADMINMENU, 	// Секция админ-меню
+	MENUTYPE_SPEAKLIST, 	// Список игроков, которые слышат вас
+	MENUTYPE_LISTININGLIST	// Список игроков, которых вы слышите
+};
 
 enum struct Player
 {
@@ -91,31 +117,6 @@ enum struct Player
 	}
 }
 Player Players[MAXPLAYERS+1];
-
-enum
-{
-	F_PLUGIN = 0,
-	F_MENUTYPE,
-	F_PRIORITY_TYPE,
-	F_SELECT,
-	F_DISPLAY,
-	F_DRAW,
-	F_COUNT
-}
-
-enum FeatureMenus
-{
-	MENUTYPE_NONE = 0,		// Без секции меню
-	MENUTYPE_MAINMENU,		// Секция главного меню
-	MENUTYPE_SETTINGSMENU,	// Секция меню настроек
-	MENUTYPE_ADMINMENU, 	// Секция админ-меню
-	MENUTYPE_SPEAKLIST, 	// Список игроков, которые слышат вас
-	MENUTYPE_LISTININGLIST	// Список игроков, которых вы слышите
-};
-
-TopMenu     	g_hTopMenu = null;
-ArrayList		g_hItems, g_hNameItems;
-KeyValues		g_kvConfig;
 
 #include "VoiceDynamicMode/config.sp"
 #include "VoiceDynamicMode/api.sp"
@@ -190,7 +191,7 @@ Action CheckTime(Handle hTimer, any data)
 		// Обновление данных в меню
 		if(Players[i].MenuIsOpen())
 		{
-			OpenMenu(i, view_as<FeatureMenus>(Players[i].iMenuType));
+			if(view_as<FeatureMenus>(Players[i].iMenuType) == MENUTYPE_MAINMENU) OpenMenu(i, MENUTYPE_MAINMENU);
 		}
 		// Обновление режима игрока
 		if(Players[i].iPlayerMode > 0)

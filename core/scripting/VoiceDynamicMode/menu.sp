@@ -218,6 +218,8 @@ void ShowSettingsMenu(int iClient, int iPage = 0)
 	NullMenu(iClient);
 
 	Menu hMenu = new Menu(Handler_SettingsMenu, MenuAction_Display|MenuAction_DisplayItem|MenuAction_DrawItem);
+	SetGlobalTransTarget(iClient);
+	hMenu.SetTitle("%s %t\n \n", g_sPrefix, "MENU_TitleSettings");
 	AddFeatureItemToMenu(hMenu, MENUTYPE_SETTINGSMENU);
 
 	hMenu.ExitButton = true;
