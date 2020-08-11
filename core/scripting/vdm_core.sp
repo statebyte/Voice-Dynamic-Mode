@@ -264,7 +264,8 @@ public void Update_CV(ConVar hCvar, const char[] szOldValue, const char[] szNewV
 	if(hCvar == g_hCvar1 || hCvar == g_hCvar2 || hCvar == g_hCvar3 || hCvar == g_hCvar4 || hCvar == g_hCvar5)
 	{
 		SetMode(g_iMainMode);
-		CallForward_OnSetVoiceModePost(g_iMainMode);
+		// Не когда не повторяйте моих ошибок!
+		//CallForward_OnSetVoiceModePost(g_iMainMode);
 	}
 }
 

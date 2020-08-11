@@ -108,11 +108,13 @@ int Native_SetVoiceMode(Handle hPlugin, int iNumParams)
 				SetMode(iMode);
 			}
 		}
+		case Plugin_Handled: return 0;
+		case Plugin_Stop: return 0;
 	}
 
-	CallForward_OnSetVoiceModePost(g_iMode);
-
 	if(g_iMode == g_iLastMode) return 0;
+
+	CallForward_OnSetVoiceModePost(g_iMode);
 
 	return 1;
 }
