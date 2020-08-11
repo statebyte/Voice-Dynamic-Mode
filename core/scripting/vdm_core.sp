@@ -24,7 +24,7 @@
 * - Create modules
 */
 
-#define			VDM_VERSION         "2.0 D" // D - Developer Preview | B - BETA | R - RELEASE
+#define			VDM_VERSION         "2.0 B" // D - Developer Preview | B - BETA | R - RELEASE
 #define 		VDM_INT_VERSION 	020000
 #define			DEBUG_MODE 			0
 
