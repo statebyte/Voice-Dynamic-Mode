@@ -3,6 +3,7 @@
 
 #define FUNC_NAME       "force_camera"
 #define FUNC_PRIORITY   10
+#define MESSAGE 		"{GREEN}[VDM] {DEFAULT}Режим Force Camera %s!"
 
 ConVar 		g_hCvar;
 int         g_iForceCameraMode,
@@ -51,6 +52,8 @@ public void VDM_OnConfigReloaded(KeyValues kv)
 bool OnItemSelectMenu(int iClient)
 {
 	g_bForceCameraEnabled = !g_bForceCameraEnabled;
+	SetForceCamera(view_as<int>(g_bForceCameraEnabled));
+	CGOPrintToChatAll(MESSAGE, g_bForceCameraEnabled ? "включён" : "выключен");
 	return true;
 }
 
