@@ -6,8 +6,9 @@
 #define FUNC_PRIORITY   10
 
 #define REMIND_MESSAGE  "{GREEN}[VDM] {RED}Не забудьте, что вы выключили голосовой чат!"
+#define MESSAGE 		"{GREEN}[VDM] {DEFAULT}Вы %s голосовой чат!"
 
-bool g_bVoiceEnable[MAXPLAYERS+1];
+bool g_bVoiceDisable[MAXPLAYERS+1];
 
 public Plugin myinfo =
 {
@@ -43,13 +44,14 @@ public void VDM_OnCoreIsReady()
 
 bool OnItemSelectMenu(int iClient)
 {
-	g_bVoiceEnable[iClient] = !g_bVoiceEnable[iClient];
+	g_bVoiceDisable[iClient] = !g_bVoiceDisable[iClient];
+	CGOPrintToChatAll(MESSAGE, g_bVoiceDisable[iClient] ? "выключили" : "включили");
 	return true;
 }
 
 bool OnItemDisplayMenu(int iClient, char[] szDisplay, int iMaxLength)
 {
-	FormatEx(szDisplay, iMaxLength, "Голосовой чат [ %s ]", g_bVoiceEnable[iClient] ? "Вкл" : "Выкл");
+	FormatEx(szDisplay, iMaxLength, "Голосовой чат [ %s ]", g_bVoiceDisable[iClient] ? "Выкл" : "Вкл");
 	return true;
 }
 
@@ -60,7 +62,7 @@ int OnItemDrawMenu(int iClient, int iStyle)
 
 public void Event_OnRoundStart(Event hEvent, char[] name, bool dontBroadcast)
 {
-	for(int i = 1; i <= MaxClients; i++) if(IsClientInGame(i) && !IsFakeClient(i))
+	for(int i = 1; i <= MaxClients; i++) if(IsClientInGame(i) && !IsFakeClient(i) && g_bVoiceDisable[i])
 	{
 		CGOPrintToChat(i, REMIND_MESSAGE);
 	}
@@ -69,7 +71,7 @@ public void Event_OnRoundStart(Event hEvent, char[] name, bool dontBroadcast)
 public Action CVP(int iClient, int iTarget, bool& bListen)
 {
 	if(!IsClientInGame(iClient) || !IsClientInGame(iTarget)) return Plugin_Continue;
-	if(g_bVoiceEnable[iTarget]) return Plugin_Handled;
+	if(g_bVoiceDisable[iTarget]) return Plugin_Handled;
 
 	return Plugin_Continue;
 }
