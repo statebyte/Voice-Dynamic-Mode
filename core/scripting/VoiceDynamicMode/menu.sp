@@ -11,6 +11,7 @@ void OpenMenu(int iClient, FeatureMenus eMenuType = MENUTYPE_MAINMENU, int iPage
 	Players[iClient].bMenuIsOpen = true;
 	Players[iClient].iMenuType = view_as<int>(eMenuType);
 	Players[iClient].bLastAdminMenu = bLastAdminMenu;
+	Players[iClient].iMenuPage = iPage;
 }
 
 public void OnLibraryRemoved(const char[] szName)
@@ -51,20 +52,18 @@ public void Handler_MenuVoiceSettings(TopMenu hMenu, TopMenuAction action, TopMe
 		}
 		case TopMenuAction_SelectOption:
 		{
-			OpenMenu(iClient, MENUTYPE_ADMINMENU, true);
+			OpenMenu(iClient, MENUTYPE_ADMINMENU, _, true);
 		}
 	}
 }
 
 void ShowMainMenu(int iClient)
 {
-	//NullMenu(iClient);
-	
 	Menu hMenu = new Menu(Handler_MainMenu);
 	SetGlobalTransTarget(iClient);
 	hMenu.SetTitle("%s %t\n \n", g_sPrefix, "MENU_TITLE");
 
-	char szBuffer[128], szPhrase[128];
+	char szBuffer[128], szPhrase[256];
 	if(CheckAdminAccess(iClient)) FormatEx(szBuffer, sizeof szBuffer, "%t", "SettingsMenu");
 	else FormatEx(szBuffer, sizeof szBuffer, "%t\n \n", "SettingsMenu");
 
@@ -155,8 +154,6 @@ int Handler_MainMenu(Menu hMenu, MenuAction action, int iClient, int iItem)
 
 void ShowAdminMenu(int iClient, int iPage = 0)
 {
-	//NullMenu(iClient);
-	
 	Menu hMenu = new Menu(Handler_AdminMenu, MenuAction_Display|MenuAction_DisplayItem|MenuAction_DrawItem);
 	SetGlobalTransTarget(iClient);
 	hMenu.SetTitle("%s %t\n \n", g_sPrefix, "ADMINMENU_TitleSettings");
@@ -197,6 +194,8 @@ int Handler_AdminMenu(Menu hMenu, MenuAction action, int iClient, int iItem)
 			char szInfo[64];
 			hMenu.GetItem(iItem, szInfo, sizeof(szInfo));
 
+			Players[iClient].iMenuPage = GetMenuSelectionPosition();
+
 			if(!strcmp(szInfo, "reloadconfig"))
 			{
 				ReloadConfig(iClient);
@@ -215,8 +214,6 @@ int Handler_AdminMenu(Menu hMenu, MenuAction action, int iClient, int iItem)
 
 void ShowSettingsMenu(int iClient, int iPage = 0)
 {
-	NullMenu(iClient);
-
 	Menu hMenu = new Menu(Handler_SettingsMenu, MenuAction_Display|MenuAction_DisplayItem|MenuAction_DrawItem);
 	SetGlobalTransTarget(iClient);
 	hMenu.SetTitle("%s %t\n \n", g_sPrefix, "MENU_TitleSettings");
@@ -240,6 +237,11 @@ int Handler_SettingsMenu(Menu hMenu, MenuAction action, int iClient, int iItem)
 				OpenMenu(iClient, MENUTYPE_MAINMENU);
 			}
 		}
+		case MenuAction_Select:
+		{
+			//PrintToChatAll("menu - %i", GetMenuSelectionPosition());
+			Players[iClient].iMenuPage = GetMenuSelectionPosition();
+		}
 	}
 	
 	return FeatureHandler(hMenu, action, iClient, iItem, MENUTYPE_SETTINGSMENU);
@@ -247,8 +249,6 @@ int Handler_SettingsMenu(Menu hMenu, MenuAction action, int iClient, int iItem)
 
 void ShowListningList(int iClient)
 {
-	//NullMenu(iClient);
-	
 	Menu hMenu = new Menu(Handler_ListningListMenu);
 	SetGlobalTransTarget(iClient);
 	hMenu.SetTitle("%t\n \n", "YouHear");
@@ -295,8 +295,6 @@ int Handler_ListningListMenu(Menu hMenu, MenuAction action, int iClient, int iIt
 
 void ShowSpeakList(int iClient)
 {
-	//NullMenu(iClient);
-	
 	Menu hMenu = new Menu(Handler_SpeakListMenu);
 	SetGlobalTransTarget(iClient);
 	hMenu.SetTitle("%t\n \n", "HearYou");
@@ -356,11 +354,6 @@ void AddFeatureItemToMenu(Menu hMenu, FeatureMenus eMenuType)
 			hMenu.AddItem(szBuffer, szBuffer);
 		}
 	}
-}
-
-void NullMenu(int iClient)
-{
-	PrintToChat(iClient, "Вызов меню...");
 }
 
 int FeatureHandler(Menu hMenu, MenuAction action, int iClient, int iItem, FeatureMenus eMenuType)

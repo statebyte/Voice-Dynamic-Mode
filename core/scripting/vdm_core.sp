@@ -99,9 +99,11 @@ enum struct Player
 	int 	iClient;
 	int 	iPlayerMode;
 	int		iLastPluginPriority;
+
 	bool 	bMenuIsOpen;
-	int 	iMenuType;
 	bool	bLastAdminMenu;
+	int 	iMenuType;
+	int		iMenuPage;
 
 	bool MenuIsOpen()
 	{
@@ -122,6 +124,7 @@ Player Players[MAXPLAYERS+1];
 #include "VoiceDynamicMode/api.sp"
 #include "VoiceDynamicMode/menu.sp"
 #include "VoiceDynamicMode/cmds.sp"
+#include "VoiceDynamicMode/events.sp"
 
 public Plugin myinfo =
 {
@@ -154,13 +157,13 @@ public void OnPluginStart()
 	GetCvars();
 	
 	if (LibraryExists("adminmenu"))
-    {
-        TopMenu hTopMenu;
-        if ((hTopMenu = GetAdminTopMenu()) != null)
-        {
-            OnAdminMenuReady(hTopMenu);
-        }
-    }
+	{
+		TopMenu hTopMenu;
+		if ((hTopMenu = GetAdminTopMenu()) != null)
+		{
+			OnAdminMenuReady(hTopMenu);
+		}
+	}
 
 	HookEvent("round_start", Event_OnRoundStart, EventHookMode_PostNoCopy);
 	HookEvent("server_cvar", Event_Cvar, EventHookMode_Pre);
@@ -170,7 +173,33 @@ public void OnPluginStart()
 	for(int i = 1; i <= MaxClients; i++) if(IsClientValid(i)) OnClientPutInServer(i);
 
 	CallForward_OnCoreIsReady();
+
+	AddCommandListener(MenuSelectListener, "menuselect");
 }
+
+/* Фикс для динамичного отображения всех пунктов меню на любой странце меню.
+Функция AddCommandListner - hook command (menuselect)
+*/
+Action MenuSelectListener(int iClient, char[] cmd, int argc)
+{
+	if(Players[iClient].MenuIsOpen())
+	{
+		char szBuffer[4];
+		GetCmdArgString(szBuffer, sizeof(szBuffer));
+
+		switch(szBuffer[0])
+		{
+			case '7': 
+			{
+				if(Players[iClient].iMenuPage > 0) Players[iClient].iMenuPage -= 6;
+				else Players[iClient].iMenuPage = 0;
+			}
+			case '8': Players[iClient].iMenuPage += 6;
+		}
+	}
+	
+	return Plugin_Continue;
+} 
 
 Action CheckTime(Handle hTimer, any data)
 {
@@ -191,7 +220,9 @@ Action CheckTime(Handle hTimer, any data)
 		// Обновление данных в меню
 		if(Players[i].MenuIsOpen())
 		{
-			if(view_as<FeatureMenus>(Players[i].iMenuType) == MENUTYPE_MAINMENU) OpenMenu(i, MENUTYPE_MAINMENU);
+			//if(view_as<FeatureMenus>(Players[i].iMenuType) == MENUTYPE_MAINMENU)  
+			//PrintToChatAll("menupage - %i", Players[i].iMenuPage);
+			OpenMenu(i, view_as<FeatureMenus>(Players[i].iMenuType), Players[i].iMenuPage);
 		}
 		// Обновление режима игрока
 		if(Players[i].iPlayerMode > 0)
@@ -201,30 +232,10 @@ Action CheckTime(Handle hTimer, any data)
 	}
 }
 
-public Action Event_Cvar(Handle hEvent, const char[] name, bool dontBroadcast)
-{
-    if(!g_bBlockEvents) return Plugin_Continue;
-    char cvarname[64]; 
-    GetEventString(hEvent, "cvarname", cvarname, sizeof(cvarname));
-
-    if(!strcmp("sv_deadtalk", cvarname)) return Plugin_Handled;
-
-    return Plugin_Continue;
-}
-
 public void OnMapStart()
 {
 	if(g_iTalkAfterDyingTime > 0) g_hCvar7.SetInt(g_iTalkAfterDyingTime);
 	if(g_bTalkOnWarmup) g_hCvar6.SetInt(1);
-}
-
-public void Event_OnRoundStart(Event hEvent, char[] name, bool dontBroadcast)
-{
-	g_iLastPluginPriority = 0;
-	SetMode(g_iMainMode);
-	CallForward_OnSetVoiceModePost(g_iMainMode, true);
-
-	for(int i = 1; i <= MaxClients; i++) if(IsClientValid(i)) Players[i].iLastPluginPriority = 0;
 }
 
 public void OnClientPutInServer(int iClient)
@@ -258,16 +269,7 @@ void GetCvars()
 	HookConVarChange(g_hCvar7, Update_CV);
 }
 
-public void Update_CV(ConVar hCvar, const char[] szOldValue, const char[] szNewValue)
-{
-	if(!g_bHookCvars) return;
-	if(hCvar == g_hCvar1 || hCvar == g_hCvar2 || hCvar == g_hCvar3 || hCvar == g_hCvar4 || hCvar == g_hCvar5)
-	{
-		SetMode(g_iMainMode);
-		// Не когда не повторяйте моих ошибок!
-		//CallForward_OnSetVoiceModePost(g_iMainMode);
-	}
-}
+
 
 /*
 TODO: Добавить ивенты pre/post + приоритеты плагинов
