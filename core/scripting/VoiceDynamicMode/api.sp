@@ -83,16 +83,29 @@ int Native_SetVoiceMode(Handle hPlugin, int iNumParams)
 	g_iLastPluginPriority = 0;
 
 	int iMode = view_as<int>(GetNativeCell(1));
-	bool IsWarmupCheck = GetNativeCell(2);
+	int iModeType = GetNativeCell(2);
+	bool IsWarmupCheck = GetNativeCell(3);
 	int iPluginPriority = GetPluginPriority(hPlugin);
+
+	if(iMode > MAX_MODES) iMode = MAX_MODES;
+	else if(iMode < 0) iMode = 0;
+
+	if(iModeType != 0)
+	{
+		switch(iModeType)
+		{
+			case 1: g_iMainMode = iMode;
+			case 2: g_iDefaultMode = iMode;
+			case 3: g_iLastMode = iMode;
+		}
+
+		return 0;
+	}
 
 	if(IsWarmupCheck)
 	{
 		if(IsWarmup()) return 0;
 	}
-
-	if(iMode > MAX_MODES) iMode = MAX_MODES;
-	else if(iMode < 0) iMode = 0;
 
 	switch(CallForward_OnSetVoiceModePre(iMode))
 	{
