@@ -58,9 +58,9 @@ int				g_iMode, // Текущий режим
 				g_iMainMode, // Основной режим (может быть изменён)
 				g_iDefaultMode, // Стандартный основной режим (изменяется только конфигом)
 				g_iLastMode, // Предыдущий режим
-				g_iLastPluginPriority, // Предыдущий приоритет выставленный модулем
 				g_iChangeDynamicMode,
-				g_iTalkAfterDyingTime;
+				g_iTalkAfterDyingTime,
+				g_iDynamicMenu;
 
 bool			g_bCoreIsLoaded = false,
 				g_bHookCvars,
@@ -218,12 +218,14 @@ Action CheckTime(Handle hTimer, any data)
 	for(int i = 1; i <= MaxClients; i++) if(IsClientValid(i))
 	{
 		// Обновление данных в меню
-		if(Players[i].MenuIsOpen())
+		if(g_iDynamicMenu > 0 && Players[i].MenuIsOpen())
 		{
 			//if(view_as<FeatureMenus>(Players[i].iMenuType) == MENUTYPE_MAINMENU)  
 			//PrintToChatAll("menupage - %i", Players[i].iMenuPage);
-			OpenMenu(i, view_as<FeatureMenus>(Players[i].iMenuType), Players[i].iMenuPage);
+			if(g_iDynamicMenu == 1) OpenMenu(i, MENUTYPE_MAINMENU);
+			else OpenMenu(i, view_as<FeatureMenus>(Players[i].iMenuType), Players[i].iMenuPage, Players[i].bLastAdminMenu);
 		}
+		
 		// Обновление режима игрока
 		if(Players[i].iPlayerMode > 0)
 		{
@@ -374,6 +376,8 @@ bool CheckPlayerListenStatus(int iClient, int iTarget = 0)
 
 void SetMode(int iMode)
 {
+	bool bConvar = g_bHookCvars;
+	g_bHookCvars = false;
 	switch(iMode)
 	{
 		// Mode_NoVoice
@@ -420,6 +424,8 @@ void SetMode(int iMode)
 
 	g_iLastMode = g_iMode;
 	g_iMode = iMode;
+
+	g_bHookCvars = bConvar;
 }
 
 // sv_alltalk, sv_deadtalk, sv_talk_enemy_dead, sv_talk_enemy_living, sv_full_alltalk

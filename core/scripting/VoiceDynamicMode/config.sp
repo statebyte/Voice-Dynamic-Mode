@@ -35,6 +35,8 @@ void LoadConfig()
 	g_kvConfig.GetString("prefix", g_sPrefix, sizeof(g_sPrefix), "VDM");
 	//PrintToServer("--- %s", g_sAdminFlag);
 
+	g_iDynamicMenu = g_kvConfig.GetNum("menu_dynamic", 2);
+
 	g_bBlockEvents = view_as<bool>(g_kvConfig.GetNum("block_events", 0));
 	g_bHookCvars = view_as<bool>(g_kvConfig.GetNum("hook_events", 0));
 	g_bLogs = view_as<bool>(g_kvConfig.GetNum("logs", 0));
