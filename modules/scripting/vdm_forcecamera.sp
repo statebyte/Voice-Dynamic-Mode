@@ -47,6 +47,7 @@ public void VDM_OnCoreIsReady()
 public void VDM_OnConfigReloaded(KeyValues kv)
 {
 	GetSettings(kv);
+	SetForceCamera(view_as<int>(g_bForceCameraEnabled));
 }
 
 bool OnItemSelectMenu(int iClient)

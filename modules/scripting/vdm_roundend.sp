@@ -1,6 +1,6 @@
 #include <vdm_core>
 
-#define FUNC_NAME       "roundend"
+#define FUNC_NAME       "round_end"
 #define FUNC_PRIORITY   10
 
 int g_iRoundEndMode;

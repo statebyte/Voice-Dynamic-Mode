@@ -9,7 +9,9 @@ public Plugin myinfo =
 	url			=	"Source: http://hlmod.ru | Support: https://discord.gg/ajW69wN"
 };
 
-public void VDM_OnSetVoiceModePost(int iMode, bool bRoundStart)
+public void VDM_OnSetVoiceModePost(int iMode, int iPluginPriority, char[] szFeature)
 {
-    CGOPrintToChatAll("{GREEN}[VDM] {DEFAULT}Change Mode Post - %i (%s)", iMode, bRoundStart ? "RoundStart" : "Other");
+    if(!strcmp(szFeature, "round_start")) CGOPrintToChatAll("{GREEN}[VDM] {DEFAULT}Голосовой режим установлен по умолчанию");
+	else if(!strcmp(szFeature, "round_end")) CGOPrintToChatAll("{GREEN}[VDM] {DEFAULT}Общение включено!");
+	else CGOPrintToChatAll("{GREEN}[VDM] {DEFAULT}Изменён голосовой режим на %i (%s)", iMode, szFeature);
 }

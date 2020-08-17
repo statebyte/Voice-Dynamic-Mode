@@ -10,7 +10,7 @@ bool g_bFullAllTalk;
 
 public Plugin myinfo =
 {
-	name		=	"[VDM] Voice Enable (PTaH Edition)",
+	name		=	"[VDM] Full AllTalk",
 	version		=	"1.0",
 	author		=	"FIVE",
 	url			=	"Source: http://hlmod.ru | Support: https://discord.gg/ajW69wN"
@@ -31,13 +31,14 @@ public void OnPluginEnd()
 	}
 }
 
-public Action VDM_OnSetVoiceModePre(int& iMode)
+public Action VDM_OnSetVoiceModePre(int& iMode, int iPluginPriority, char[] szFeature)
 {
-	if(g_bFullAllTalk)
+	if(FUNC_PRIORITY > iPluginPriority && g_bFullAllTalk)
 	{
+		PrintToChatAll("Попытка изменения режима - плагин (%s)", szFeature);
 		iMode = VMODE_FULL_ALLTALK;
 		return Plugin_Changed;
-	}
+	}	
 
 	return Plugin_Continue;
 }
@@ -56,13 +57,15 @@ bool OnItemSelectMenu(int iClient)
 {
 	g_bFullAllTalk = !g_bFullAllTalk;
 
+	if(g_bFullAllTalk) VDM_SetVoiceMode(8);
+
 	CGOPrintToChatAll(MESSAGE, g_bFullAllTalk ? "включён" : "выключен");
 	return true;
 }
 
 bool OnItemDisplayMenu(int iClient, char[] szDisplay, int iMaxLength)
 {
-	FormatEx(szDisplay, iMaxLength, "Общий голосовой чат [ %s ]", g_bFullAllTalk ? "Вкл" : "Выкл");
+	FormatEx(szDisplay, iMaxLength, "Общий голосовой чат [ %s ]", (VDM_GetVoiceMode() == VMODE_FULL_ALLTALK && g_bFullAllTalk) ? "Вкл" : "Выкл");
 	return true;
 }
 
