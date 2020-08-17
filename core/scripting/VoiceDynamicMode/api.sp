@@ -32,6 +32,7 @@ void CreateNatives()
 {
 	CreateNative("VDM_GetVersion",				Native_GetVersion);
 	CreateNative("VDM_GetConfig",				Native_GetConfig);
+	CreateNative("VDM_GetPluginPrefix",			Native_GetPluginPrefix);
 
 	CreateNative("VDM_SetVoiceMode",			Native_SetVoiceMode);
 	CreateNative("VDM_GetVoiceMode",			Native_GetVoiceMode);
@@ -53,8 +54,8 @@ void CreateGlobalForwards()
 	g_hGlobalForvard_OnCoreIsReady = CreateGlobalForward("VDM_OnCoreIsReady", ET_Ignore);
 	g_hGlobalForvard_OnConfigReloaded = CreateGlobalForward("VDM_OnConfigReloaded", ET_Ignore, Param_Cell);
 
-	g_hGlobalForvard_OnSetVoiceModePre = CreateGlobalForward("VDM_OnSetVoiceModePre", ET_Hook, Param_CellByRef);
-	g_hGlobalForvard_OnSetVoiceModePost = CreateGlobalForward("VDM_OnSetVoiceModePost", ET_Ignore, Param_Cell, Param_Cell);
+	g_hGlobalForvard_OnSetVoiceModePre = CreateGlobalForward("VDM_OnSetVoiceModePre", ET_Hook, Param_CellByRef, Param_Cell, Param_String);
+	g_hGlobalForvard_OnSetVoiceModePost = CreateGlobalForward("VDM_OnSetVoiceModePost", ET_Ignore, Param_Cell, Param_Cell, Param_String);
 
 	g_hGlobalForvard_OnSetPlayerModePre = CreateGlobalForward("VDM_OnSetPlayerModePre", ET_Hook, Param_Cell, Param_CellByRef);
 	g_hGlobalForvard_OnSetPlayerModePost = CreateGlobalForward("VDM_OnSetPlayerModePost", ET_Ignore, Param_Cell, Param_Cell);
@@ -65,6 +66,11 @@ int Native_GetConfig(Handle hPlugin, int numParams)
 	return view_as<int>(g_kvConfig);
 }
 
+int Native_GetPluginPrefix(Handle hPlugin, int numParams)
+{
+	int iMaxLen = GetNativeCell(2);
+	SetNativeString(1, g_sPrefix, iMaxLen, false);
+}
 
 int Native_GetVersion(Handle hPlugin, int iArgs)
 {
@@ -80,54 +86,49 @@ int Native_CoreIsLoaded(Handle hPlugin, int iNumParams)
 // bool bCallPreForward = false, bool bCallPostForward = false
 int Native_SetVoiceMode(Handle hPlugin, int iNumParams)
 {
-	g_iLastPluginPriority = 0;
+	if(!IsPluginRegister(hPlugin)) 
+	{
+		ThrowNativeError(SP_ERROR_NATIVE, "[VDM] This Plugin not registred...");
+		return 0;
+	}
 
-	int iMode = view_as<int>(GetNativeCell(1));
+	char szFeature[32];
+	int m_iMode = view_as<int>(GetNativeCell(1));
 	int iModeType = GetNativeCell(2);
 	bool IsWarmupCheck = GetNativeCell(3);
 	int iPluginPriority = GetPluginPriority(hPlugin);
+	GetPluginFeature(hPlugin, szFeature, sizeof(szFeature));
 
-	if(iMode > MAX_MODES) iMode = MAX_MODES;
-	else if(iMode < 0) iMode = 0;
+	if(m_iMode > MAX_MODES) m_iMode = MAX_MODES;
+	else if(m_iMode < 0) m_iMode = 0;
 
 	if(iModeType != 0)
 	{
 		switch(iModeType)
 		{
-			case 1: g_iMainMode = iMode;
-			case 2: g_iDefaultMode = iMode;
-			case 3: g_iLastMode = iMode;
+			case 1: g_iMainMode = m_iMode;
+			case 2: g_iDefaultMode = m_iMode;
+			case 3: g_iLastMode = m_iMode;
 		}
 
-		return 0;
+		return 1;
 	}
 
-	if(IsWarmupCheck)
-	{
-		if(IsWarmup()) return 0;
-	}
+	if(IsWarmupCheck && IsWarmup()) return 0;
 
-	switch(CallForward_OnSetVoiceModePre(iMode))
+	int iMode = m_iMode;
+
+	switch(CallForward_OnSetVoiceModePre(iMode, iPluginPriority, szFeature))
 	{
-		case Plugin_Continue:
-		{
-			SetMode(iMode);
-		}
-		case Plugin_Changed:
-		{
-			if(iPluginPriority >= g_iLastPluginPriority) 
-			{
-				g_iLastPluginPriority = iPluginPriority;
-				SetMode(iMode);
-			}
-		}
-		case Plugin_Handled: return 0;
-		case Plugin_Stop: return 0;
+		case Plugin_Continue: 	SetMode(m_iMode);
+		case Plugin_Changed: 	SetMode(iMode);
+		case Plugin_Handled: 	return 0;
+		case Plugin_Stop: 		return 0;
 	}
 
 	if(g_iMode == g_iLastMode) return 0;
 
-	CallForward_OnSetVoiceModePost(g_iMode);
+	CallForward_OnSetVoiceModePost(g_iMode, iPluginPriority, szFeature);
 
 	return 1;
 }
@@ -289,33 +290,61 @@ int Native_LogMessage(Handle hPlugin, int iNumParams)
 int GetPluginPriority(Handle hPlugin)
 {
 	any aArray[6];
-	for(int i = 0; i <= g_hNameItems.Length; i++)
+	for(int i = 0; i < g_hNameItems.Length; i++)
 	{
 		g_hItems.GetArray(i, aArray, 6);
-		if(hPlugin == aArray[0])
+		if(hPlugin == aArray[F_PLUGIN])
 		{
-			return aArray[2];
+			return aArray[F_PRIORITY_TYPE];
 		}
 	}
 
-	return -1;
+	return 0;
+}
+
+void GetPluginFeature(Handle hPlugin, char[] szBuffer, int iMaxLength)
+{
+	any aArray[6];
+	for(int i = 0; i < g_hNameItems.Length; i++)
+	{
+		g_hItems.GetArray(i, aArray, 6);
+		if(hPlugin == aArray[F_PLUGIN])
+		{
+			g_hNameItems.GetString(i, szBuffer, iMaxLength);
+		}
+	}
+}
+
+bool IsPluginRegister(Handle hPlugin)
+{
+	any aArray[6];
+	for(int i = 0; i < g_hNameItems.Length; i++)
+	{
+		g_hItems.GetArray(i, aArray, 6);
+		if(hPlugin == aArray[F_PLUGIN]) return true;
+	}
+
+	return false;
 }
 
 // forward Action VDM_OnSetVoiceModePre(int iClient, int &iMode);
-Action CallForward_OnSetVoiceModePre(int iMode)
+Action CallForward_OnSetVoiceModePre(int& iMode, int iPluginPriority, char[] szFeature)
 {
 	Action Result = Plugin_Continue;
 	Call_StartForward(g_hGlobalForvard_OnSetVoiceModePre);
 	Call_PushCellRef(iMode);
+	Call_PushCell(iPluginPriority);
+	Call_PushString(szFeature);
 	Call_Finish(Result);
 	return Result;
 }
 
-void CallForward_OnSetVoiceModePost(int iMode, bool bRoundStart = false)
+void CallForward_OnSetVoiceModePost(int iMode, int iPluginPriority, char[] szFeature)
 {
 	Call_StartForward(g_hGlobalForvard_OnSetVoiceModePost);
 	Call_PushCell(iMode);
-	Call_PushCell(bRoundStart);
+	Call_PushCell(iPluginPriority);
+	Call_PushString(szFeature);
 	Call_Finish();
 }
 

@@ -31,7 +31,7 @@ public void __pl_vdm_core_SetNTVOptional()
 {
 	MarkNativeAsOptional("VDM_GetVersion");
 	MarkNativeAsOptional("VDM_GetConfig");
-	//MarkNativeAsOptional("VDM_GetPluginPrefix");
+	MarkNativeAsOptional("VDM_GetPluginPrefix");
 
 	MarkNativeAsOptional("VDM_SetVoiceMode");
 	MarkNativeAsOptional("VDM_GetVoiceMode");
@@ -92,6 +92,12 @@ native int VDM_GetVersion();
 * @return					Handle KeyValus
 */
 native KeyValues VDM_GetConfig();
+
+/** Получить префикс плагина
+*
+* @noreturn					
+*/
+native int VDM_GetPluginPrefix(char[] szBuffer, int iMaxLen);
 
 /** Проверка на готовность ядра
 *
@@ -251,12 +257,14 @@ forward void VDM_OnConfigReloaded(KeyValues g_hConfig);
 /** Вызывается при установке голосового режима сервера
 *
 * @param iMode				Индекс режима
+* @param iPluginPriority	Приоритет плагина, устанавливающий режим.
+* @param szFeature			Название первой функции плагина, устанавливающий режим.
 *
 * @return					Plugin_Stop или Plugin_Handled  - запретит установку режима (плагинам с низким приоритетом);
 *							Plugin_Continue  - разрешит установку режима без изменений;
 *							Plugin_Changed - разрешит установку режима с изменениями.
 */
-forward Action VDM_OnSetVoiceModePre(int& iMode);
+forward Action VDM_OnSetVoiceModePre(int& iMode, int iPluginPriority, char[] szFeature);
 
 /** Вызывается после установки голосового режима сервера
 *
@@ -265,7 +273,7 @@ forward Action VDM_OnSetVoiceModePre(int& iMode);
 *
 * @noreturn
 */
-forward void VDM_OnSetVoiceModePost(int iMode, bool bRoundStart);
+forward void VDM_OnSetVoiceModePost(int iMode, int iPluginPriority, char[] szFeature);
 
 /** Вызывается при установке голосового режима игроку
 *
