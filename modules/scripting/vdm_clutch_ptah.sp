@@ -2,13 +2,16 @@
 #include <vdm_core>
 #include <csgo_colors>
 #include <PTaH>
+#include <clientprefs>
 
 #define FUNC_NAME       "clutch_mode_ptah"
 #define FUNC_PRIORITY   10
 
-int g_iClutchMode;
-bool g_bClutchModeActive[MAXPLAYERS+1];
-bool g_bClutchMode[MAXPLAYERS+1];
+int     g_iClutchMode;
+bool    g_bClutchModeActive[MAXPLAYERS+1];
+bool    g_bClutchMode[MAXPLAYERS+1];
+
+Handle  hCookie;
 
 public Plugin myinfo =
 {
@@ -28,7 +31,24 @@ public void OnPluginStart()
     HookEvent("player_death", Event_OnPlayerDeath, EventHookMode_PostNoCopy);
     HookEvent("round_end", Event_OnRoundEnd, EventHookMode_PostNoCopy);
 
+    hCookie = RegClientCookie("VDM_ClutchMode", "VDM_ClutchMode", CookieAccess_Public);
+
     if(VDM_CoreIsLoaded()) VDM_OnCoreIsReady();
+}
+
+public void OnClientCookiesCached(int iClient)
+{
+    char szBuffer[4];
+    GetClientCookie(iClient, hCookie, szBuffer, sizeof(szBuffer));
+
+    if(szBuffer[0]) g_bClutchMode[iClient] = view_as<bool>(StringToInt(szBuffer));
+    else g_bClutchMode[iClient] = false;
+}
+
+public void OnClientDisconnect(int iClient)
+{
+    if(g_bClutchMode[iClient]) SetClientCookie(iClient, hCookie, "1");
+    else SetClientCookie(iClient, hCookie, "0");
 }
 
 public void OnPluginEnd()
