@@ -35,7 +35,7 @@ public Action VDM_OnSetVoiceModePre(int& iMode, int iPluginPriority, char[] szFe
 {
 	if(FUNC_PRIORITY > iPluginPriority && g_bFullAllTalk)
 	{
-		PrintToChatAll("Попытка изменения режима - плагин (%s)", szFeature);
+		//PrintToChatAll("Попытка изменения режима - плагин (%s)", szFeature);
 		iMode = VMODE_FULL_ALLTALK;
 		return Plugin_Changed;
 	}	
