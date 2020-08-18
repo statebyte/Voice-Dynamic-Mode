@@ -29,6 +29,11 @@ public void OnPluginStart()
 	if(VDM_CoreIsLoaded()) VDM_OnCoreIsReady();
 }
 
+public void OnClientPutInServer(int iClient)
+{
+	g_bVoiceDisable[iClient] = false;
+}
+
 public void OnPluginEnd()
 {
 	if (VDM_IsExistFeature(FUNC_NAME) && CanTestFeatures() && GetFeatureStatus(FeatureType_Native, "VDM_RemoveFeature") == FeatureStatus_Available)
