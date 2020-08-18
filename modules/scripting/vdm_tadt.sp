@@ -60,7 +60,7 @@ public void OnClientDisconnect(int iClient)
 public Action Timer_CallBack(Handle hTimer, any UserId)
 {
 	int iClient = GetClientOfUserId(UserId);
-	if(IsClientValid(iClient)) CGOPrintToChat(iClient, "{LIGHTRED}[VDM] {GRAY}Живые игроки вас больше не слышат!!!");
+	if(IsClientValid(iClient) && !IsPlayerAlive(iClient)) CGOPrintToChat(iClient, "{LIGHTRED}[VDM] {GRAY}Живые игроки вас больше не слышат!!!");
 
 	g_hTimerAfterDying[iClient] = null;
 	return Plugin_Stop;
@@ -83,6 +83,21 @@ public void OnPluginEnd()
 public void VDM_OnCoreIsReady()
 {
 	VDM_AddFeature(FUNC_NAME, FUNC_PRIORITY, MENUTYPE_ADMINMENU, OnItemSelectMenu, OnItemDisplayMenu, OnItemDrawMenu);
+
+	KeyValues kv = VDM_GetConfig();
+	GetSettings(kv);
+	delete kv;
+}
+
+public void VDM_OnConfigReloaded(KeyValues kv)
+{
+	GetSettings(kv);
+}
+
+void GetSettings(KeyValues kv)
+{
+	int iValue = kv.GetNum("m_tadt", 5);
+	SetNewValue(iValue);
 }
 
 bool OnItemSelectMenu(int iClient)
@@ -102,13 +117,16 @@ int OnItemDrawMenu(int iClient, int iStyle)
 	return ITEMDRAW_DEFAULT;
 }
 
-void SetNewValue()
+void SetNewValue(int iValue = -1)
 {
 	g_bUnHookCvar = true;
 
-	g_hCvar.IntValue += STEP_TIME;
-
-	if(g_hCvar.IntValue > MAX_TIME) g_hCvar.IntValue = 0;
+	if(iValue == -1)
+	{
+		g_hCvar.IntValue += STEP_TIME;
+		if(g_hCvar.IntValue > MAX_TIME) g_hCvar.IntValue = 0;
+	}
+	else g_hCvar.IntValue = iValue;
 
 	g_iValue = g_hCvar.IntValue;
 
