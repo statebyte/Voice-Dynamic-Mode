@@ -84,9 +84,7 @@ public void VDM_OnCoreIsReady()
 {
 	VDM_AddFeature(FUNC_NAME, FUNC_PRIORITY, MENUTYPE_ADMINMENU, OnItemSelectMenu, OnItemDisplayMenu, OnItemDrawMenu);
 
-	KeyValues kv = VDM_GetConfig();
-	GetSettings(kv);
-	delete kv;
+	GetSettings(VDM_GetConfig());
 }
 
 public void VDM_OnConfigReloaded(KeyValues kv)
@@ -108,7 +106,8 @@ bool OnItemSelectMenu(int iClient)
 
 bool OnItemDisplayMenu(int iClient, char[] szDisplay, int iMaxLength)
 {
-	FormatEx(szDisplay, iMaxLength, "Общение после смерти [ %i ]", g_iValue);
+	if(g_iValue == 0) FormatEx(szDisplay, iMaxLength, "Общение после смерти [ Выключено ]");
+	else FormatEx(szDisplay, iMaxLength, "Общение после смерти [ %i сек ]", g_iValue);
 	return true;
 }
 
