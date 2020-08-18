@@ -115,8 +115,8 @@ void SetCluchMode(int iClient)
 
     for(int i = 1; i <= MaxClients; i++)
     {
-        if(iClient == i) CGOPrintToChat(i, "%t", "CHAT_ClutchMode_IsActivated", g_iClutchMode == 1 ? "TheDead" : "OfAll");
-        else CGOPrintToChat(i, "%t", "CHAT_ClutchMode_IsActivated_All", iClient, g_iClutchMode == 1 ? "TheDead" : "OfAll");
+        if(iClient == i) CGOPrintToChat(i, "%t", "{LIGHTGREEN}[VDM] {DEFAULT}Вы остались одни. Теперь Вы не слышите %s игроков", g_iClutchMode == 1 ? "мертвых" : "всех");
+        else CGOPrintToChat(i, "%t", "{LIGHTGREEN}[VDM] {DEFAULT}Игрок %N теперь не слышит %s игроков", iClient, g_iClutchMode == 1 ? "мертвых" : "всех");
     }
 }
 
