@@ -184,7 +184,7 @@ int Handler_AdminMenu(Menu hMenu, MenuAction action, int iClient, int iItem)
 				if(!Players[iClient].bLastAdminMenu) OpenMenu(iClient, MENUTYPE_MAINMENU);
 				else 
 				{
-					PrintToChatAll("Возврат в меню админки");
+					//PrintToChatAll("Возврат в меню админки");
 					RedisplayAdminMenu(g_hTopMenu, iClient);
 				}
 			}
@@ -251,7 +251,7 @@ void ShowListningList(int iClient)
 {
 	Menu hMenu = new Menu(Handler_ListningListMenu);
 	SetGlobalTransTarget(iClient);
-	hMenu.SetTitle("%t\n \n", "YouHear");
+	hMenu.SetTitle("%s %t\n \n", g_sPrefix, "YouHear");
 
 	char szBuffer[64];
 	int iCount;
@@ -297,7 +297,7 @@ void ShowSpeakList(int iClient)
 {
 	Menu hMenu = new Menu(Handler_SpeakListMenu);
 	SetGlobalTransTarget(iClient);
-	hMenu.SetTitle("%t\n \n", "HearYou");
+	hMenu.SetTitle("%s %t\n \n", g_sPrefix, "HearYou");
 
 	char szBuffer[64];
 	int iCount;
@@ -454,4 +454,116 @@ int GetCountMenuItems(FeatureMenus eMenuType)
 	}
 
 	return iCount;
+}
+
+/**
+* Добавление в меню статический(e) элемент(ы) под своим номером.
+*
+* @param menu                Menu Handle.
+* @param startNum            Позиция, начиная с 0.
+* @param sItem                Массив, One - Item information string, Two - item display string.
+* @param maxSize            Общее кол-во элементов.
+* @return                    True on success, false on failure.
+* @error                    Invalid Handle or clear menu или если у элемента нет пары (One, Two, One)
+*/
+stock bool StaticNumInsertItem(Menu menu, int startNum, const char[][] sItem, int maxSize)
+{
+    if (menu != INVALID_HANDLE)
+    {
+        int iMenuItemCount = menu.ItemCount;
+        if (iMenuItemCount > 0)
+        {
+            int iLog = maxSize % 2;
+            int iMaxPageItems = GetMaxPageItems(menu.Style);
+            //if (!iLog && startNum >= 0 && startNum < iMaxPageItems)
+            if (!iLog && startNum >= 0)
+            {
+                #if defined DEBUG
+                LogMessage("iMenuItemCount[%d]", iMenuItemCount);
+                LogMessage("iMaxPageItems[%d]", iMaxPageItems);
+                LogMessage("maxSize[%d]", maxSize);
+                LogMessage("startNum[%d]", startNum);
+                LogMessage("##### StartMenu #####");
+                #endif
+     
+                //low
+                for (int i = 0, j = startNum; i < maxSize; j++, i += 2)
+                {
+                    #if defined DEBUG
+                    LogMessage("%s %s", sItem[i], sItem[i + 1]);
+                    if (!menu.InsertItem(j, sItem[i], sItem[i + 1]))
+                    {
+                        return false;
+                    }
+                    #else
+                    menu.InsertItem(j, sItem[i], sItem[i + 1]);
+                    #endif
+                }
+     
+                bool bExit = menu.ExitButton;
+                bool bExitandBack = menu.ExitBackButton;
+                if (bExitandBack)
+                {
+                    iMaxPageItems -= 4;
+                }
+                else if (bExit)
+                {
+                    iMaxPageItems -= 3;
+                }
+                else
+                {
+                    iMaxPageItems -= 3;
+                }
+     
+                //middle
+                int iCount;
+                for (iCount = iMaxPageItems + startNum; iCount < menu.ItemCount; iCount += iMaxPageItems)
+                {
+                    for (int k = 0, j = iCount; k < maxSize; j++, k += 2)
+                    {
+                        #if defined DEBUG
+                        if (!menu.InsertItem(j, sItem[k], sItem[k + 1]))
+                        {
+                            return false;
+                        }
+                        #else
+                        menu.InsertItem(j, sItem[k], sItem[k + 1]);
+                        #endif
+                    }
+                }
+     
+                #if defined DEBUG
+                LogMessage("iCount[%d]_ItemCount[%d]", iCount, menu.ItemCount);
+                #endif
+     
+                //hight
+                if ((iCount - menu.ItemCount) < startNum) // && startNum < maxSize)
+                {
+                    for (int i = 0, j = menu.ItemCount; i < maxSize; j++, i += 2)
+                    {
+                        #if defined DEBUG
+                        //LogMessage("%s %s", sItem[i], sItem[i + 1]);
+                        if (!menu.AddItem(sItem[i], sItem[i + 1]))
+                        {
+                            return false;
+                        }
+                        #else
+                        menu.AddItem(sItem[i], sItem[i + 1]);
+                        #endif
+                    }
+                }
+     
+                return true;
+            }
+            else
+            {
+                LogError("Bad sItem", sItem);
+            }
+        }
+        else
+        {
+            LogError("Clear Menu");
+        }
+    }
+    return false;
 }
