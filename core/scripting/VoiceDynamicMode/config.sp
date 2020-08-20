@@ -24,8 +24,7 @@ void LoadConfig()
 	if(g_iMode < 0) g_iMode = 0;
 	g_iDefaultMode = g_iMode;
 	g_iMainMode = g_iMode;
-
-	g_iTalkAfterDyingTime = g_kvConfig.GetNum("talk_after_dying_time", 0);
+	
 	g_bTalkOnWarmup = view_as<bool>(g_kvConfig.GetNum("talk_on_warmup", 0));
 
 	g_iChangeDynamicMode = g_kvConfig.GetNum("update_time", 0);

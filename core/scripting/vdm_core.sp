@@ -59,7 +59,6 @@ int				g_iMode, // Текущий режим
 				g_iDefaultMode, // Стандартный основной режим (изменяется только конфигом)
 				g_iLastMode, // Предыдущий режим
 				g_iChangeDynamicMode,
-				g_iTalkAfterDyingTime,
 				g_iDynamicMenu;
 
 bool			g_bCoreIsLoaded = false,
@@ -236,7 +235,6 @@ Action CheckTime(Handle hTimer, any data)
 
 public void OnMapStart()
 {
-	if(g_iTalkAfterDyingTime > 0) g_hCvar7.SetInt(g_iTalkAfterDyingTime);
 	if(g_bTalkOnWarmup) g_hCvar6.SetInt(1);
 }
 
