@@ -1,0 +1,188 @@
+"Phrases"
+{
+	"VDM"
+	{
+		"en" "Voice Dynamic Mode"
+		"ru" "Voice Dynamic Mode"
+	}
+
+	"MAINMENU_TITLE"
+	{
+		"en" "Voice Mode"
+		"ru" "Голосовой режим"
+	}
+
+	"MAINMENU_ADMIN"
+	{
+		"en" "Admin Menu"
+		"ru" "Меню администратора"
+	}
+
+	"MAINMENU_SETTINGS"
+	{
+		"en" "My settings"
+		"ru" "Мои настройки"
+	}
+
+	"SETTINGSMENU_TITLE"
+	{
+		"en" "My Settings"
+		"ru" "Мои настройки"
+	}
+
+	"ADMINMENU_TitleSettings"
+	{
+		"en" "Settings Voice Mode"
+		"ru" "Настройки голосового режима"
+	}
+
+	"MENU_RELOADCONFIG"
+	{
+		"en" "Reload Config"
+		"ru" "Перезагрузить настройки"
+	}
+
+	"MENU_RELOADMODULES"
+	{
+		"en" "Reload Modules"
+		"ru" "Перезагрузить модули"
+	}
+	
+	"MENU_YOUHEAR"
+	{
+		"en" "You hear:"
+		"ru" "В данный момент Вы слышите:"
+	}
+
+	"MENU_HEARYOU"
+	{
+		"en" "Hear you:"
+		"ru" "В данный момент Вас слышат:"
+	}
+
+	// ------------------------------------------
+
+	"Noone"
+	{
+		"en" "Noone"
+		"ru" "Никого"
+	}
+
+	"No_one"
+	{
+		"en" "Noone"
+		"ru" "Никто"
+	}
+
+	"OnlySpectators"
+	{
+		"en" "Only spectators"
+		"ru" "Только наблюдатели"
+	}
+
+	"YH_1_3"
+	{
+		"en" "Only your team (dead & alive)"
+		"ru" "Только свою команду (живую и мертвую)"
+	}
+
+	"YH_2"
+	{
+		"en" "Own & opposite team (dead)"
+		"ru" "Свою и противоположную команду (мертвую)"
+	}
+
+	"YH_4_5"
+	{
+		"en" "Own (living & dead) & the opposite team (dead)"
+		"ru" "Свою (живую и мертвую) и противоположную команду (мертвую)"
+	}
+
+	"YH_6"
+	{
+		"en" "Own & opposite team (living and dead)"
+		"ru" "Свою и противоположную команду (живую и мертвую)"
+	}
+
+	"YH_7"
+	{
+		"en" "All players except spectators"
+		"ru" "Всех игроков, кроме наблюдателей"
+	}
+
+	"YH_8"
+	{
+		"en" "All players, including spectators"
+		"ru" "Всех игроков, включая наблюдателей"
+	}
+
+	"YH_1_2A"
+	{
+		"en" "Only your team (live)"
+		"ru" "Только свою команду (живую)"
+	}
+
+	"YH_3_4A"
+	{
+		"en" "Only your team (dead & alive)"
+		"ru" "Только свою команду (живую и мертвую)"
+	}
+
+	"YH_5_6A"
+	{
+		"en" "All alive players except spectators"
+		"ru" "Всех живых игроков, кроме наблюдателей"
+	}
+
+	// ------------------------------------------
+
+	"HY_1_5"
+	{
+		"en" "Only your team (dead)"
+		"ru" "Только ваша команда (мертвая)"
+	}
+
+	"HY_2_6"
+	{
+		"en" "Yours & the opposite team (dead)"
+		"ru" "Ваша и противоположная команда (мертвые)"
+	}
+
+	"HY_4"
+	{
+		"en" "Yours (living & dead) & the opposite team (dead)"
+		"ru" "Ваша (живая и мертвая) и противоположная команда (мертвые)"
+	}
+
+	"HY_1_2_3_4A"
+	{
+		"en" "Only your team (living & dead)"
+		"ru" "Только ваша команда (живая и мертвая)"
+	}
+
+	"HY_5_6_7_8A"
+	{
+		"en" "All Players"
+		"ru" "Все игроки"
+	}
+
+	// ------------------------------------------
+
+	"CHAT_MODULES_RELOADED"
+	{
+		"en" "Modules reloaded..."
+		"ru" "Модули перезагружены..."
+	}
+
+	"CHAT_SETTINGS_RELOADED"
+	{
+		"en" "Settings reloaded..."
+		"ru" "Настройки перезагружены..."
+	}
+
+	"PLAYERS"
+	{
+		"en" "players"
+		"ru" "игроков"
+	}
+}

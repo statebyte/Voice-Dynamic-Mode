@@ -1,5 +1,21 @@
-#pragma semicolon 1
+#pragma semicolon 1 
 #pragma newdecls required
+
+/**
+* ----------------------------- INFO ---------------------------------
+* Full name:        [CS:GO] Voice Dynamic Mode Core
+* Author:           FIVE (Discord: FIVE#3136)
+* Source:           https://github.com/theelsaud/Voice-Dynamic-Mode
+* Support:          https://discord.gg/ajW69wN
+* Official theme:   http://hlmod.ru
+*
+* -------------------------- CHANGELOGS ------------------------------
+* v1.0 - Release
+* v1.1 - Add new features, optimization, improvements, and fixes issues...
+*
+* ----------------------------- TODO ---------------------------------
+* - Create a single core
+*/
 
 #include <cstrike>
 #include <sdktools>
@@ -12,13 +28,14 @@
 
 #define DEBUG 0
 #define MAXMODE 8
+#define VDM_VERSION "1.1"
 
 public Plugin myinfo =
 {
-    name		= "[CS:GO] Dynamic Voice Mode",
-    version		= "1.0",
-    description	= "Simple and dynamic change voice mode for CS:GO",
-    author		= "FIVE (Discord: FIVE#3136)",
+    name		= "[CS:GO] Voice Dynamic Mode",
+    version		= VDM_VERSION,
+    description	= "Simple and dynamic changes voice mode for CS:GO servers",
+    author		= "FIVE",
     url			= "Source: http://hlmod.ru | Support: https://discord.gg/ajW69wN"
 };
 
@@ -26,12 +43,12 @@ TopMenu     g_hTopMenu = null;
 
 char        g_sLogPath[PLATFORM_MAX_PATH];
 
-int 		g_iMode, g_iMainMode, g_iDefaultMode, g_iLastMode, 
+int 		g_iMode, g_iMainMode, g_iDefaultMode, g_iLastMode,
             g_iMaxClients, g_iNotify, g_iNotifyAfterDying, g_iNotifyClutchMode,
-            g_iQuota, g_iQuotaMode, g_iQuotaPriority, g_iRoundEndMode, 
+            g_iQuota, g_iQuotaMode, g_iQuotaPriority, g_iRoundEndMode,
             g_iTalkAfterDyingTime, g_iForceCameraRoundEnd, g_iForceCameraQuota, g_iClutchMode;
 
-bool		g_bTalkOnWarmup, g_bQuotaEnable, g_bLogs, g_bNotifyVoiceEnable, 
+bool		g_bTalkOnWarmup, g_bQuotaEnable, g_bLogs, g_bNotifyVoiceEnable,
             g_bForceCameraMode, g_bBlockEvents, g_bVoiceEnableActivated, g_bNotifyAdminActions,
             g_bVoiceEnable[MAXPLAYERS+1], g_bClutchMode[MAXPLAYERS+1], g_bClutchModeActive[MAXPLAYERS+1];
 
@@ -46,7 +63,9 @@ Handle      g_hTimerAfterDying[MAXPLAYERS+1], hCookie;
 
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
 {
-    if(GetEngineVersion() != Engine_CSGO) SetFailState("DVM - This plugin is for CS:GO only.");
+    
+    
+    if(GetEngineVersion() != Engine_CSGO) SetFailState("[VDM] Core - This plugin is for CS:GO only.");
 
     return APLRes_Success;
 }
@@ -54,7 +73,7 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 public void OnPluginStart()
 {
     LoadConfig();
-    LoadTranslations("dynamic_voice_mode.phrases");
+    LoadTranslations("voice_dynamic_mode.phrases");
 
     HookEvent("round_start", Event_OnRoundStart, EventHookMode_PostNoCopy);
     HookEvent("round_end", Event_OnRoundEnd, EventHookMode_PostNoCopy);
@@ -65,12 +84,11 @@ public void OnPluginStart()
 	{
 		char sBuf[16];
 		PTaH_Version(sBuf, sizeof(sBuf));
-		SetFailState("DVM - Version PTaH %s is too old (requires no less than 1.1.0)", sBuf);
-		SetFailState("DVM - PTaH extension needs to be updated. (Installed Version: %s - Required Version: 1.1.0+) [ Download from: https://ptah.zizt.ru ]", sBuf);
+		SetFailState("VDM Core - PTaH extension needs to be updated. (Installed Version: %s - Required Version: 1.1.0+) [ Download from: https://ptah.zizt.ru ]", sBuf);
 	}
     PTaH(PTaH_ClientVoiceToPre, Hook, CVP);
 
-    hCookie = RegClientCookie("DVM_ClutchMode", "DVM_ClutchMode", CookieAccess_Public);
+    hCookie = RegClientCookie("VDM_ClutchMode", "VDM_ClutchMode", CookieAccess_Public);
     g_iMaxClients = GetMaxHumanPlayers() + 1;
 
     GetCvars();
@@ -132,7 +150,7 @@ public void Event_OnRoundStart(Event hEvent, char[] name, bool dontBroadcast)
 public void Event_OnRoundEnd(Event hEvent, char[] name, bool dontBroadcast) 
 { 
     if(g_iRoundEndMode > 0 && g_iMode != g_iRoundEndMode) SetMode(g_iRoundEndMode);
-    if(g_iNotify == 2 || g_iNotify == 3 && g_iMode != g_iRoundEndMode) CGOPrintToChatAll("%t", "CHAT_Change_Mode");
+    if((g_iNotify == 2 || g_iNotify == 3) && g_iMode != g_iRoundEndMode) CGOPrintToChatAll("%t", "CHAT_Change_Mode");
 
     if(g_bForceCameraMode) SetForceCamera(g_iForceCameraRoundEnd);
 
@@ -144,13 +162,13 @@ public void Event_OnRoundEnd(Event hEvent, char[] name, bool dontBroadcast)
 
 public Action Event_OnPlayerDeath(Event hEvent, char[] name, bool dontBroadcast)
 {
-    CheckClutchMode();
+    if(IsWarmup()) return;
+    if(g_iClutchMode > 0) CheckClutchMode();
 
-    if(g_iMode == 8 || g_iMode == 7 || g_iMode == 4 || g_iMode == 3) return;
-    if(g_hCvar7.IntValue == 0 || g_iNotifyAfterDying == 0) return;
+    if(g_iMode == 8 || g_iMode == 7 || g_iMode == 4 || g_iMode == 3 || g_hCvar7.IntValue == 0 || g_hCvar5.IntValue == 1 || g_iNotifyAfterDying == 0) return;
 
     int iClient = GetClientOfUserId(hEvent.GetInt("userid"));
-    if(!IsClientValid(iClient) || g_hCvar5.IntValue == 1 || IsWarmup() || g_iMode == 8 || g_iMode == 7 || g_iMode == 4 || g_iMode == 3) return;
+    if(!IsClientValid(iClient)) return;
 
     float fValue = float(g_hCvar7.IntValue);
     if(g_iNotifyAfterDying == 2 || g_iNotifyAfterDying == 3) CGOPrintToChat(iClient, "%t", "CHAT_Dying_Time", g_hCvar7.IntValue);
@@ -170,8 +188,6 @@ public Action Event_Cvar(Handle hEvent, const char[] name, bool dontBroadcast)
 
 void CheckClutchMode()
 {
-    if(IsWarmup()) return;
-    if(g_iClutchMode == 0) return;
     int iCount_T, iCount_CT, iLastClientCT, iLastClientT;
     for(int i = 1; i <= MaxClients; i++)	if(IsClientValid(i) && IsPlayerAlive(i))
     {
@@ -224,6 +240,7 @@ void RegCmds()
     RegAdminCmd("sm_voice_admin", Admin_CmdCallBack, ADMFLAG_ROOT);
     RegAdminCmd("sm_voice_mode", SetMode_CmdCallBack, ADMFLAG_ROOT);
     RegAdminCmd("sm_voice_enable", VoiceEnable_CmdCallBack, ADMFLAG_ROOT);
+    RegAdminCmd("sm_voice_listen", VoiceListen_CmdCallBack, ADMFLAG_ROOT);
     RegAdminCmd("sm_voice_reload", ReloadConfig_CmdCallBack, ADMFLAG_ROOT);
 }
 
@@ -261,19 +278,19 @@ public void OnConVarChanged(ConVar hCvar, const char[] oldValue, const char[] ne
 void LoadConfig()
 {
     //////////////////////////////////////////////////////////////////////////////////
-    BuildPath(Path_SM, g_sLogPath, sizeof(g_sLogPath), "logs/dynamic_voice_mode.log");
+    BuildPath(Path_SM, g_sLogPath, sizeof(g_sLogPath), "logs/voice_dynamic_mode.log");
     //////////////////////////////////////////////////////////////////////////////////
     
     if(g_kvConfig) delete g_kvConfig;
     
     char sPath[PLATFORM_MAX_PATH];
-    BuildPath(Path_SM, sPath, PLATFORM_MAX_PATH, "configs/dynamic_voice_mode.ini");
+    BuildPath(Path_SM, sPath, PLATFORM_MAX_PATH, "configs/voice_dynamic_mode.ini");
 
-    g_kvConfig = new KeyValues("DynamicVoiceMode");
+    g_kvConfig = new KeyValues("VoiceDynamicMode");
 
     if(!g_kvConfig.ImportFromFile(sPath))
     {
-        SetFailState("DVM - config is not found (%s).", sPath);
+        SetFailState("VDM - config is not found (%s).", sPath);
     }
     g_kvConfig.Rewind();
 
@@ -329,7 +346,7 @@ void LoadMenus()
     }
     
     g_hMainMenu = new Menu(MenuHandler_MainMenu, MenuAction_Display|MenuAction_DisplayItem|MenuAction_DrawItem);
-    g_hMainMenu.SetTitle("DVM\n \n");
+    g_hMainMenu.SetTitle("VDM/n /n");
     g_hMainMenu.AddItem("1", "VoiceChat");
     g_hMainMenu.AddItem("4", "ClutchMode", ITEMDRAW_RAWLINE);
     g_hMainMenu.AddItem("2", "YouHear", ITEMDRAW_RAWLINE);
@@ -337,7 +354,7 @@ void LoadMenus()
     
 
     g_hAdminMenu = new Menu(MenuHandler_AdminMenu, MenuAction_Display|MenuAction_DisplayItem|MenuAction_DrawItem);
-    g_hAdminMenu.SetTitle("DVM\n \n");
+    g_hAdminMenu.SetTitle("VDM/n /n");
     g_hAdminMenu.AddItem("1", "Enable_Full_AllTalk");
     g_hAdminMenu.AddItem("2", "ChangeQuota");
     g_hAdminMenu.AddItem("3", "ChangeMode");
@@ -358,7 +375,7 @@ public int MenuHandler_MainMenu(Menu hMenu, MenuAction action, int iClient, int 
         {
             char szTitle[128];
             SetGlobalTransTarget(iClient);
-            FormatEx(szTitle, sizeof(szTitle), "%t\n \n", "DVM", iClient);
+            FormatEx(szTitle, sizeof(szTitle), "%t/n /n", "VDM", iClient);
             (view_as<Panel>(iItem)).SetTitle(szTitle);
         }
         case MenuAction_Select:
@@ -387,8 +404,8 @@ public int MenuHandler_MainMenu(Menu hMenu, MenuAction action, int iClient, int 
 
             SetGlobalTransTarget(iClient);
 
-            if(!strcmp(szInfo, "1")) FormatEx(szTitleReady, sizeof(szTitleReady), "%t\n \n", szTitle, g_bVoiceEnable[iClient] ? "Disable" : "Enable");
-            else if(!strcmp(szInfo, "4")) FormatEx(szTitleReady, sizeof(szTitleReady), "%t\n \n", szTitle, g_bClutchMode[iClient] ? "Enable" : "Disable");
+            if(!strcmp(szInfo, "1")) FormatEx(szTitleReady, sizeof(szTitleReady), "%t/n /n", szTitle, g_bVoiceEnable[iClient] ? "Disable" : "Enable");
+            else if(!strcmp(szInfo, "4")) FormatEx(szTitleReady, sizeof(szTitleReady), "%t/n /n", szTitle, g_bClutchMode[iClient] ? "Enable" : "Disable");
             else if(!strcmp(szInfo, "2"))
             {
                 if(GetClientTeam(iClient) > 1)
@@ -410,7 +427,7 @@ public int MenuHandler_MainMenu(Menu hMenu, MenuAction action, int iClient, int 
                 if(g_hCvar5.IntValue == 1) FormatEx(szBuffer, sizeof(szBuffer), "%t", "YH_8");
                 if(g_bVoiceEnable[iClient]) FormatEx(szBuffer, sizeof(szBuffer), "%t", "Noone");
 
-                FormatEx(szTitleReady, sizeof(szTitleReady), "%t\n%s\n \n", "YouHear", szBuffer);
+                FormatEx(szTitleReady, sizeof(szTitleReady), "%t/n%s/n /n", "YouHear", szBuffer);
             }
             else if(!strcmp(szInfo, "3"))
             {
@@ -427,7 +444,7 @@ public int MenuHandler_MainMenu(Menu hMenu, MenuAction action, int iClient, int 
 
                 if(GetClientTeam(iClient) < 2 && g_hCvar5.IntValue == 0) FormatEx(szBuffer, sizeof(szBuffer), "%t", "OnlySpectators");
 
-                FormatEx(szTitleReady, sizeof(szTitleReady), "%t\n%s\n \n", "HearYou", szBuffer);
+                FormatEx(szTitleReady, sizeof(szTitleReady), "%t/n%s/n /n", "HearYou", szBuffer);
             }
             else FormatEx(szTitleReady, sizeof(szTitleReady), "%t", szTitle);
 
@@ -452,13 +469,13 @@ public int MenuHandler_AdminMenu(Menu hMenu, MenuAction action, int iClient, int
     {
         case MenuAction_Cancel:
         {
-            if(iItem == MenuCancel_ExitBack) g_hMainMenu.Display(iClient, 0); 
+            if(iItem == MenuCancel_ExitBack) g_hMainMenu.Display(iClient, 0);
         }
         case MenuAction_Display:
         {
             char szTitle[128];
             SetGlobalTransTarget(iClient);
-            FormatEx(szTitle, sizeof(szTitle), TranslationPhraseExists("DVM_settings") ? "%t\n \n" : "%s\n \n", "DVM_settings");
+            FormatEx(szTitle, sizeof(szTitle), TranslationPhraseExists("VDM_settings") ? "%t/n /n" : "%s/n /n", "VDM_settings");
             (view_as<Panel>(iItem)).SetTitle(szTitle);
         }
         case MenuAction_Select:
@@ -541,7 +558,7 @@ public int MenuHandler_AdminMenu(Menu hMenu, MenuAction action, int iClient, int
 
             SetGlobalTransTarget(iClient);
 
-            if(!strcmp(szInfo, "1")) FormatEx(szTitleReady, sizeof(szTitleReady), "%t\n \n", szTitle, g_hCvar5.IntValue == 1 ? "Enable" : "Disable");
+            if(!strcmp(szInfo, "1")) FormatEx(szTitleReady, sizeof(szTitleReady), "%t/n /n", szTitle, g_hCvar5.IntValue == 1 ? "Enable" : "Disable");
             else if(!strcmp(szInfo, "2")) FormatEx(szTitleReady, sizeof(szTitleReady), "%t", szTitle, g_iQuota);
             else if(!strcmp(szInfo, "3")) FormatEx(szTitleReady, sizeof(szTitleReady), "%t", szTitle, g_iMode);
             else if(!strcmp(szInfo, "4")) FormatEx(szTitleReady, sizeof(szTitleReady), "%t", szTitle, g_iQuotaMode);
@@ -692,6 +709,13 @@ void ChangeAllTalk(int iType, int iClient)
     CGOPrintToChatAll("%t", "CHAT_Enable_Full_AllTalk", iClient, iType == 1 ? "EnableOther" : "DisableOther");
 
     if(g_bLogs) LogToFile(g_sLogPath, "Администратор %N %s общий голосовой чат", iClient, g_hCvar5.IntValue == 1 ? "включил" : "выключил");
+}
+
+void VoiceAll(int iClient, bool bAction)
+{
+    if(!IsClientValid(iClient)) return;
+    if(bAction) SetClientListeningFlags(iClient, VOICE_LISTENALL | VOICE_SPEAKALL);
+    else SetClientListeningFlags(iClient, VOICE_NORMAL);
 }
 
 void CheckMode()
