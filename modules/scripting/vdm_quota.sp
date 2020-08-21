@@ -41,9 +41,9 @@ public void VDM_OnConfigReloaded(KeyValues kv)
 	GetSettings(kv);
 }
 
-public void VDM_OnSetVoiceModePost(int iMode, bool bRoundStart)
+public void VDM_OnSetVoiceModePost(int iMode, int iPluginPriority, char[] szFeature)
 {
-	if(bRoundStart) RequestFrame(CheckQuotaMode);
+	if(!strcmp(szFeature, "round_start")) RequestFrame(CheckQuotaMode);
 }
 
 void CheckQuotaMode()
