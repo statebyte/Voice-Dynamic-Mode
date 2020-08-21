@@ -269,7 +269,8 @@ forward Action VDM_OnSetVoiceModePre(int& iMode, int iPluginPriority, char[] szF
 /** Вызывается после установки голосового режима сервера
 *
 * @param iMode				Индекс режима
-* @param bRoundStart		Выдан ли ядром в начале раунда? 
+* @param iPluginPriority	Приоритет плагина, устанавливающий режим.
+* @param szFeature			Название первой функции плагина, устанавливающий режим.
 *
 * @noreturn
 */
@@ -277,18 +278,24 @@ forward void VDM_OnSetVoiceModePost(int iMode, int iPluginPriority, char[] szFea
 
 /** Вызывается при установке голосового режима игроку
 *
+* @param iClient			Индекс игрока
 * @param iMode				Индекс режима
+* @param iPluginPriority	Приоритет плагина, устанавливающий режим.
+* @param szFeature			Название первой функции плагина, устанавливающий режим.
 *
 * @return					Plugin_Stop или Plugin_Handled  - запретит установку режима (плагинам с низким приоритетом);
 *							Plugin_Continue  - разрешит установку режима без изменений;
 *							Plugin_Changed - разрешит установку режима с изменениями.
 */
-forward Action VDM_OnSetPlayerModePre(int iClient, int& iMode);
+forward Action VDM_OnSetPlayerModePre(int iClient, int& iMode, int iPluginPriority, char[] szFeature);
 
 /** Вызывается после установки голосового режима игроку
 *
+* @param iClient			Индекс игрока
 * @param iMode				Индекс режима
+* @param iPluginPriority	Приоритет плагина, устанавливающий режим.
+* @param szFeature			Название первой функции плагина, устанавливающий режим.
 *
 * @noreturn
 */
-forward void VDM_OnSetPlayerModePost(int iClient, int iMode);
+forward void VDM_OnSetPlayerModePost(int iClient, int iMode, int iPluginPriority, char[] szFeature);

@@ -97,7 +97,7 @@ enum struct Player
 {
 	int 	iClient;
 	int 	iPlayerMode;
-	int		iLastPluginPriority;
+	int 	iLastPlayerMode;
 
 	bool 	bMenuIsOpen;
 	bool	bLastAdminMenu;
@@ -113,8 +113,10 @@ enum struct Player
 	{
 		this.iClient = -1;
 		this.iPlayerMode = 0;
-		this.bMenuIsOpen = false;
 		this.iMenuType = -1;
+		this.iMenuPage = 0;
+		this.bMenuIsOpen = false;
+		this.bLastAdminMenu = false;
 	}
 }
 Player Players[MAXPLAYERS+1];
@@ -269,11 +271,6 @@ void GetCvars()
 	HookConVarChange(g_hCvar7, Update_CV);
 }
 
-
-
-/*
-TODO: Добавить ивенты pre/post + приоритеты плагинов
-*/
 void SetPlayerMode(int iClient, int iMode)
 {
 	if(IsClientValid(iClient))
@@ -283,7 +280,7 @@ void SetPlayerMode(int iClient, int iMode)
 
 		switch(iMode)
 		{
-			case -1: 
+			case -1:
 			{
 				// Для правильной работы модулей...
 				// Игрок не слышыт никого...

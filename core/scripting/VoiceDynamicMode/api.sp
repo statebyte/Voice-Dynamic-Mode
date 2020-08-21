@@ -51,14 +51,14 @@ void CreateNatives()
 
 void CreateGlobalForwards()
 {
-	g_hGlobalForvard_OnCoreIsReady = CreateGlobalForward("VDM_OnCoreIsReady", ET_Ignore);
-	g_hGlobalForvard_OnConfigReloaded = CreateGlobalForward("VDM_OnConfigReloaded", ET_Ignore, Param_Cell);
+	g_hGlobalForvard_OnCoreIsReady = new GlobalForward("VDM_OnCoreIsReady", ET_Ignore);
+	g_hGlobalForvard_OnConfigReloaded = new GlobalForward("VDM_OnConfigReloaded", ET_Ignore, Param_Cell);
 
-	g_hGlobalForvard_OnSetVoiceModePre = CreateGlobalForward("VDM_OnSetVoiceModePre", ET_Hook, Param_CellByRef, Param_Cell, Param_String);
-	g_hGlobalForvard_OnSetVoiceModePost = CreateGlobalForward("VDM_OnSetVoiceModePost", ET_Ignore, Param_Cell, Param_Cell, Param_String);
+	g_hGlobalForvard_OnSetVoiceModePre = new GlobalForward("VDM_OnSetVoiceModePre", ET_Hook, Param_CellByRef, Param_Cell, Param_String);
+	g_hGlobalForvard_OnSetVoiceModePost = new GlobalForward("VDM_OnSetVoiceModePost", ET_Ignore, Param_Cell, Param_Cell, Param_String);
 
-	g_hGlobalForvard_OnSetPlayerModePre = CreateGlobalForward("VDM_OnSetPlayerModePre", ET_Hook, Param_Cell, Param_CellByRef);
-	g_hGlobalForvard_OnSetPlayerModePost = CreateGlobalForward("VDM_OnSetPlayerModePost", ET_Ignore, Param_Cell, Param_Cell);
+	g_hGlobalForvard_OnSetPlayerModePre = new GlobalForward("VDM_OnSetPlayerModePre", ET_Hook, Param_Cell, Param_CellByRef, Param_Cell, Param_String);
+	g_hGlobalForvard_OnSetPlayerModePost = new GlobalForward("VDM_OnSetPlayerModePost", ET_Ignore, Param_Cell, Param_Cell, Param_Cell, Param_String);
 }
 
 int Native_GetConfig(Handle hPlugin, int numParams)
@@ -159,12 +159,19 @@ int Native_GetPlayerListenStatus(Handle hPlugin, int iNumParams)
 
 int Native_SetPlayerMode(Handle hPlugin, int iNumParams)
 {
+	if(!IsPluginRegister(hPlugin)) 
+	{
+		ThrowNativeError(SP_ERROR_NATIVE, "[VDM] This Plugin not registred...");
+		return 0;
+	}
+	
+	char szFeature[32];
 	int iClient = GetNativeCell(1);
 	int iMode = GetNativeCell(2);
 	int iPluginPriority = GetPluginPriority(hPlugin);
-	Players[iClient].iLastPluginPriority = 0;
+	GetPluginFeature(hPlugin, szFeature, sizeof(szFeature));
 	
-	switch(CallForward_OnSetPlayerModePre(iClient, iMode))
+	switch(CallForward_OnSetPlayerModePre(iClient, iMode, iPluginPriority, szFeature))
 	{
 		case Plugin_Continue:
 		{
@@ -172,15 +179,11 @@ int Native_SetPlayerMode(Handle hPlugin, int iNumParams)
 		}
 		case Plugin_Changed:
 		{
-			if(iPluginPriority >= Players[iClient].iLastPluginPriority) 
-			{
-				Players[iClient].iLastPluginPriority = iPluginPriority;
-				SetPlayerMode(iClient, iMode);
-			}
+			SetPlayerMode(iClient, iMode);
 		}
 	}
 
-	CallForward_OnSetPlayerModePost(iClient, iMode);
+	CallForward_OnSetPlayerModePost(iClient, iMode, iPluginPriority, szFeature);
 
 	return 1;
 }
@@ -348,21 +351,25 @@ void CallForward_OnSetVoiceModePost(int iMode, int iPluginPriority, char[] szFea
 	Call_Finish();
 }
 
-Action CallForward_OnSetPlayerModePre(int iClient, int iMode)
+Action CallForward_OnSetPlayerModePre(int iClient, int& iMode, int iPluginPriority, char[] szFeature)
 {
 	Action Result = Plugin_Continue;
 	Call_StartForward(g_hGlobalForvard_OnSetPlayerModePre);
 	Call_PushCell(iClient);
 	Call_PushCell(iMode);
+	Call_PushCell(iPluginPriority);
+	Call_PushString(szFeature);
 	Call_Finish();
 	return Result;
 }
 
-void CallForward_OnSetPlayerModePost(int iClient, int iMode)
+void CallForward_OnSetPlayerModePost(int iClient, int iMode, int iPluginPriority, char[] szFeature)
 {
 	Call_StartForward(g_hGlobalForvard_OnSetPlayerModePost);
 	Call_PushCell(iClient);
 	Call_PushCell(iMode);
+	Call_PushCell(iPluginPriority);
+	Call_PushString(szFeature);
 	Call_Finish();
 }
 
