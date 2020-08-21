@@ -61,30 +61,27 @@ void ShowMainMenu(int iClient)
 {
 	Menu hMenu = new Menu(Handler_MainMenu);
 	SetGlobalTransTarget(iClient);
-	hMenu.SetTitle("%s %t\n \n", g_sPrefix, "MENU_TITLE");
+	hMenu.SetTitle("%s %t\n \n", g_sPrefix, "MAINMENU_TITLE");
 
 	char szBuffer[128], szPhrase[256];
-	if(CheckAdminAccess(iClient)) FormatEx(szBuffer, sizeof szBuffer, "%t", "SettingsMenu");
-	else FormatEx(szBuffer, sizeof szBuffer, "%t\n \n", "SettingsMenu");
+	if(CheckAdminAccess(iClient)) FormatEx(szBuffer, sizeof szBuffer, "%t", "MAINMENU_SETTINGS");
+	else FormatEx(szBuffer, sizeof szBuffer, "%t\n \n", "MAINMENU_SETTINGS");
 
 	if(GetCountMenuItems(MENUTYPE_SETTINGSMENU) > 0) hMenu.AddItem("settings", szBuffer);
 	else hMenu.AddItem("settings", szBuffer, ITEMDRAW_DISABLED);
 
 	if(CheckAdminAccess(iClient))
 	{
-		FormatEx(szBuffer, sizeof szBuffer, "%t\n \n", "AdminMenu");
+		FormatEx(szBuffer, sizeof szBuffer, "%t\n \n", "MAINMENU_ADMIN");
 		hMenu.AddItem("admin", szBuffer);
-
-		//if(GetCountMenuItems(MENUTYPE_ADMINMENU) > 0) hMenu.AddItem("admin", szBuffer);
-		//else hMenu.AddItem("admin", szBuffer, ITEMDRAW_DISABLED);
 	}
 	
 	GetStringVoiceMode(iClient, 0, szPhrase, sizeof(szPhrase));
-	FormatEx(szBuffer, sizeof szBuffer, "%t\n%s\n \n", "YouHear", szPhrase);
+	FormatEx(szBuffer, sizeof szBuffer, "%t\n%s\n \n", "MENU_YOUHEAR", szPhrase);
 	hMenu.AddItem("YouHear", szBuffer);
 
 	GetStringVoiceMode(iClient, 1, szPhrase, sizeof(szPhrase));
-	FormatEx(szBuffer, sizeof szBuffer, "%t\n%s\n \n", "HearYou", szPhrase);
+	FormatEx(szBuffer, sizeof szBuffer, "%t\n%s\n \n", "MENU_HEARYOU", szPhrase);
 	hMenu.AddItem("HearYou", szBuffer);
 
 
@@ -98,34 +95,53 @@ void GetStringVoiceMode(int iClient, int iType, char[] szBuffer, int iMaxLength)
 	{
 		if(GetClientTeam(iClient) > 1)
 		{
-			switch(g_iMode)
+			if(Players[iClient].iPlayerMode == -1)
 			{
-				case 1: FormatEx(szBuffer, iMaxLength, "%t", IsPlayerAlive(iClient) ? "YH_1_2A" : "YH_1_3");
-				case 2: FormatEx(szBuffer, iMaxLength, "%t", IsPlayerAlive(iClient) ? "YH_1_2A" : "YH_2");
-				case 3: FormatEx(szBuffer, iMaxLength, "%t", IsPlayerAlive(iClient) ? "YH_3_4A" : "YH_1_3");
-				case 4: FormatEx(szBuffer, iMaxLength, "%t", IsPlayerAlive(iClient) ? "YH_3_4A" : "YH_4_5");
-				case 5: FormatEx(szBuffer, iMaxLength, "%t", IsPlayerAlive(iClient) ? "YH_5_6A" : "YH_4_5");
-				case 6: FormatEx(szBuffer, iMaxLength, "%t", IsPlayerAlive(iClient) ? "YH_5_6A" : "YH_6");
-				case 7: FormatEx(szBuffer, iMaxLength, "%t", "YH_7");
-				case 8: FormatEx(szBuffer, iMaxLength, "%t", "YH_8");
+				int iCount;
+				for(int i = 1; i <= MaxClients; i++) if(CheckPlayerListenStatus(iClient, i)) iCount++;
+				FormatEx(szBuffer, iMaxLength, "%i %t", iCount, "PLAYERS");
+			}
+			else
+			{
+				switch(g_iMode)
+				{
+					case 0: FormatEx(szBuffer, iMaxLength, "%t", "Noone");
+					case 1: FormatEx(szBuffer, iMaxLength, "%t", IsPlayerAlive(iClient) ? "YH_1_2A" : "YH_1_3");
+					case 2: FormatEx(szBuffer, iMaxLength, "%t", IsPlayerAlive(iClient) ? "YH_1_2A" : "YH_2");
+					case 3: FormatEx(szBuffer, iMaxLength, "%t", IsPlayerAlive(iClient) ? "YH_3_4A" : "YH_1_3");
+					case 4: FormatEx(szBuffer, iMaxLength, "%t", IsPlayerAlive(iClient) ? "YH_3_4A" : "YH_4_5");
+					case 5: FormatEx(szBuffer, iMaxLength, "%t", IsPlayerAlive(iClient) ? "YH_5_6A" : "YH_4_5");
+					case 6: FormatEx(szBuffer, iMaxLength, "%t", IsPlayerAlive(iClient) ? "YH_5_6A" : "YH_6");
+					case 7: FormatEx(szBuffer, iMaxLength, "%t", "YH_7");
+					case 8: FormatEx(szBuffer, iMaxLength, "%t", "YH_8");
+				}
 			}
 		}
 		else FormatEx(szBuffer, iMaxLength, "%t", "YH_8");
 	}
 	else
 	{
-		switch(g_iMode)
+		if(Players[iClient].iPlayerMode == -1)
 		{
-			case 1: FormatEx(szBuffer, iMaxLength, "%t", IsPlayerAlive(iClient) ? "HY_1_2_3_4A" : "HY_1_5");
-			case 2: FormatEx(szBuffer, iMaxLength, "%t", IsPlayerAlive(iClient) ? "HY_1_2_3_4A" : "HY_2_6");
-			case 3: FormatEx(szBuffer, iMaxLength, "%t", "HY_1_2_3_4A");
-			case 4: FormatEx(szBuffer, iMaxLength, "%t", IsPlayerAlive(iClient) ? "HY_1_2_3_4A" : "HY_4");
-			case 5: FormatEx(szBuffer, iMaxLength, "%t", IsPlayerAlive(iClient) ? "HY_5_6_7_8A" : "HY_1_5");
-			case 6: FormatEx(szBuffer, iMaxLength, "%t", IsPlayerAlive(iClient) ? "HY_5_6_7_8A" : "HY_2_6");
-			case 7, 8: FormatEx(szBuffer, iMaxLength, "%t", "HY_5_6_7_8A");
+			int iCount;
+			for(int i = 1; i <= MaxClients; i++) if(CheckPlayerListenStatus(i, iClient)) iCount++;
+			FormatEx(szBuffer, iMaxLength, "%i %t", iCount, "PLAYERS");
 		}
+		else
+		{
+			switch(g_iMode)
+			{
+				case 1: FormatEx(szBuffer, iMaxLength, "%t", IsPlayerAlive(iClient) ? "HY_1_2_3_4A" : "HY_1_5");
+				case 2: FormatEx(szBuffer, iMaxLength, "%t", IsPlayerAlive(iClient) ? "HY_1_2_3_4A" : "HY_2_6");
+				case 3: FormatEx(szBuffer, iMaxLength, "%t", "HY_1_2_3_4A");
+				case 4: FormatEx(szBuffer, iMaxLength, "%t", IsPlayerAlive(iClient) ? "HY_1_2_3_4A" : "HY_4");
+				case 5: FormatEx(szBuffer, iMaxLength, "%t", IsPlayerAlive(iClient) ? "HY_5_6_7_8A" : "HY_1_5");
+				case 6: FormatEx(szBuffer, iMaxLength, "%t", IsPlayerAlive(iClient) ? "HY_5_6_7_8A" : "HY_2_6");
+				case 7, 8: FormatEx(szBuffer, iMaxLength, "%t", "HY_5_6_7_8A");
+			}
 
-		if(GetClientTeam(iClient) < 2 && g_hCvar5.IntValue == 0) FormatEx(szBuffer, iMaxLength, "%t", "OnlySpectators");
+			if(GetClientTeam(iClient) < 2 && g_hCvar5.IntValue == 0) FormatEx(szBuffer, iMaxLength, "%t", "OnlySpectators");
+		}
 	}
 }
 
@@ -159,9 +175,9 @@ void ShowAdminMenu(int iClient, int iPage = 0)
 	hMenu.SetTitle("%s %t\n \n", g_sPrefix, "ADMINMENU_TitleSettings");
 
 	char szBuffer[128];
-	FormatEx(szBuffer, sizeof szBuffer, "%t", "ReloadConfig");
+	FormatEx(szBuffer, sizeof szBuffer, "%t", "MENU_RELOADCONFIG");
 	hMenu.AddItem("reloadconfig", szBuffer);
-	FormatEx(szBuffer, sizeof szBuffer, "%t", "ReloadModules");
+	FormatEx(szBuffer, sizeof szBuffer, "%t", "MENU_RELOADMODULES");
 	hMenu.AddItem("reloadmodules", szBuffer);
 
 	AddFeatureItemToMenu(hMenu, MENUTYPE_ADMINMENU);
@@ -216,7 +232,7 @@ void ShowSettingsMenu(int iClient, int iPage = 0)
 {
 	Menu hMenu = new Menu(Handler_SettingsMenu, MenuAction_Display|MenuAction_DisplayItem|MenuAction_DrawItem);
 	SetGlobalTransTarget(iClient);
-	hMenu.SetTitle("%s %t\n \n", g_sPrefix, "MENU_TitleSettings");
+	hMenu.SetTitle("%s %t\n \n", g_sPrefix, "SETTINGSMENU_TITLE");
 	AddFeatureItemToMenu(hMenu, MENUTYPE_SETTINGSMENU);
 
 	hMenu.ExitButton = true;
@@ -251,7 +267,7 @@ void ShowListningList(int iClient)
 {
 	Menu hMenu = new Menu(Handler_ListningListMenu);
 	SetGlobalTransTarget(iClient);
-	hMenu.SetTitle("%s %t\n \n", g_sPrefix, "YouHear");
+	hMenu.SetTitle("%s %t\n \n", g_sPrefix, "MENU_YOUHEAR");
 
 	char szBuffer[64];
 	int iCount;
@@ -297,7 +313,7 @@ void ShowSpeakList(int iClient)
 {
 	Menu hMenu = new Menu(Handler_SpeakListMenu);
 	SetGlobalTransTarget(iClient);
-	hMenu.SetTitle("%s %t\n \n", g_sPrefix, "HearYou");
+	hMenu.SetTitle("%s %t\n \n", g_sPrefix, "MENU_HEARYOU");
 
 	char szBuffer[64];
 	int iCount;

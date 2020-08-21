@@ -26,9 +26,14 @@ Action cmd_Dump(int iClient, int iArgs)
 {
 	int iSize = g_hNameItems.Length;
 
+	VDM_LogMessage("VDM Version: %s", VDM_VERSION);
+	VDM_LogMessage("---");
+	VDM_LogMessage("Feature List:");
+	VDM_LogMessage("---");
+
 	if(iSize == 0)
 	{
-		VDM_LogMessage("Модули не загружены...");
+		VDM_LogMessage("Modules not loaded...");
 		return;
 	}
 
@@ -37,18 +42,19 @@ Action cmd_Dump(int iClient, int iArgs)
 	for(int i; i < iSize; i++)
 	{
 		g_hNameItems.GetString(i, szBuffer, sizeof(szBuffer));
-		VDM_LogMessage("%i - %s", i, szBuffer);
+		VDM_LogMessage("[%i] %s", i, szBuffer);
 	}
 
 	VDM_LogMessage("---");
-	VDM_LogMessage("Общее кол-во модулей: %i", iSize);
+	VDM_LogMessage("All modules list: %i", iSize);
 }
 
 void ReloadConfig(int iClient)
 {
 	LoadConfig();
 	CallForward_OnConfigReloaded();
-	CGOPrintToChat(iClient, "{GREEN}%s {DEFAULT}Настройки перезагружены", g_sPrefix);
+	if(iClient) CGOPrintToChat(iClient, "{GREEN}%s {DEFAULT}%t", g_sPrefix, "CHAT_SETTINGS_RELOADED");
+	PrintToServer("[VDM] - Settings reloaded...");
 }
 
 void ReloadModules(int iClient)
@@ -57,5 +63,6 @@ void ReloadModules(int iClient)
 	g_hItems.Clear();
 	
 	CallForward_OnCoreIsReady();
-	CGOPrintToChat(iClient, "{GREEN}%s {DEFAULT}Модули перезагружены", g_sPrefix);
+	if(iClient) CGOPrintToChat(iClient, "{GREEN}%s {DEFAULT}%t", g_sPrefix, "CHAT_MODULES_RELOADED");
+	PrintToServer("[VDM] - Modules reloaded...");
 }

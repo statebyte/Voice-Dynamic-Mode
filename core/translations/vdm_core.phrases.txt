@@ -2,92 +2,76 @@
 {
 	"VDM"
 	{
-		"en" "Voice Mode"
-		"ru" "Голосовой режим"
+		"en" "Voice Dynamic Mode"
+		"ru" "Voice Dynamic Mode"
 	}
 
-	"MENU_TITLE"
+	"MAINMENU_TITLE"
 	{
 		"en" "Voice Mode"
 		"ru" "Голосовой режим"
 	}
 
-	"SettingsMenu"
-	{
-		"en" "My settings"
-		"ru" "Мои настройки"
-	}
-
-	"AdminMenu"
+	"MAINMENU_ADMIN"
 	{
 		"en" "Admin Menu"
 		"ru" "Меню администратора"
 	}
 
-	"ADMINMENU_TitleSettings"
+	"MAINMENU_SETTINGS"
 	{
-		"en" "Settings voice mode"
-		"ru" "Настройки голосового режима"
+		"en" "My settings"
+		"ru" "Мои настройки"
 	}
 
-	"MENU_TitleSettings"
+	"SETTINGSMENU_TITLE"
 	{
 		"en" "My Settings"
 		"ru" "Мои настройки"
 	}
 
-	"ReloadConfig"
+	"ADMINMENU_TitleSettings"
 	{
-		"en" "Reload config"
-		"ru" "Перезагрузить конфиг"
+		"en" "Settings Voice Mode"
+		"ru" "Настройки голосового режима"
 	}
 
-	"Default"
+	"MENU_RELOADCONFIG"
 	{
-		"en" "Default"
-		"ru" "По умолчанию"
+		"en" "Reload Config"
+		"ru" "Перезагрузить настройки"
 	}
 
-	"Enable"
+	"MENU_RELOADMODULES"
 	{
-		"en" "on"
-		"ru" "Вкл."
+		"en" "Reload Modules"
+		"ru" "Перезагрузить модули"
 	}
-
-	"Disable"
-	{
-		"en" "off"
-		"ru" "Выкл."
-	}
-
-	"EnableOther"
-	{
-		"en" "on"
-		"ru" "{GREEN}включен"
-	}
-
-	"DisableOther"
-	{
-		"en" "off"
-		"ru" "{RED}выключен"
-	}
-
-	"YouHear"
+	
+	"MENU_YOUHEAR"
 	{
 		"en" "You hear:"
 		"ru" "В данный момент Вы слышите:"
 	}
 
-	"HearYou"
+	"MENU_HEARYOU"
 	{
 		"en" "Hear you:"
 		"ru" "В данный момент Вас слышат:"
 	}
 
+	// ------------------------------------------
+
 	"Noone"
 	{
 		"en" "Noone"
 		"ru" "Никого"
+	}
+
+	"No_one"
+	{
+		"en" "Noone"
+		"ru" "Никто"
 	}
 
 	"OnlySpectators"
@@ -150,6 +134,8 @@
 		"ru" "Всех живых игроков, кроме наблюдателей"
 	}
 
+	// ------------------------------------------
+
 	"HY_1_5"
 	{
 		"en" "Only your team (dead)"
@@ -179,211 +165,24 @@
 		"en" "All Players"
 		"ru" "Все игроки"
 	}
-	
 
-	"PlayersVoiceDisable"
+	// ------------------------------------------
+
+	"CHAT_MODULES_RELOADED"
 	{
-		"en" "Players Voice Disable"
-		"ru" "Игроки которые вас не слышат"
+		"en" "Modules reloaded..."
+		"ru" "Модули перезагружены..."
 	}
 
-	"Enable_Full_AllTalk"
+	"CHAT_SETTINGS_RELOADED"
 	{
-		"#format" "{1:t}"
-		"en" "Full All Talk [{1}]"
-		"ru" "Общий голосовой чат: [{1}]"
+		"en" "Settings reloaded..."
+		"ru" "Настройки перезагружены..."
 	}
 
-	"ChangeQuota"
+	"PLAYERS"
 	{
-		"#format" "{1:i}"
-		"en" "Change Quota [{1}]"
-		"ru" "Квота - {1} игроков"
-	}
-
-	"ChangeMode"
-	{
-		"#format" "{1:i}"
-		"en" "Change Mode - {1}"
-		"ru" "Текущий режим - {1}"
-	}
-
-	"ChangeQuotaMode"
-	{
-		"#format" "{1:i}"
-		"en" "Change Quota Mode"
-		"ru" "Режим квоты - {1}"
-	}
-
-	"ChangeTalkAfterDyingTime"
-	{
-		"#format" "{1:i}"
-		"en" "Talk After Dying [{1} sec]"
-		"ru" "Общение после смерти: [{1} сек]"
-	}
-
-	"ChangeForceCamera"
-	{
-		"#format" "{1:t}"
-		"en" "Talk After Dying [{1}]"
-		"ru" "Просмотр за другой командой: [{1}]"
-	}
-
-	"VoiceChat"
-	{
-		"#format" "{1:t}"
-		"en" "Voice Chat [{1}]"
-		"ru" "Голосовой чат: [{1}]"
-	}
-
-	"ClutchMode"
-	{
-		"#format" "{1:t}"
-		"en" "Clutch mode: [{1}]"
-		"ru" "Clutch режим: [{1}]"
-	}
-
-	"CHAT_VoiceEnable"
-	{
-		"#format" "{1:t}"
-		"en" "[VDM] Voice chat - {1}"
-		"ru" "{LIGHTGREEN}[VDM] {DEFAULT}Настройки: Голосовой чат - {1}"
-	}
-
-	"CHAT_ClutchMode"
-	{
-		"#format" "{1:t}"
-		"en" "[VDM] Clutch mode - {1}"
-		"ru" "{LIGHTGREEN}[VDM] {DEFAULT}Настройки: Clutch режим - {1}"
-	}
-
-	"CHAT_Enable_Full_AllTalk"
-	{
-		"#format" "{1:N},{2:t}"
-		"en" "[VDM] {1}: Full All Talk - {2}"
-		"ru" "{LIGHTGREEN}[VDM] {DEFAULT}{1}: Общий голосовой чат - {2}"
-	}
-
-	"CHAT_Reload_Config"
-	{
-		"en" "[VDM] Config reload..."
-		"ru" "{LIGHTGREEN}[VDM] {DEFAULT}Конфиг перезагружен..."
-	}
-
-	"CHAT_Change_Mode"
-	{
-		"en" "[VDM] Voice mode has been changed..."
-		"ru" "{LIGHTGREEN}[VDM] {DEFAULT}Голосовой режим был изменен"
-	}
-
-	"CHAT_Change_Mode_Default"
-	{
-		"en" "[VDM] Voice mode has been change to default..."
-		"ru" "{LIGHTGREEN}[VDM] {DEFAULT}Голосовой режим установлен по умолчанию"
-	}
-
-	"CHAT_Dying_Time"
-	{
-		"#format" "{1:i}"
-		"en" "[VDM] You have {1} seconds to chat with alive players..."
-		"ru" "{LIGHTGREEN}[VDM] {GRAY}У вас есть {DEFAULT}%i {GRAY}сек на общение с живыми игроками..."
-	}
-
-	"CHAT_Dying_Time_Timeout"
-	{
-		"en" "[VDM] Alive players can no longer hear you!!!"
-		"ru" "{LIGHTRED}[VDM] {GRAY}Живые игроки вас больше не слышат!!!"
-	}
-
-	"CHAT_VC_Still_Off"
-	{
-		"en" "[VDM] Voice chat is still off!!!"
-		"ru" "{LIGHTRED}[VDM] {GRAY}Голосовой чат до сих пор выключен!!!"
-	}
-
-	"CHAT_ClutchMode_IsActivated"
-	{
-		"#format" "{1:t}"
-		"en" "[VDM] You are left alone. Now you do not hear {1} players"
-		"ru" "{LIGHTGREEN}[VDM] {DEFAULT}Вы остались одни. Теперь Вы не слышите {1} игроков"
-	}
-
-	"CHAT_ClutchMode_IsActivated_All"
-	{
-		"#format" "{1:N},{2:t}"
-		"en" "[VDM] Player {1} now does not hear {2} player"
-		"ru" "{LIGHTGREEN}[VDM] {DEFAULT}Игрок {1} теперь не слышит {2} игроков"
-	}
-
-	"CHAT_ChangeModeCmd"
-	{
-		"#format" "{1:i}"
-		"en" "[VDM] Voice mode is set to - ({1})"
-		"ru" "{LIGHTGREEN}[VDM] {DEFAULT}Голосовой режим установлен на - ({1})"
-	}
-
-	"CHAT_ChangeModeCmd_Default"
-	{
-		"en" "[VDM] Voice mode is set by default."
-		"ru" "{LIGHTGREEN}[VDM] {DEFAULT}Голосовой режим установлен по умолчанию"
-	}
-
-	"CHAT_AdminAction_ChangeMode"
-	{
-		"#format" "{1:N}"
-		"en" "[VDM] {1}: changed the voice chat mode"
-		"ru" "{LIGHTGREEN}[VDM] {DEFAULT}{1}: изменил режим голосового чата"
-	}
-
-	"CHAT_AdminAction_ChangeQuotaMode"
-	{
-		"#format" "{1:N}"
-		"en" "[VDM] {1}: changed the quota mode for voice chat"
-		"ru" "{LIGHTGREEN}[VDM] {DEFAULT}{1}: изменил режим квоты для голосового чата"
-	}
-
-	"CHAT_AdminAction_ChangeQuota"
-	{
-		"#format" "{1:N},{2:i}"
-		"en" "[VDM] {1}: changed the voice mode quota to - {2}"
-		"ru" "{LIGHTGREEN}[VDM] {DEFAULT}{1}: изменил квоту голосового режима на - {2} игроков"
-	}
-
-	"CHAT_AdminAction_TalkAfterDying"
-	{
-		"#format" "{1:N},{2:i}"
-		"en" "[VDM] {1}: changed communication time after death to - {2}"
-		"ru" "{LIGHTGREEN}[VDM] {DEFAULT}{1}: изменил время общения после смерти на - {2} сек"
-	}
-
-	"CHAT_AdminAction_ChangeForceCameraMode"
-	{
-		"#format" "{1:N},{2:t}"
-		"en" "[VDM] {1}: View behind the opposite team - {2}"
-		"ru" "{LIGHTGREEN}[VDM] {DEFAULT}{1}: Просмотр за противоположной командой - {2}"
-	}
-
-	"TheDead"
-	{
-		"en" "the dead"
-		"ru" "мертвых"
-	}
-
-	"OfAll"
-	{
-		"en" "of all"
-		"ru" "всех"
-	}
-
-	"ReloadConfig"
-	{
-		"en" "Reload Config"
-		"ru" "Перезагрузить настройки"
-	}
-
-	"ReloadModules"
-	{
-		"en" "Reload Modules"
-		"ru" "Перезагрузить модули"
+		"en" "players"
+		"ru" "игроков"
 	}
 }
