@@ -44,7 +44,7 @@
 
 ## Для разработчиков:
 Удобное API и динамичное получение данных о голосовом режиме сервера или игрока  
-Описано в файле <a href="https://github.com/theelsaud/Voice-Dynamic-Mode/blob/v2.0/core/scripting/include/vdm_core.inc">**core/scripting/include/vdm_core.inc**</a>
+Описано в файле <a href="https://github.com/theelsaud/Voice-Dynamic-Mode/blob/master/core/scripting/include/vdm_core.inc">**core/scripting/include/vdm_core.inc**</a>
 
 ----------------------------------------------------------------------------------
 ### Поддержка на сервере Discord: https://discord.gg/ajW69wN
