@@ -51,9 +51,13 @@ void CheckQuotaMode()
 	int iCount;
 	for(int i = 1; i <= MaxClients; i++) if(IsClientInGame(i) && !IsFakeClient(i))
 	{
-		if(g_iQuotaPriority == 1 && GetClientTeam(i) == CS_TEAM_CT) iCount++;
-		else if(g_iQuotaPriority == 2 && GetClientTeam(i) == CS_TEAM_T) iCount++;
-		else if(g_iQuotaPriority == 0) iCount++;
+		switch(g_iQuotaPriority)
+		{
+			case 0: iCount++;
+			case 1: if(GetClientTeam(i) != CS_TEAM_SPECTATOR) iCount++;
+			case 2: if(GetClientTeam(i) == CS_TEAM_T) iCount++;
+			case 3: if(GetClientTeam(i) == CS_TEAM_CT) iCount++;
+		} 
 	}
 
 	if(g_iQuota > 0 && g_iQuota <= iCount) VDM_SetVoiceMode(g_iQuotaMode);
