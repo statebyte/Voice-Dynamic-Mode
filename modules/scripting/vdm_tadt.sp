@@ -1,4 +1,5 @@
 #include <vdm_core>
+#include <sdktools>
 #include <csgo_colors>
 
 #define FUNC_NAME       "talk_after_dying_time"
@@ -10,7 +11,8 @@
 ConVar 		g_hCvar;
 bool		g_bUnHookCvar;
 int 		g_iValue;
-Handle      g_hTimerAfterDying[MAXPLAYERS+1];
+Handle      g_hTimerAfterDying[MAXPLAYERS+1] = INVALID_HANDLE;
+char		g_sPrefix[32];
 
 public Plugin myinfo =
 {
@@ -26,9 +28,11 @@ public void OnPluginStart()
 	g_iValue = g_hCvar.IntValue;
 	HookConVarChange(g_hCvar, Update_CV);
 
-	HookEvent("player_death", Event_OnPlayerDeath, EventHookMode_PostNoCopy);
+	HookEvent("player_death", Event_OnPlayerDeath);
 	HookEvent("round_start", Event_RoundStart, EventHookMode_PostNoCopy);
 	
+	LoadTranslations("vdm_modules.phrases");
+
 	if(VDM_CoreIsLoaded()) VDM_OnCoreIsReady();
 }
 
@@ -40,14 +44,15 @@ public void Event_RoundStart(Event hEvent, const char[] sEvName, bool bDontBroad
 public Action Event_OnPlayerDeath(Event hEvent, char[] name, bool dontBroadcast)
 {
 	int iMode = VDM_GetVoiceMode();
-	if(g_iValue != 0 && iMode > 0 && iMode < 7)
+	if(!IsWarmup() && g_iValue != 0 && iMode > 0 && iMode < 7)
 	{
 		int iClient = GetClientOfUserId(hEvent.GetInt("userid"));
 	
 		if(IsClientValid(iClient)) 
 		{
-			CGOPrintToChat(iClient, "{LIGHTGREEN}[VDM] {GRAY}У вас есть {DEFAULT}%i {GRAY}сек на общение с живыми игроками...", g_iValue);
-			g_hTimerAfterDying[iClient] = CreateTimer(float(g_iValue), Timer_CallBack, GetClientUserId(iClient), TIMER_FLAG_NO_MAPCHANGE);
+			if(g_hTimerAfterDying[iClient]) StopTimer(iClient);
+			CGOPrintToChat(iClient, "{LIGHTGREEN}%s %t", g_sPrefix, "MODULE_TADT", g_iValue);
+			g_hTimerAfterDying[iClient] = CreateTimer(float(g_iValue), Timer_CallBack, GetClientUserId(iClient));
 		}
 	}
 }
@@ -60,9 +65,9 @@ public void OnClientDisconnect(int iClient)
 public Action Timer_CallBack(Handle hTimer, any UserId)
 {
 	int iClient = GetClientOfUserId(UserId);
-	if(IsClientValid(iClient) && !IsPlayerAlive(iClient)) CGOPrintToChat(iClient, "{LIGHTRED}[VDM] {GRAY}Живые игроки вас больше не слышат!!!");
+	if(IsClientValid(iClient) && !IsPlayerAlive(iClient)) CGOPrintToChat(iClient, "{LIGHTGREEN}%s {DEFAULT}%t", g_sPrefix, "MODULE_TADT2");
 
-	g_hTimerAfterDying[iClient] = null;
+	g_hTimerAfterDying[iClient] = INVALID_HANDLE;
 	return Plugin_Stop;
 }
 
@@ -83,7 +88,7 @@ public void OnPluginEnd()
 public void VDM_OnCoreIsReady()
 {
 	VDM_AddFeature(FUNC_NAME, FUNC_PRIORITY, MENUTYPE_ADMINMENU, OnItemSelectMenu, OnItemDisplayMenu, OnItemDrawMenu);
-
+	VDM_GetPluginPrefix(g_sPrefix, sizeof(g_sPrefix));
 	GetSettings(VDM_GetConfig());
 }
 
@@ -106,8 +111,8 @@ bool OnItemSelectMenu(int iClient)
 
 bool OnItemDisplayMenu(int iClient, char[] szDisplay, int iMaxLength)
 {
-	if(g_iValue == 0) FormatEx(szDisplay, iMaxLength, "Общение после смерти [ Выключено ]");
-	else FormatEx(szDisplay, iMaxLength, "Общение после смерти [ %i сек ]", g_iValue);
+	if(g_iValue == 0) FormatEx(szDisplay, iMaxLength, "%t [ %t ]", "MODULE_TADT_TITLE", "DISABLED");
+	else FormatEx(szDisplay, iMaxLength, "%t [ %i %t ]", "MODULE_TADT_TITLE", g_iValue, "SECONDS");
 	return true;
 }
 
@@ -139,9 +144,14 @@ stock bool IsClientValid(int iClient)
 
 stock void StopTimer(int iClient)
 {
-	if(g_hTimerAfterDying[iClient])
+	if(g_hTimerAfterDying[iClient] != INVALID_HANDLE)
 	{
 		KillTimer(g_hTimerAfterDying[iClient]);
-		g_hTimerAfterDying[iClient] = null;
+		g_hTimerAfterDying[iClient] = INVALID_HANDLE;
 	}
+}
+
+bool IsWarmup()
+{
+	return view_as<bool>(GameRules_GetProp("m_bWarmupPeriod", 1));
 }
