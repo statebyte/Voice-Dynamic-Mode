@@ -356,7 +356,7 @@ Action CallForward_OnSetPlayerModePre(int iClient, int& iMode, int iPluginPriori
 	Action Result = Plugin_Continue;
 	Call_StartForward(g_hGlobalForvard_OnSetPlayerModePre);
 	Call_PushCell(iClient);
-	Call_PushCell(iMode);
+	Call_PushCellRef(iMode);
 	Call_PushCell(iPluginPriority);
 	Call_PushString(szFeature);
 	Call_Finish();
