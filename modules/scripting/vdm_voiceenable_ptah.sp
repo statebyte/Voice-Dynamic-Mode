@@ -5,10 +5,11 @@
 #define FUNC_NAME       "voice_enable"
 #define FUNC_PRIORITY   10
 
-#define REMIND_MESSAGE  "{GREEN}[VDM] {RED}Не забудьте, что вы выключили голосовой чат!"
-#define MESSAGE 		"{GREEN}[VDM] {DEFAULT}Вы %s голосовой чат!"
+#define REMIND_MESSAGE  "{GREEN}%s {RED}Не забудьте, что вы выключили голосовой чат!"
+#define MESSAGE 		"{GREEN}%s {DEFAULT}Вы %s голосовой чат!"
 
-bool g_bVoiceDisable[MAXPLAYERS+1];
+char		g_sPrefix[32];
+bool 		g_bVoiceDisable[MAXPLAYERS+1];
 
 public Plugin myinfo =
 {
@@ -45,12 +46,13 @@ public void OnPluginEnd()
 public void VDM_OnCoreIsReady()
 {
 	VDM_AddFeature(FUNC_NAME, FUNC_PRIORITY, MENUTYPE_SETTINGSMENU, OnItemSelectMenu, OnItemDisplayMenu, OnItemDrawMenu);
+	VDM_GetPluginPrefix(g_sPrefix, sizeof(g_sPrefix));
 }
 
 bool OnItemSelectMenu(int iClient)
 {
 	g_bVoiceDisable[iClient] = !g_bVoiceDisable[iClient];
-	CGOPrintToChatAll(MESSAGE, g_bVoiceDisable[iClient] ? "выключили" : "включили");
+	CGOPrintToChat(iClient, MESSAGE, g_sPrefix, g_bVoiceDisable[iClient] ? "выключили" : "включили");
 	return true;
 }
 
@@ -69,7 +71,7 @@ public void Event_OnRoundStart(Event hEvent, char[] name, bool dontBroadcast)
 {
 	for(int i = 1; i <= MaxClients; i++) if(IsClientInGame(i) && !IsFakeClient(i) && g_bVoiceDisable[i])
 	{
-		CGOPrintToChat(i, REMIND_MESSAGE);
+		CGOPrintToChat(i, REMIND_MESSAGE, g_sPrefix);
 	}
 }
 
