@@ -16,7 +16,7 @@
 static char g_sBuf[2048];
 
 static const char color_t[ZCOLOR][] = {"{DEFAULT}", "{RED}", "{LIGHTPURPLE}", "{GREEN}", "{LIME}", "{LIGHTGREEN}", "{LIGHTRED}", "{GRAY}", "{LIGHTOLIVE}", "{OLIVE}", "{LIGHTBLUE}", "{BLUE}", "{PURPLE}", "{GRAYBLUE}"},
-	color_c[ZCOLOR][] = {"/x01", "/x02", "/x03", "/x04", "/x05", "/x06", "/x07", "/x08", "/x09", "/x10", "/x0B", "/x0C", "/x0E", "/x0A"};
+	color_c[ZCOLOR][] = {"\x01", "\x02", "\x03", "\x04", "\x05", "\x06", "\x07", "\x08", "\x09", "\x10", "\x0B", "\x0C", "\x0E", "\x0A"};
 
 
 stock void CGOPrintToChat(int iClient, const char[] message, any ...)
@@ -34,7 +34,7 @@ stock void CGOPrintToChat(int iClient, const char[] message, any ...)
 	
 	while(g_sBuf[i])
 	{
-		if(g_sBuf[i] == '/n')
+		if(g_sBuf[i] == '\n')
 		{
 			g_sBuf[i] = 0;
 			PrintToChat(iClient, " %s", g_sBuf[iLastStart]);
@@ -65,7 +65,7 @@ stock void CGOPrintToChatAll(const char[] message, any ...)
 		
 		while(g_sBuf[i])
 		{
-			if(g_sBuf[i] == '/n')
+			if(g_sBuf[i] == '\n')
 			{
 				g_sBuf[i] = 0;
 				PrintToChat(iClient, " %s", g_sBuf[iLastStart]);
@@ -96,7 +96,7 @@ stock void GOPrintToChat(int iClient, const char[] message, any ...)
 	
 	while(g_sBuf[i])
 	{
-		if(g_sBuf[i] == '/n')
+		if(g_sBuf[i] == '\n')
 		{
 			g_sBuf[i] = 0;
 			PrintToChat(iClient, " %s", g_sBuf[iLastStart]);
@@ -122,7 +122,7 @@ stock void GOPrintToChatAll(const char[] message, any ...)
 		
 		while(g_sBuf[i])
 		{
-			if(g_sBuf[i] == '/n')
+			if(g_sBuf[i] == '\n')
 			{
 				g_sBuf[i] = 0;
 				PrintToChat(iClient, " %s", g_sBuf[iLastStart]);
