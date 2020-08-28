@@ -24,23 +24,17 @@
 * - Create modules
 */
 
-#define			VDM_VERSION         "2.0 B" // D - Developer Preview | B - BETA | R - RELEASE
+#define			VDM_VERSION         "2.0 R" // D - Developer Preview | B - BETA | R - RELEASE
 #define 		VDM_INT_VERSION 	020000
 #define			DEBUG_MODE 			0
 
 #define			MAX_MODES           8
 #define			MAX_PLAYERMODES     4
-#define			PATH_TO_CONFIG      "configs/vdm_core.ini"
+#define			PATH_TO_CONFIG      "configs/vdm_config.ini"
+#define			PATH_TO_SORTMENU    "configs/vdm_sortmenu.ini"
 #define			PATH_TO_LOGS        "logs/vdm_core.log"
 #define			RELOAD_COMMAND      "sm_vdm_reload"
 #define			DUMP_COMMAND      	"sm_vdm_dump"
-
-#if DEBUG_MODE == 1
-	#define VDM_Debug(%0)		LogToFile(g_sPathLogs, %0);
-#else
-	#define VDM_Debug(%0)
-#endif
-
 
 ConVar			g_hCvar1,
 				g_hCvar2,
@@ -51,7 +45,7 @@ ConVar			g_hCvar1,
 				g_hCvar7;
 
 TopMenu     	g_hTopMenu = null;
-ArrayList		g_hItems, g_hNameItems;
+ArrayList		g_hItems, g_hNameItems, g_hSortItems;
 KeyValues		g_kvConfig;
 
 int				g_iMode, // Текущий режим
@@ -152,6 +146,7 @@ public void OnPluginStart()
 {
 	g_hItems = new ArrayList(ByteCountToCells(128));
 	g_hNameItems = new ArrayList(ByteCountToCells(128));
+	g_hSortItems = new ArrayList(ByteCountToCells(128));
 	
 	LoadTranslations("vdm_core.phrases");
 	LoadConfig();
@@ -459,6 +454,61 @@ bool CheckAdminAccess(int iClient)
 	
 	if(iFlagBits & ReadFlagString("z") || iFlagBits & ReadFlagString(g_sAdminFlag)) return true;
 	else return false;
+}
+
+void SetSortItems()
+{
+	if(g_hSortItems) g_hSortItems.Clear();
+
+	char sPath[PLATFORM_MAX_PATH], szFeature[128];
+	BuildPath(Path_SM, sPath, sizeof(sPath), PATH_TO_SORTMENU);
+	File hFile = OpenFile(sPath, "r");
+	if (hFile != null)
+	{
+		while (!hFile.EndOfFile() && hFile.ReadLine(szFeature, 128))
+		{
+			TrimString(szFeature);
+			//PrintToChatAll(szFeature);
+			if (szFeature[0])
+			{
+				g_hSortItems.PushString(szFeature);
+			}
+		}
+		
+		delete hFile;
+		
+		if ((g_hSortItems).Length == 0)
+		{
+			g_hSortItems.Clear();
+			g_hSortItems = null;
+		}
+	}
+}
+
+void ResortItems()
+{
+	if (g_hNameItems.Length < 2 || !g_hSortItems) return;
+
+	int i, x, iSize, index;
+	iSize = g_hSortItems.Length;
+
+	x = 0;
+	char szItemInfo[128];
+	for (i = 0; i < iSize; ++i)
+	{
+		g_hSortItems.GetString(i, szItemInfo, sizeof(szItemInfo));
+		index = g_hNameItems.FindString(szItemInfo);
+		if (index != -1)
+		{
+			if (index != x)
+			{
+				g_hNameItems.SwapAt(index, x);
+				g_hItems.SwapAt(index, x);
+			}
+			
+			++x;
+		}
+	}
 }
 
 /*

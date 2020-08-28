@@ -218,6 +218,8 @@ int Native_AddFeature(Handle hPlugin, int iNumParams)
 
 			g_hNameItems.PushString(szFeature);
 			g_hItems.PushArray(aArray);
+
+			ResortItems();
 			return 1;
 		}
 
@@ -244,6 +246,8 @@ int Native_RemoveFeature(Handle hPlugin, int iNumParams)
 		{
 			g_hNameItems.Erase(iIndex);
 			g_hItems.Erase(iIndex);
+
+			ResortItems();
 			return 0;
 		}
 		
