@@ -5,19 +5,19 @@
 #define FUNC_NAME       "talk_after_dying_time"
 #define FUNC_PRIORITY   10
 
-#define MAX_TIME 		10
+#define MAX_TIME 		10	
 #define STEP_TIME 		1
 
 ConVar 		g_hCvar;
 bool		g_bUnHookCvar;
 int 		g_iValue;
-Handle      g_hTimerAfterDying[MAXPLAYERS+1] = INVALID_HANDLE;
+Handle      g_hTimerAfterDying[MAXPLAYERS+1] = {INVALID_HANDLE, ...};
 char		g_sPrefix[32];
 
 public Plugin myinfo =
 {
 	name		=	"[VDM] Talk After Dying Time",
-	version		=	"1.0",
+	version		=	"1.0.2",
 	author		=	"FIVE",
 	url			=	"Source: http://hlmod.ru | Support: https://discord.gg/ajW69wN"
 };
@@ -38,7 +38,7 @@ public void OnPluginStart()
 
 public void Event_RoundStart(Event hEvent, const char[] sEvName, bool bDontBroadcast)
 {
-	for(int i = 1; i <= MaxClients; ++i) StopTimer(i);
+	for(int i = 1; i <= MaxClients; i++) StopTimer(i);
 }
 
 public Action Event_OnPlayerDeath(Event hEvent, char[] name, bool dontBroadcast)
@@ -50,7 +50,7 @@ public Action Event_OnPlayerDeath(Event hEvent, char[] name, bool dontBroadcast)
 	
 		if(IsClientValid(iClient)) 
 		{
-			if(g_hTimerAfterDying[iClient]) StopTimer(iClient);
+			StopTimer(iClient);
 			CGOPrintToChat(iClient, "{LIGHTGREEN}%s %t", g_sPrefix, "MODULE_TADT", g_iValue);
 			g_hTimerAfterDying[iClient] = CreateTimer(float(g_iValue), Timer_CallBack, GetClientUserId(iClient));
 		}
@@ -65,8 +65,14 @@ public void OnClientDisconnect(int iClient)
 public Action Timer_CallBack(Handle hTimer, any UserId)
 {
 	int iClient = GetClientOfUserId(UserId);
-	if(IsClientValid(iClient) && !IsPlayerAlive(iClient)) CGOPrintToChat(iClient, "{LIGHTGREEN}%s {DEFAULT}%t", g_sPrefix, "MODULE_TADT2");
 
+	//PrintToServer("0x%08x - 0x%08x", g_hTimerAfterDying[iClient], hTimer);
+	if(IsClientValid(iClient) && !IsPlayerAlive(iClient)) 
+	{
+		CGOPrintToChat(iClient, "{LIGHTGREEN}%s {DEFAULT}%t", g_sPrefix, "MODULE_TADT2");
+	}
+
+	//PrintToChatAll(">>> Зануляем...");
 	g_hTimerAfterDying[iClient] = INVALID_HANDLE;
 	return Plugin_Stop;
 }
@@ -118,6 +124,7 @@ bool OnItemDisplayMenu(int iClient, char[] szDisplay, int iMaxLength)
 
 int OnItemDrawMenu(int iClient, int iStyle)
 {
+	if(VDM_GetVoiceMode() > 6) return ITEMDRAW_DISABLED;
 	return ITEMDRAW_DEFAULT;
 }
 
@@ -140,13 +147,16 @@ void SetNewValue(int iValue = -1)
 stock bool IsClientValid(int iClient)
 {
 	return iClient && IsClientInGame(iClient) && !IsFakeClient(iClient);
+	//return iClient && IsClientInGame(iClient);
 }
 
-stock void StopTimer(int iClient)
+void StopTimer(int iClient)
 {
+	//PrintToChatAll(">>> УДАЛЯЕМ ТАЙМЕР");
 	if(g_hTimerAfterDying[iClient] != INVALID_HANDLE)
 	{
-		KillTimer(g_hTimerAfterDying[iClient]);
+		//PrintToChatAll(">>> ТАЙМЕР ВАЛИДНЫЙ");
+		KillTimer(g_hTimerAfterDying[iClient], false);
 		g_hTimerAfterDying[iClient] = INVALID_HANDLE;
 	}
 }
