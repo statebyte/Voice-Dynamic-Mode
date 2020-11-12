@@ -9,7 +9,8 @@
 #define STEP_TIME 		1
 
 ConVar 		g_hCvar;
-bool		g_bUnHookCvar;
+bool		g_bUnHookCvar, 
+			g_bFixTimers[MAXPLAYERS+1];
 int 		g_iValue;
 Handle      g_hTimerAfterDying[MAXPLAYERS+1] = {INVALID_HANDLE, ...};
 char		g_sPrefix[32];
@@ -17,7 +18,7 @@ char		g_sPrefix[32];
 public Plugin myinfo =
 {
 	name		=	"[VDM] Talk After Dying Time",
-	version		=	"1.0.2",
+	version		=	"1.0.3",
 	author		=	"FIVE",
 	url			=	"Source: http://hlmod.ru | Support: https://discord.gg/ajW69wN"
 };
@@ -47,19 +48,23 @@ public Action Event_OnPlayerDeath(Event hEvent, char[] name, bool dontBroadcast)
 	if(!IsWarmup() && g_iValue != 0 && iMode > 0 && iMode < 7)
 	{
 		int iClient = GetClientOfUserId(hEvent.GetInt("userid"));
+		//PrintToServer("Event_OnPlayerDeath - %i", iClient);
 	
 		if(IsClientValid(iClient)) 
 		{
 			StopTimer(iClient);
 			CGOPrintToChat(iClient, "{LIGHTGREEN}%s %t", g_sPrefix, "MODULE_TADT", g_iValue);
 			g_hTimerAfterDying[iClient] = CreateTimer(float(g_iValue), Timer_CallBack, GetClientUserId(iClient));
+			g_bFixTimers[iClient] = true;
 		}
 	}
 }
 
-public void OnClientDisconnect(int iClient)
+public void OnClientDisconnect_Post(int iClient)
 {
+	//PrintToServer("OnClientDisconnect_Post - %i", iClient);
 	StopTimer(iClient);
+	g_hTimerAfterDying[iClient] = INVALID_HANDLE;
 }
 
 public Action Timer_CallBack(Handle hTimer, any UserId)
@@ -73,8 +78,27 @@ public Action Timer_CallBack(Handle hTimer, any UserId)
 	}
 
 	//PrintToChatAll(">>> Зануляем...");
+	g_bFixTimers[iClient] = false;
 	g_hTimerAfterDying[iClient] = INVALID_HANDLE;
 	return Plugin_Stop;
+}
+
+void StopTimer(int iClient)
+{
+	//PrintToChatAll(">>> УДАЛЯЕМ ТАЙМЕР");
+	if(g_bFixTimers[iClient])
+	{
+		g_bFixTimers[iClient] = false;
+		//PrintToChatAll(">>> ТАЙМЕР ВАЛИДНЫЙ");
+		KillTimer(g_hTimerAfterDying[iClient], false);
+		g_hTimerAfterDying[iClient] = INVALID_HANDLE;
+	}
+}
+
+stock bool IsClientValid(int iClient)
+{
+	return iClient && IsClientInGame(iClient) && !IsFakeClient(iClient);
+	//return iClient && IsClientInGame(iClient);
 }
 
 public void Update_CV(ConVar hCvar, const char[] szOldValue, const char[] szNewValue)
@@ -82,6 +106,7 @@ public void Update_CV(ConVar hCvar, const char[] szOldValue, const char[] szNewV
 	if(g_bUnHookCvar) return;
 	g_iValue = StringToInt(szNewValue);
 }
+
 
 public void OnPluginEnd()
 {
@@ -142,23 +167,6 @@ void SetNewValue(int iValue = -1)
 	g_iValue = g_hCvar.IntValue;
 
 	g_bUnHookCvar = false;
-}
-
-stock bool IsClientValid(int iClient)
-{
-	return iClient && IsClientInGame(iClient) && !IsFakeClient(iClient);
-	//return iClient && IsClientInGame(iClient);
-}
-
-void StopTimer(int iClient)
-{
-	//PrintToChatAll(">>> УДАЛЯЕМ ТАЙМЕР");
-	if(g_hTimerAfterDying[iClient] != INVALID_HANDLE)
-	{
-		//PrintToChatAll(">>> ТАЙМЕР ВАЛИДНЫЙ");
-		KillTimer(g_hTimerAfterDying[iClient], false);
-		g_hTimerAfterDying[iClient] = INVALID_HANDLE;
-	}
 }
 
 bool IsWarmup()
