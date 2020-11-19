@@ -3,10 +3,11 @@
 
 #define DISTANCE 		1000
 #define FUNC_NAME       "distance"
-#define FUNC_NAME       "distance_client"
+#define CLIENTFUNC_NAME "distance_client"
 #define FUNC_PRIORITY   1
 
 ConVar 	g_hCvar;
+bool 	g_bClientEnable[MAXPLAYERS+1];
 
 public Plugin myinfo =
 {
@@ -38,6 +39,7 @@ public void OnPluginEnd()
 	if (VDM_IsExistFeature(FUNC_NAME) && CanTestFeatures() && GetFeatureStatus(FeatureType_Native, "VDM_RemoveFeature") == FeatureStatus_Available)
 	{
 		VDM_RemoveFeature(FUNC_NAME);
+		VDM_RemoveFeature(CLIENTFUNC_NAME);
 	}
 }
 
@@ -49,6 +51,26 @@ public void Event_OnRoundStart(Event hEvent, char[] name, bool dontBroadcast)
 public void VDM_OnCoreIsReady()
 {
 	VDM_AddFeature(FUNC_NAME, FUNC_PRIORITY, MENUTYPE_ADMINMENU, OnItemSelectMenu, OnItemDisplayMenu);
+	VDM_AddFeature(CLIENTFUNC_NAME, FUNC_PRIORITY, MENUTYPE_SETTINGSMENU, ClientOnItemSelectMenu, ClientOnItemDisplayMenu);
+}
+
+bool ClientOnItemSelectMenu(int iClient)
+{
+	bool bState;
+	if((bState = ClientVoiceProximity(iClient))) ClientVoiceProximity(iClient, 0);
+	else ClientVoiceProximity(iClient, DISTANCE);
+
+	g_bClientEnable[iClient] = !bState;
+
+	CGOPrintToChatAll("{GREEN}[VDM] {DEFAULT}Вы %s режим дистанции", bState ? "выключил" : "включил");
+	return true;
+}
+
+bool ClientOnItemDisplayMenu(int iClient, char[] szDisplay, int iMaxLength)
+{
+	if(ClientVoiceProximity(iClient)) FormatEx(szDisplay, iMaxLength, "Дистанция [ %i ]", DISTANCE);
+	else FormatEx(szDisplay, iMaxLength, "Дистанция [ Выкл ]");
+	return true;
 }
 
 bool OnItemSelectMenu(int iClient)
@@ -57,7 +79,7 @@ bool OnItemSelectMenu(int iClient)
 	if((bState = GlobalVoiceProximity())) GlobalVoiceProximity(0);
 	else GlobalVoiceProximity(DISTANCE);
 
-	CGOPrintToChatAll("{GREEN}[VDM] {DEFAULT}Администратор %N %s режим дистанции", iClient, bState ? "выключил" : "включил");
+	CGOPrintToChat(iClient, "{GREEN}[VDM] {DEFAULT}Администратор %N %s режим дистанции", iClient, bState ? "выключили" : "включили");
 	return true;
 }
 
@@ -83,5 +105,18 @@ bool GlobalVoiceProximity(int iSet = -1)
 	}
 
 	g_hCvar.IntValue = iSet;
+	return true;
+}
+
+bool ClientVoiceProximity(int iClient, int iSet = -1)
+{
+	if(iSet == -1)
+	{
+		return g_bClientEnable[iClient];
+	}
+
+	char sValue[32];
+	IntToString(iSet, sValue, sizeof(sValue));
+	SendConVarValue(iClient, g_hCvar, sValue);
 	return true;
 }
