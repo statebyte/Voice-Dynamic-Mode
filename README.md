@@ -7,7 +7,7 @@
 	
 </p>
 </details>
-⯈ <a href="https://github.com/theelsaud/Voice-Dynamic-Mode/tree/v2.0/modules">Список официальных модулей</a>
+⯈ <a href="https://github.com/theelsaud/Voice-Dynamic-Mode/tree/master/modules">Список официальных модулей</a>
 
 ## Для администраторов:
 После установки плагина по умолчанию будет включен общий голосовой чат (без наблюдателей).  
