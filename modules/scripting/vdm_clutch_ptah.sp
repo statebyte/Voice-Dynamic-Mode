@@ -7,11 +7,11 @@
 #define FUNC_NAME       "clutch_mode_ptah"
 #define FUNC_PRIORITY   10
 
-int     g_iClutchMode;
+int     g_iClutchMode[MAXPLAYERS+1];
 bool    g_bClutchModeActive[MAXPLAYERS+1];
-bool    g_bClutchMode[MAXPLAYERS+1];
 
 Handle  hCookie;
+char	g_sPrefix[32];
 
 public Plugin myinfo =
 {
@@ -23,32 +23,36 @@ public Plugin myinfo =
 
 public void OnPluginStart()
 {
-    if(VDM_GetVersion() < 020000) SetFailState("VDM Core is older to use this module.");
-    if(PTaH_Version() < 101000) SetFailState("PTaH is older to use this module.");
-    
-    PTaH(PTaH_ClientVoiceToPre, Hook, CVP);
+	if(VDM_GetVersion() < 020000) SetFailState("VDM Core is older to use this module.");
+	if(PTaH_Version() < 101000) SetFailState("PTaH is older to use this module.");
+	
+	PTaH(PTaH_ClientVoiceToPre, Hook, CVP);
 
-    HookEvent("player_death", Event_OnPlayerDeath, EventHookMode_PostNoCopy);
-    HookEvent("round_end", Event_OnRoundEnd, EventHookMode_PostNoCopy);
+	HookEvent("player_death", Event_OnPlayerDeath, EventHookMode_PostNoCopy);
+	HookEvent("round_end", Event_OnRoundEnd, EventHookMode_PostNoCopy);
 
-    hCookie = RegClientCookie("VDM_ClutchMode", "VDM_ClutchMode", CookieAccess_Public);
+	hCookie = RegClientCookie("VDM_ClutchMode", "VDM_ClutchMode", CookieAccess_Public);
 
-    if(VDM_CoreIsLoaded()) VDM_OnCoreIsReady();
+	if(VDM_CoreIsLoaded()) VDM_OnCoreIsReady();
 }
 
 public void OnClientCookiesCached(int iClient)
 {
-    char szBuffer[4];
-    GetClientCookie(iClient, hCookie, szBuffer, sizeof(szBuffer));
+	char szBuffer[4];
+	GetClientCookie(iClient, hCookie, szBuffer, sizeof(szBuffer));
 
-    if(szBuffer[0]) g_bClutchMode[iClient] = view_as<bool>(StringToInt(szBuffer));
-    else g_bClutchMode[iClient] = false;
+	if(szBuffer[0]) g_iClutchMode[iClient] = StringToInt(szBuffer);
+	else g_iClutchMode[iClient] = -1;
 }
 
 public void OnClientDisconnect(int iClient)
 {
-    if(g_bClutchMode[iClient]) SetClientCookie(iClient, hCookie, "1");
-    else SetClientCookie(iClient, hCookie, "0");
+	if(g_iClutchMode[iClient] > -1) 
+	{
+		char sBuf[4];
+		IntToString(g_iClutchMode[iClient], sBuf, sizeof(sBuf));
+		SetClientCookie(iClient, hCookie, sBuf);
+	}
 }
 
 public void OnPluginEnd()
@@ -62,17 +66,39 @@ public void OnPluginEnd()
 public void VDM_OnCoreIsReady()
 {
 	VDM_AddFeature(FUNC_NAME, FUNC_PRIORITY, MENUTYPE_SETTINGSMENU, OnItemSelectMenu, OnItemDisplayMenu, OnItemDrawMenu);
+	VDM_GetPluginPrefix(g_sPrefix, sizeof(g_sPrefix));
 }
 
 bool OnItemSelectMenu(int iClient)
 {
-	g_bClutchMode[iClient] = !g_bClutchMode[iClient];
+	g_iClutchMode[iClient] += 1;
+	if(g_iClutchMode[iClient] > 1) g_iClutchMode[iClient] = -1;
+
+	char sBuf[256];
+
+	switch(g_iClutchMode[iClient])
+	{
+		case -1: sBuf = "Вы отключили клатч-режим.";
+		case 0: sBuf = "Теперь когда вы останитесь одни, вы не будете слышать других игроков.";
+		case 1: sBuf = "Теперь когда вы останитесь одни, вы не будете слышать мёртвых игроков.";
+	}
+
+	CGOPrintToChat(iClient, "{LIGHTGREEN}%s {DEFAULT}%s", g_sPrefix, sBuf);
+
 	return true;
 }
 
 bool OnItemDisplayMenu(int iClient, char[] szDisplay, int iMaxLength)
 {
-	FormatEx(szDisplay, iMaxLength, "Режим Clutch [ %s ]", g_bClutchMode[iClient] ? "Вкл" : "Выкл");
+	char sBuf[32];
+	switch(g_iClutchMode[iClient])
+	{
+		case -1: sBuf = "Выключено";
+		case 0: sBuf = "Всех";
+		case 1: sBuf = "Мертвых"
+	}
+
+	FormatEx(szDisplay, iMaxLength, "Режим Clutch [ %s ]", sBuf);
 	return true;
 }
 
@@ -83,57 +109,67 @@ int OnItemDrawMenu(int iClient, int iStyle)
 
 public Action Event_OnPlayerDeath(Event hEvent, char[] name, bool dontBroadcast)
 {
-    int iCount_T, iCount_CT, iLastClientCT, iLastClientT;
-    for(int i = 1; i <= MaxClients; i++)	if(IsClientInGame(i) && IsPlayerAlive(i))
-    {
-        switch(GetClientTeam(i))
-        {
-            case CS_TEAM_T: 
-            {
-                iLastClientT = i;
-                iCount_T++;
-            }
-            case CS_TEAM_CT:
-            { 
-                iLastClientCT = i;
-                iCount_CT++;
-            }
-        }
-    }
+	int iCount_T, iCount_CT, iLastClientCT, iLastClientT;
+	for(int i = 1; i <= MaxClients; i++)	if(IsClientInGame(i) && IsPlayerAlive(i))
+	{
+		switch(GetClientTeam(i))
+		{
+			case CS_TEAM_T: 
+			{
+				iLastClientT = i;
+				iCount_T++;
+			}
+			case CS_TEAM_CT:
+			{ 
+				iLastClientCT = i;
+				iCount_CT++;
+			}
+		}
+	}
 
-    if(iCount_T == 0 || iCount_CT == 0) return;
+	if(iCount_T == 0 || iCount_CT == 0) return;
 
-    if(iCount_CT == 1) SetCluchMode(iLastClientCT);
-    if(iCount_T == 1) SetCluchMode(iLastClientT);
+	if(iCount_CT == 1) SetCluchMode(iLastClientCT);
+	if(iCount_T == 1) SetCluchMode(iLastClientT);
 }
 
 void SetCluchMode(int iClient)
 {
-    if(!g_bClutchMode[iClient]) return;
+	if(g_iClutchMode[iClient] == -1) return;
 
-    g_bClutchModeActive[iClient] = true;
+	g_bClutchModeActive[iClient] = true;
 
-    for(int i = 1; i <= MaxClients; i++)
-    {
-        if(iClient == i) CGOPrintToChat(i, "%t", "{LIGHTGREEN}[VDM] {DEFAULT}Вы остались одни. Теперь Вы не слышите %s игроков", g_iClutchMode == 1 ? "мертвых" : "всех");
-        else CGOPrintToChat(i, "%t", "{LIGHTGREEN}[VDM] {DEFAULT}Игрок %N теперь не слышит %s игроков", iClient, g_iClutchMode == 1 ? "мертвых" : "всех");
-    }
+	for(int i = 1; i <= MaxClients; i++) if(IsClientInGame(i) && !IsFakeClient(i))
+	{
+		if(iClient == i) CGOPrintToChat(i, "{LIGHTGREEN}%s {DEFAULT}Вы остались одни. Теперь Вы не слышите %s игроков", g_sPrefix, g_iClutchMode[iClient] == 1 ? "мертвых" : "всех");
+		else CGOPrintToChat(i, "{LIGHTGREEN}%s {DEFAULT}Игрок %N теперь не слышит %s игроков", g_sPrefix, iClient, g_iClutchMode[iClient] == 1 ? "мертвых" : "всех");
+	}
 }
 
 public void Event_OnRoundEnd(Event hEvent, char[] name, bool dontBroadcast) 
 { 
-    for(int i = 1; i <= MaxClients; i++) g_bClutchModeActive[i] = false;
+	for(int i = 1; i <= MaxClients; i++) g_bClutchModeActive[i] = false;
 }
 
 public Action CVP(int iClient, int iTarget, bool& bListen)
 {
-    if(!IsClientInGame(iClient) || !IsClientInGame(iTarget)) return Plugin_Continue;
-    
-    if(g_iClutchMode > 0 && g_bClutchMode[iTarget] && g_bClutchModeActive[iTarget])
-    {
-        if(g_iClutchMode == 0) return Plugin_Handled;
-        if(g_iClutchMode == 1 && !IsPlayerAlive(iClient)) return Plugin_Handled;
-    }
+	if(!IsClientInGame(iClient) || !IsClientInGame(iTarget)) return Plugin_Continue;
+	
+	//PrintHintText(iTarget, "--- Вы слушаете: %N", iClient);
 
-    return Plugin_Continue;
+	if(g_iClutchMode[iTarget] > -1 && g_bClutchModeActive[iTarget])
+	{
+		if(g_iClutchMode[iTarget] == 0) 
+		{
+			//PrintToConsole(iTarget, "STOP VOICE: %N", iClient);
+			return Plugin_Handled;
+		}
+		if(g_iClutchMode[iTarget] == 1 && !IsPlayerAlive(iClient))
+		{
+			//PrintToConsole(iTarget, "STOP VOICE: %N", iClient);
+			return Plugin_Handled;
+		}
+	}
+
+	return Plugin_Continue;
 }

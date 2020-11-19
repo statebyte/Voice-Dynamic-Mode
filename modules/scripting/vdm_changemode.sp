@@ -1,6 +1,7 @@
 #include <vdm_core>
 
 #define FUNC_NAME       "changemode"
+#define FUNC_NAMETWO    "change_main_mode"
 #define FUNC_PRIORITY   1
 
 #define FUNC_COMMAND    "sm_vochange"
@@ -29,14 +30,14 @@ public void OnPluginEnd()
 	}
 }
 
-Action cmd_VoChange(int iClient, int iArgs)
-{
-	ChangeMode();
-}
-
 public void VDM_OnCoreIsReady()
 {
 	VDM_AddFeature(FUNC_NAME, FUNC_PRIORITY, MENUTYPE_ADMINMENU, OnItemSelectMenu, OnItemDisplayMenu, OnItemDrawMenu);
+}
+
+Action cmd_VoChange(int iClient, int iArgs)
+{
+	ChangeMode();
 }
 
 bool OnItemSelectMenu(int iClient)
@@ -48,7 +49,7 @@ bool OnItemSelectMenu(int iClient)
 bool OnItemDisplayMenu(int iClient, char[] szDisplay, int iMaxLength)
 {
 	int iMode = VDM_GetVoiceMode();
-	FormatEx(szDisplay, iMaxLength, "Изменить режим [ %i ]", iMode);
+	FormatEx(szDisplay, iMaxLength, "Текущий режим [ %i ]", iMode);
 	return true;
 }
 
@@ -57,14 +58,16 @@ int OnItemDrawMenu(int iClient, int iStyle)
 	return ITEMDRAW_DEFAULT;
 }
 
-void ChangeMode()
+void ChangeMode(int iModeType = 0)
 {
 	int iMode = VDM_GetVoiceMode();
 
-	if(iMode >= VMODE_COUNT-1) VDM_SetVoiceMode(VMODE_NOVOICE);
+	if(iMode >= VMODE_COUNT-1) VDM_SetVoiceMode(VMODE_NOVOICE, iModeType);
 	else
 	{
 		iMode++;
-		VDM_SetVoiceMode(iMode);
+		VDM_SetVoiceMode(iMode, iModeType);
 	}
+
+	
 }

@@ -5,8 +5,8 @@
 #define FUNC_NAME       "voice_enable"
 #define FUNC_PRIORITY   10
 
-#define REMIND_MESSAGE  "{GREEN}%s {RED}Не забудьте, что вы выключили голосовой чат!"
-#define MESSAGE 		"{GREEN}%s {DEFAULT}Вы %s голосовой чат!"
+#define REMIND_MESSAGE  "{GREEN}%s {LIGHTRED}Не забудьте, что вы выключили голосовой чат!"
+#define MESSAGE 		"{GREEN}%s {DEFAULT}Вы %s {DEFAULT}голосовой чат!"
 
 char		g_sPrefix[32];
 bool 		g_bVoiceDisable[MAXPLAYERS+1];
@@ -52,7 +52,7 @@ public void VDM_OnCoreIsReady()
 bool OnItemSelectMenu(int iClient)
 {
 	g_bVoiceDisable[iClient] = !g_bVoiceDisable[iClient];
-	CGOPrintToChat(iClient, MESSAGE, g_sPrefix, g_bVoiceDisable[iClient] ? "выключили" : "включили");
+	CGOPrintToChat(iClient, MESSAGE, g_sPrefix, g_bVoiceDisable[iClient] ? "{RED}выключили" : "{GREEN}включили");
 	return true;
 }
 
