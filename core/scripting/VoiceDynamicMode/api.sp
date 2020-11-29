@@ -260,7 +260,6 @@ int Native_RemoveFeature(Handle hPlugin, int iNumParams)
 	return 0;
 }
 
-
 // bool VDM_IsExistFeature(const char[] szFeature);
 int Native_IsExistFeature(Handle hPlugin, int iNumParams)
 {
@@ -280,7 +279,8 @@ int Native_IsExistFeature(Handle hPlugin, int iNumParams)
 int Native_MoveToMenu(Handle hPlugin, int iNumParams)
 {
 	int iClient = GetNativeCell(1);
-	FeatureMenus eMenyType = GetNativeCell(2);
+	FeatureMenus eMenyType = view_as<FeatureMenus>(GetNativeCell(2));
+	
 	if (iClient && IsClientInGame(iClient))
 	{
 		OpenMenu(iClient, eMenyType);

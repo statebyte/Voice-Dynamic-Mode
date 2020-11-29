@@ -26,7 +26,7 @@ Action cmd_Dump(int iClient, int iArgs)
 {
 	int iSize = g_hNameItems.Length;
 
-	VDM_LogMessage("VDM Version: %s", VDM_VERSION);
+	VDM_LogMessage("VDM Version: %s (ID: %i)", VDM_VERSION, VDM_INT_VERSION);
 	VDM_LogMessage("---");
 
 	if(iSize == 0)

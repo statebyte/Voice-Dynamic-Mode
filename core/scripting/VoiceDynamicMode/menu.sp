@@ -1,5 +1,11 @@
 void OpenMenu(int iClient, FeatureMenus eMenuType = MENUTYPE_MAINMENU, int iPage = 0, bool bLastAdminMenu = false)
 {
+	// Для отображения последних пунктов...
+	if(eMenuType == view_as<FeatureMenus>(Players[iClient].iMenuType))
+	{
+		iPage = Players[iClient].iMenuPage;
+	}
+	
 	switch(eMenuType)
 	{
 		case MENUTYPE_MAINMENU:			ShowMainMenu(iClient);
@@ -410,6 +416,7 @@ int FeatureHandler(Menu hMenu, MenuAction action, int iClient, int iItem, Featur
 							{
 								OpenMenu(iClient, eMenuType, GetMenuSelectionPosition());
 							}
+							else Players[iClient].bMenuIsOpen = false;
 						}
 					}
 					case MenuAction_DisplayItem:
