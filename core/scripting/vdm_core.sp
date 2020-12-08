@@ -63,7 +63,7 @@ bool			g_bCoreIsLoaded = false,
 
 char			g_sPathLogs[PLATFORM_MAX_PATH], 
 				g_sAdminFlag[2], 
-				g_sPrefix[32];
+				g_sPrefix[32], g_sPrefixMenu[32];
 
 
 enum

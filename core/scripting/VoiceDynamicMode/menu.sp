@@ -67,7 +67,7 @@ void ShowMainMenu(int iClient)
 {
 	Menu hMenu = new Menu(Handler_MainMenu);
 	SetGlobalTransTarget(iClient);
-	hMenu.SetTitle("%s %t\n \n", g_sPrefix, "MAINMENU_TITLE");
+	hMenu.SetTitle("%s %t\n \n", g_sPrefixMenu, "MAINMENU_TITLE");
 
 	char szBuffer[128], szPhrase[256];
 	if(CheckAdminAccess(iClient)) FormatEx(szBuffer, sizeof szBuffer, "%t", "MAINMENU_SETTINGS");
@@ -178,7 +178,7 @@ void ShowAdminMenu(int iClient, int iPage = 0)
 {
 	Menu hMenu = new Menu(Handler_AdminMenu, MenuAction_Display|MenuAction_DisplayItem|MenuAction_DrawItem);
 	SetGlobalTransTarget(iClient);
-	hMenu.SetTitle("%s %t\n \n", g_sPrefix, "ADMINMENU_TitleSettings");
+	hMenu.SetTitle("%s %t\n \n", g_sPrefixMenu, "ADMINMENU_TitleSettings");
 
 	char szBuffer[128];
 	FormatEx(szBuffer, sizeof szBuffer, "%t", "MENU_RELOADCONFIG");
@@ -238,7 +238,7 @@ void ShowSettingsMenu(int iClient, int iPage = 0)
 {
 	Menu hMenu = new Menu(Handler_SettingsMenu, MenuAction_Display|MenuAction_DisplayItem|MenuAction_DrawItem);
 	SetGlobalTransTarget(iClient);
-	hMenu.SetTitle("%s %t\n \n", g_sPrefix, "SETTINGSMENU_TITLE");
+	hMenu.SetTitle("%s %t\n \n", g_sPrefixMenu, "SETTINGSMENU_TITLE");
 	AddFeatureItemToMenu(hMenu, MENUTYPE_SETTINGSMENU);
 
 	hMenu.ExitButton = true;
@@ -273,7 +273,7 @@ void ShowListningList(int iClient)
 {
 	Menu hMenu = new Menu(Handler_ListningListMenu);
 	SetGlobalTransTarget(iClient);
-	hMenu.SetTitle("%s %t\n \n", g_sPrefix, "MENU_YOUHEAR");
+	hMenu.SetTitle("%s %t\n \n", g_sPrefixMenu, "MENU_YOUHEAR");
 
 	char szBuffer[64];
 	int iCount;
@@ -319,7 +319,7 @@ void ShowSpeakList(int iClient)
 {
 	Menu hMenu = new Menu(Handler_SpeakListMenu);
 	SetGlobalTransTarget(iClient);
-	hMenu.SetTitle("%s %t\n \n", g_sPrefix, "MENU_HEARYOU");
+	hMenu.SetTitle("%s %t\n \n", g_sPrefixMenu, "MENU_HEARYOU");
 
 	char szBuffer[64];
 	int iCount;

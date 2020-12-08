@@ -34,6 +34,7 @@ void LoadConfig()
 	g_kvConfig.GetString("admin_menu_flag", g_sAdminFlag, sizeof(g_sAdminFlag), "z");
 	if(!g_sAdminFlag[0]) g_sAdminFlag[0] = 'z';
 	g_kvConfig.GetString("prefix", g_sPrefix, sizeof(g_sPrefix), "VDM");
+	ClearColorsTags(g_sPrefix);
 	//PrintToServer("--- %s", g_sAdminFlag);
 
 	g_iDynamicMenu = g_kvConfig.GetNum("menu_dynamic", 2);
@@ -44,6 +45,18 @@ void LoadConfig()
 
 	RegConsoleCmds();
 	CallForward_OnConfigReloaded();
+}
+
+void ClearColorsTags(const char[] sPrefix)
+{
+	strcopy(g_sPrefixMenu, sizeof(g_sPrefixMenu), sPrefix);
+
+	static const char color_t[ZCOLOR][] = {"{DEFAULT}", "{RED}", "{LIGHTPURPLE}", "{GREEN}", "{LIME}", "{LIGHTGREEN}", "{LIGHTRED}", "{GRAY}", "{LIGHTOLIVE}", "{OLIVE}", "{LIGHTBLUE}", "{BLUE}", "{PURPLE}", "{GRAYBLUE}"};
+	
+	for(int i = 0; i < ZCOLOR; i++)
+	{
+		ReplaceString(g_sPrefixMenu, sizeof g_sPrefixMenu, color_t[i], NULL_STRING, false);
+	}
 }
 
 void RegConsoleCmds()
