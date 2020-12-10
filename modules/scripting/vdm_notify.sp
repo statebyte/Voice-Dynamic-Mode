@@ -3,8 +3,6 @@
 
 char g_sPrefix[32];
 
-bool bNotifyAll;
-
 public Plugin myinfo =
 {
 	name		=	"[VDM] Notify",
@@ -26,7 +24,7 @@ public void VDM_OnCoreIsReady()
 
 public void VDM_OnSetVoiceModePost(int iMode, int iPluginPriority, char[] szFeature)
 {
-    if(!strcmp(szFeature, "round_start")) CGOPrintToChatAll("{GREEN}%s {DEFAULT}Голосовой режим установлен по умолчанию", g_sPrefix);
-	else if(TranslationPhraseExists(szFeature)) CGOPrintToChatAll("{GREEN}%s {DEFAULT}%t", g_sPrefix, szFeature);
-	else CGOPrintToChatAll("{GREEN}%s {DEFAULT}Изменён голосовой режим на %i (%s)", g_sPrefix, iMode, szFeature);
+    if(!strcmp(szFeature, "round_start")) CGOPrintToChatAll("%s %t", g_sPrefix, "Voice_Default");
+	else if(TranslationPhraseExists(szFeature)) CGOPrintToChatAll("%s %t", g_sPrefix, szFeature);
+	else CGOPrintToChatAll("%s %t", g_sPrefix, "Voice_Set", iMode, szFeature);
 }

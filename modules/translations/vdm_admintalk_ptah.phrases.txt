@@ -1,0 +1,42 @@
+"Phrases"
+{
+	"AdminTalk_Msg"
+	{
+		"#format"	"{1:N},{2:t}"
+		"en"		"Administrator {1} {2} admin mode!"
+		"ru"		"Администратор {1} {2} админский режим!"
+		"ua"		"Адміністратор {1} {2} адмінських режим!"
+	}
+	"Msg_On"
+	{
+		"en"		"turned on"
+		"ru"		"включил"
+		"ua"		"включив"
+	}
+	"Msg_Off"
+	{
+		"en"		"turned off"
+		"ru"		"выключил"
+		"ua"		"вимкнув"
+	}
+	"Mode_On"
+	{
+		"#format"	"{1:N}"
+		"en"		"Admin Mode [ {1} ]"
+		"ru"		"Режим Админа [ {1} ]"
+		"ua"		"Режим Адміна [ {1} ]"
+	}
+	"Mode_Off"
+	{
+		"en"		"Admin Mode [ off ]"
+		"ru"		"Режим Админа [ выкл ]"
+		"ua"		"Режим Адміна [ викл ]"
+	}
+	"Admin_Say"
+	{
+		"#foramt"	"{1:N}"
+		"en"		"Says {1} | Admin Mode"
+		"ru"		"Говорит {1} | Режим админа"
+		"ua"		"Говорить {1} | Режим Адміна"
+	}
+}

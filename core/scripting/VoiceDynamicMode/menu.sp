@@ -54,7 +54,7 @@ public void Handler_MenuVoiceSettings(TopMenu hMenu, TopMenuAction action, TopMe
 		case TopMenuAction_DisplayOption:
 		{
 			SetGlobalTransTarget(iClient);
-			FormatEx(sBuffer, maxlength, TranslationPhraseExists("ADMINMENU_TitleSettings") ? "%t" : "s", "ADMINMENU_TitleSettings");
+			FormatEx(sBuffer, maxlength, TranslationPhraseExists("ADMINMENU_Settings") ? "%t" : "s", "ADMINMENU_Settings");
 		}
 		case TopMenuAction_SelectOption:
 		{
@@ -67,7 +67,7 @@ void ShowMainMenu(int iClient)
 {
 	Menu hMenu = new Menu(Handler_MainMenu);
 	SetGlobalTransTarget(iClient);
-	hMenu.SetTitle("%s %t\n \n", g_sPrefixMenu, "MAINMENU_TITLE");
+	hMenu.SetTitle("%t\n \n","MAINMENU_TITLE", g_sPrefixMenu);
 
 	char szBuffer[128], szPhrase[256];
 	if(CheckAdminAccess(iClient)) FormatEx(szBuffer, sizeof szBuffer, "%t", "MAINMENU_SETTINGS");
@@ -178,7 +178,7 @@ void ShowAdminMenu(int iClient, int iPage = 0)
 {
 	Menu hMenu = new Menu(Handler_AdminMenu, MenuAction_Display|MenuAction_DisplayItem|MenuAction_DrawItem);
 	SetGlobalTransTarget(iClient);
-	hMenu.SetTitle("%s %t\n \n", g_sPrefixMenu, "ADMINMENU_TitleSettings");
+	hMenu.SetTitle("%t\n \n", "ADMINMENU_TitleSettings", g_sPrefixMenu);
 
 	char szBuffer[128];
 	FormatEx(szBuffer, sizeof szBuffer, "%t", "MENU_RELOADCONFIG");
@@ -238,7 +238,7 @@ void ShowSettingsMenu(int iClient, int iPage = 0)
 {
 	Menu hMenu = new Menu(Handler_SettingsMenu, MenuAction_Display|MenuAction_DisplayItem|MenuAction_DrawItem);
 	SetGlobalTransTarget(iClient);
-	hMenu.SetTitle("%s %t\n \n", g_sPrefixMenu, "SETTINGSMENU_TITLE");
+	hMenu.SetTitle("%t\n \n", "SETTINGSMENU_TITLE", g_sPrefixMenu);
 	AddFeatureItemToMenu(hMenu, MENUTYPE_SETTINGSMENU);
 
 	hMenu.ExitButton = true;
@@ -273,7 +273,7 @@ void ShowListningList(int iClient)
 {
 	Menu hMenu = new Menu(Handler_ListningListMenu);
 	SetGlobalTransTarget(iClient);
-	hMenu.SetTitle("%s %t\n \n", g_sPrefixMenu, "MENU_YOUHEAR");
+	hMenu.SetTitle("%t\n \n", "MENU_YOUHEAR_TITLE", g_sPrefixMenu);
 
 	char szBuffer[64];
 	int iCount;
@@ -290,7 +290,7 @@ void ShowListningList(int iClient)
 
 	if(iCount == 0)
 	{
-		FormatEx(szBuffer, sizeof szBuffer, "Нет игроков...");
+		FormatEx(szBuffer, sizeof szBuffer, "%T", "NO_PLAYERS", iClient);
 		hMenu.AddItem(NULL_STRING, szBuffer, ITEMDRAW_DISABLED);
 	}
 
@@ -319,7 +319,7 @@ void ShowSpeakList(int iClient)
 {
 	Menu hMenu = new Menu(Handler_SpeakListMenu);
 	SetGlobalTransTarget(iClient);
-	hMenu.SetTitle("%s %t\n \n", g_sPrefixMenu, "MENU_HEARYOU");
+	hMenu.SetTitle("%t\n \n", "MENU_HEARYOU_TITLE", g_sPrefixMenu);
 
 	char szBuffer[64];
 	int iCount;
@@ -336,7 +336,7 @@ void ShowSpeakList(int iClient)
 
 	if(iCount == 0)
 	{
-		FormatEx(szBuffer, sizeof szBuffer, "Нет игроков...");
+		FormatEx(szBuffer, sizeof szBuffer, "%T", "NO_PLAYERS", iClient);
 		hMenu.AddItem(NULL_STRING, szBuffer, ITEMDRAW_DISABLED);
 	}
 

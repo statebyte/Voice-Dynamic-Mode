@@ -2,187 +2,226 @@
 {
 	"VDM"
 	{
-		"en" "Voice Dynamic Mode"
-		"ru" "Voice Dynamic Mode"
+		"en"		"Voice Dynamic Mode"
+		"ru"		"Voice Dynamic Mode"
+		"ua"		"Voice Dynamic Mode"
 	}
-
 	"MAINMENU_TITLE"
 	{
-		"en" "Voice Mode"
-		"ru" "Голосовой режим"
+		"#format"	"{1:s}"
+		"en"		"{1} Voice Mode"
+		"ru"		"{1} Голосовой режим"
+		"ua"		"{1} Голосовий режим"
 	}
-
 	"MAINMENU_ADMIN"
 	{
-		"en" "Admin Menu"
-		"ru" "Меню администратора"
+		"en"		"Admin Menu"
+		"ru"		"Меню администратора"
+		"ua"		"Меню адміністратора"
 	}
-
 	"MAINMENU_SETTINGS"
 	{
-		"en" "My settings"
-		"ru" "Мои настройки"
+		"en"		"My settings"
+		"ru"		"Мои настройки"
+		"ua"		"Мої налаштування"
 	}
-
 	"SETTINGSMENU_TITLE"
 	{
-		"en" "My Settings"
-		"ru" "Мои настройки"
+		"#format"	"{1:s}"
+		"en"		"{1} My Settings"
+		"ru"		"{1} Мои настройки"
+		"ua"		"{1} Мої налаштування"
 	}
-
 	"ADMINMENU_TitleSettings"
 	{
-		"en" "Settings Voice Mode"
-		"ru" "Настройки голосового режима"
+		"#format"	"{1:s}"
+		"en"		"{1} Settings Voice Mode"
+		"ru"		"{1} Настройки голосового режима"
+		"ua"		"{1} Налаштування голосового режиму"
 	}
-
+	"ADMINMENU_Settings"
+	{
+		"en"		"Settings Voice Mode"
+		"ru"		"Настройки голосового режима"
+		"ua"		"Налаштування голосового режиму"
+	}
 	"MENU_RELOADCONFIG"
 	{
-		"en" "Reload Config"
-		"ru" "Перезагрузить настройки"
+		"en"		"Reload Config"
+		"ru"		"Перезагрузить настройки"
+		"ua"		"Перезавантажити налаштування"
 	}
-
 	"MENU_RELOADMODULES"
 	{
-		"en" "Reload Modules"
-		"ru" "Перезагрузить модули"
+		"en"		"Reload Modules"
+		"ru"		"Перезагрузить модули"
+		"ua"		"Перезавантажити модулі"
 	}
-	
+	"MENU_YOUHEAR_TITLE"
+	{
+		"#format"	"{1:s}"
+		"en"		"{1} You hear:"
+		"ru"		"{1} В данный момент Вы слышите:"
+		"ua"		"{1} В даний момент Ви чуєте:"
+	}
 	"MENU_YOUHEAR"
 	{
-		"en" "You hear:"
-		"ru" "В данный момент Вы слышите:"
+		"en"		"You hear:"
+		"ru"		"В данный момент Вы слышите:"
+		"ua"		"В даний момент Ви чуєте:"
 	}
-
+	"MENU_HEARYOU_TITLE"
+	{
+		"#format"	"{1:s}"
+		"en"		"{1} Hear you:"
+		"ru"		"{1} В данный момент Вас слышат:"
+		"ua"		"{1} В даний момент Вас чують:"
+	}
 	"MENU_HEARYOU"
 	{
-		"en" "Hear you:"
-		"ru" "В данный момент Вас слышат:"
+		"en"		"Hear you:"
+		"ru"		"В данный момент Вас слышат:"
+		"ua"		"В даний момент Вас чують:"
 	}
-
+	"NO_ACCESS"
+	{
+		"en"		"You do not have access to this command!"
+		"ru"		"У вас нет доступа к этой команде!"
+		"ua"		"У вас немає доступу до цієї команди!"
+	}
+	
 	// ------------------------------------------
-
 	"Noone"
 	{
-		"en" "Noone"
-		"ru" "Никого"
+		"en"		"No one"
+		"ru"		"Никого"
+		"ua"		"Нікого"
 	}
-
-	"No_one"
-	{
-		"en" "Noone"
-		"ru" "Никто"
-	}
-
 	"OnlySpectators"
 	{
-		"en" "Only spectators"
-		"ru" "Только наблюдатели"
+		"en"		"Only spectators"
+		"ru"		"Только наблюдатели"
+		"ua"		"Тільки спостерігачі"
 	}
-
 	"YH_1_3"
 	{
-		"en" "Only your team (dead & alive)"
-		"ru" "Только свою команду (живую и мертвую)"
+		"en"		"Only your team (dead & alive)"
+		"ru"		"Только свою команду (живую и мертвую)"
+		"ua"		"Тільки свою команду (живу і мертву)"
 	}
-
 	"YH_2"
 	{
-		"en" "Own & opposite team (dead)"
-		"ru" "Свою и противоположную команду (мертвую)"
+		"en"		"Own & opposite team (dead)"
+		"ru"		"Свою и противоположную команду (мертвую)"
+		"ua"		"Свою і протилежну команду (мертву)"
 	}
-
 	"YH_4_5"
 	{
-		"en" "Own (living & dead) & the opposite team (dead)"
-		"ru" "Свою (живую и мертвую) и противоположную команду (мертвую)"
+		"en"		"Own (living & dead) & the opposite team (dead)"
+		"ru"		"Свою (живую и мертвую) и противоположную команду (мертвую)"
+		"ua"		"Свою (живу і мертву) і протилежну команду (мертву)"
 	}
-
 	"YH_6"
 	{
-		"en" "Own & opposite team (living and dead)"
-		"ru" "Свою и противоположную команду (живую и мертвую)"
+		"en"		"Own & opposite team (living and dead)"
+		"ru"		"Свою и противоположную команду (живую и мертвую)"
+		"ua"		"Свою і протилежну команду (живу і мертву)"
 	}
-
 	"YH_7"
 	{
-		"en" "All players except spectators"
-		"ru" "Всех игроков, кроме наблюдателей"
+		"en"		"All players except spectators"
+		"ru"		"Всех игроков, кроме наблюдателей"
+		"ua"		"Всіх гравців, крім спостерігачів"
 	}
-
 	"YH_8"
 	{
-		"en" "All players, including spectators"
-		"ru" "Всех игроков, включая наблюдателей"
+		"en"		"All players, including spectators"
+		"ru"		"Всех игроков, включая наблюдателей"
+		"ua"		"Всіх гравців, включаючи спостерігачів"
 	}
-
 	"YH_1_2A"
 	{
-		"en" "Only your team (live)"
-		"ru" "Только свою команду (живую)"
+		"en"		"Only your team (live)"
+		"ru"		"Только свою команду (живую)"
+		"ua"		"Тільки свою команду (живу)"
 	}
-
 	"YH_3_4A"
 	{
-		"en" "Only your team (dead & alive)"
-		"ru" "Только свою команду (живую и мертвую)"
+		"en"		"Only your team (dead & alive)"
+		"ru"		"Только свою команду (живую и мертвую)"
+		"ua"		"Тільки свою команду (живу і мертву)"
 	}
-
 	"YH_5_6A"
 	{
-		"en" "All alive players except spectators"
-		"ru" "Всех живых игроков, кроме наблюдателей"
+		"en"		"All alive players except spectators"
+		"ru"		"Всех живых игроков, кроме наблюдателей"
+		"ua"		"Всіх живих гравців, крім спостерігачів"
 	}
 
 	// ------------------------------------------
-
 	"HY_1_5"
 	{
-		"en" "Only your team (dead)"
-		"ru" "Только ваша команда (мертвая)"
+		"en"		"Only your team (dead)"
+		"ru"		"Только ваша команда (мертвая)"
+		"ua"		"Тільки ваша команда (мертва)"
 	}
-
 	"HY_2_6"
 	{
-		"en" "Yours & the opposite team (dead)"
-		"ru" "Ваша и противоположная команда (мертвые)"
+		"en"		"Yours & the opposite team (dead)"
+		"ru"		"Ваша и противоположная команда (мертвые)"
+		"ua"		"Ваша і протилежна команда (мертві)"
 	}
-
 	"HY_4"
 	{
-		"en" "Yours (living & dead) & the opposite team (dead)"
-		"ru" "Ваша (живая и мертвая) и противоположная команда (мертвые)"
+		"en"		"Yours (living & dead) & the opposite team (dead)"
+		"ru"		"Ваша (живая и мертвая) и противоположная команда (мертвые)"
+		"ua"		"Ваша (жива і мертва) і протилежна команда (мертві)"
 	}
-
 	"HY_1_2_3_4A"
 	{
-		"en" "Only your team (living & dead)"
-		"ru" "Только ваша команда (живая и мертвая)"
+		"en"		"Only your team (living & dead)"
+		"ru"		"Только ваша команда (живая и мертвая)"
+		"ua"		"Тільки ваша команда (жива і мертва)"
 	}
-
 	"HY_5_6_7_8A"
 	{
-		"en" "All Players"
-		"ru" "Все игроки"
+		"en"		"All Players"
+		"ru"		"Все игроки"
+		"ua"		"Всі гравці"
 	}
 
 	// ------------------------------------------
-
 	"CHAT_MODULES_RELOADED"
 	{
-		"en" "Modules reloaded..."
-		"ru" "Модули перезагружены..."
+		"en"		"Modules reloaded..."
+		"ru"		"Модули перезагружены..."
+		"ua"		"Модулі перезавантажувались..."
 	}
-
 	"CHAT_SETTINGS_RELOADED"
 	{
-		"en" "Settings reloaded..."
-		"ru" "Настройки перезагружены..."
+		"en"		"Settings reloaded..."
+		"ru"		"Настройки перезагружены..."
+		"ua"		"Налаштування перезавантажувались..."
 	}
-
 	"PLAYERS"
 	{
-		"en" "players"
-		"ru" "игроков"
+		"en"		"players"
+		"ru"		"игроков"
+		"ua"		"гравців"
+	}
+	"NO_PLAYERS"
+	{
+		"en"		"No players..."
+		"ru"		"Нет игроков..."
+		"ua"		"Немає гравців..."
+	}
+	
+	// -----------------------------------------
+	"VDM_CHANGEMODE_Mode"
+	{
+		"#format"	"{1:i}"
+		"en"		"Current mode [ {1} ]"
+		"ru"		"Текущий режим [ {1} ]"
+		"ua"		"Поточний режим [ {1} ]"
 	}
 }
