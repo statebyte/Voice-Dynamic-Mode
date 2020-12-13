@@ -34,7 +34,8 @@ void LoadConfig()
 	g_kvConfig.GetString("admin_menu_flag", g_sAdminFlag, sizeof(g_sAdminFlag), "z");
 	if(!g_sAdminFlag[0]) g_sAdminFlag[0] = 'z';
 	g_kvConfig.GetString("prefix", g_sPrefix, sizeof(g_sPrefix), "VDM");
-	ClearColorsTags(g_sPrefix);
+	//ClearColorsTags(g_sPrefix);
+	g_kvConfig.GetString("prefix_title", g_sPrefixMenu, sizeof(g_sPrefixMenu), "VDM MENU");
 	//PrintToServer("--- %s", g_sAdminFlag);
 
 	g_iDynamicMenu = g_kvConfig.GetNum("menu_dynamic", 2);
@@ -47,7 +48,7 @@ void LoadConfig()
 	CallForward_OnConfigReloaded();
 }
 
-void ClearColorsTags(const char[] sPrefix)
+/*void ClearColorsTags(const char[] sPrefix)
 {
 	strcopy(g_sPrefixMenu, sizeof(g_sPrefixMenu), sPrefix);
 
@@ -57,7 +58,7 @@ void ClearColorsTags(const char[] sPrefix)
 	{
 		ReplaceString(g_sPrefixMenu, sizeof g_sPrefixMenu, color_t[i], NULL_STRING, false);
 	}
-}
+}*/
 
 void RegConsoleCmds()
 {
@@ -77,9 +78,12 @@ void RegConsoleCmds()
 	g_kvConfig.GetString("admin_commands", szBuffer, sizeof szBuffer);
 	iSize = ExplodeString(szBuffer, ";", szCommands, sizeof szCommands, sizeof szCommands[]);
 
-	for(int i; i <= iSize; i++)
+	if(szBuffer[0])
 	{
-		RegConsoleCmd(szCommands[i], cmd_Admin);
+		for(int i; i <= iSize; i++)
+		{
+			RegConsoleCmd(szCommands[i], cmd_Admin);
+		}
 	}
 
 	RegConsoleCmd(DUMP_COMMAND, cmd_Dump);

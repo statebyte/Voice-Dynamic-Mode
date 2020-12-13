@@ -1,0 +1,60 @@
+"Phrases"
+{
+	"Clutch_Off"
+	{
+		"en"		"You have disabled clutch mode."
+		"ru"		"Вы отключили клатч-режим."
+		"ua"		"Ви відключили клатч-режим."
+	}
+	"Clutch_On_1"
+	{
+		"en"		"Now when you're alone, you won't hear other players."
+		"ru"		"Теперь когда вы останитесь одни, вы не будете слышать других игроков."
+		"ua"		"Тепер коли ви залишитеся одні, ви не будете чути інших гравців."
+	}
+	"Clutch_On_2"
+	{
+		"en"		"Now when you are alone, you will not hear the dead players."
+		"ru"		"Теперь когда вы останетесь одни, вы не будете слышать мёртвых игроков."
+		"ua"		"Тепер коли ви залишитеся одні, ви не будете чути мертвих гравців."
+	}
+	"Mode"
+	{
+		"#format"	"{1:s}"
+		"en"		"Clutch Mode [ {1} ]"
+		"ru"		"Режим Clutch [ {1} ]"
+		"ua"		"Режим Clutch [ {1} ]"
+	}
+	"Mode_Off"
+	{
+		"en"		"off"
+		"ru"		"выкл"
+		"ua"		"вимк"
+	}
+	"Mode_All"
+	{
+		"en"		"all"
+		"ru"		"всех"
+		"ua"		"всіх"
+	}
+	"Mode_Dead"
+	{
+		"en"		"dead"
+		"ru"		"мертвых"
+		"ua"		"мертвих"
+	}
+	"Clutch_Msg_1"
+	{
+		"#format"	"{1:t}"
+		"en"		"You are left alone. Now you can't hear {1} players!"
+		"ru"		"Вы остались одни. Теперь Вы не слышите {1} игроков!"
+		"ua"		"Ви залишилися одні. Тепер Ви не чуєте {1} гравців!"
+	}
+	"Clutch_Msg_2"
+	{
+		"#format"	"{1:N},{3:t}"
+		"en"		"Player {1} can no longer hear {2} players!"
+		"ru"		"Игрок {1} теперь не слышит {2} игроков!"
+		"ua"		"Гравець {1} тепер не чує {2} гравців!"
+	}
+}

@@ -9,8 +9,7 @@ Action cmd_Admin(int iClient, int iArgs)
 	if(!iClient) return;
 	if(!CheckAdminAccess(iClient))
 	{
-		PrintToConsole(iClient, "[VDM] У вас нет доступа к этой команде!");
-		CGOPrintToChat(iClient, "{GREEN}%s {DEFAULT}У вас нет доступа к этой команде!", g_sPrefix);
+		CGOPrintToChat(iClient, "%s %T", g_sPrefix, "NO_ACCESS", iClient);
 		return;
 	}
 	OpenMenu(iClient, MENUTYPE_ADMINMENU);
@@ -70,7 +69,7 @@ void ReloadConfig(int iClient)
 {
 	LoadConfig();
 	CallForward_OnConfigReloaded();
-	if(iClient) CGOPrintToChat(iClient, "{GREEN}%s {DEFAULT}%t", g_sPrefix, "CHAT_SETTINGS_RELOADED");
+	if(iClient) CGOPrintToChat(iClient, "%s %t", g_sPrefix, "CHAT_SETTINGS_RELOADED");
 	PrintToServer("[VDM] - Settings reloaded...");
 }
 
@@ -80,6 +79,6 @@ void ReloadModules(int iClient)
 	g_hItems.Clear();
 	
 	CallForward_OnCoreIsReady();
-	if(iClient) CGOPrintToChat(iClient, "{GREEN}%s {DEFAULT}%t", g_sPrefix, "CHAT_MODULES_RELOADED");
+	if(iClient) CGOPrintToChat(iClient, "%s %t", g_sPrefix, "CHAT_MODULES_RELOADED");
 	PrintToServer("[VDM] - Modules reloaded...");
 }

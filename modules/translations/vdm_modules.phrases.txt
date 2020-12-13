@@ -2,38 +2,14 @@
 {
 	"ENABLED"
     {
-        "en" "Enabled"
-		"ru" "Включено"
+        "en"		"Enabled"
+		"ru"		"Включено"
+		"ua"		"Включено"
     }
-
     "DISABLED"
     {
-        "en" "Disabled"
-		"ru" "Выключено"
-    }
-
-    "SECONDS"
-    {
-        "en" "sec"
-        "ru" "сек"
-    }
-    
-    "MODULE_TADT_TITLE"
-    {
-        "en" "Talk After Dying Time"
-        "ru" "Общение после смерти"
-    }
-
-    "MODULE_TADT"
-	{
-		"#format" "{1:i}"
-        "en" "{GRAY}You have {DEFAULT}{1} {GRAY}sec to communicate with live players..."
-		"ru" "{GRAY}У вас есть {DEFAULT}{1} {GRAY}сек на общение с живыми игроками..."
-    }
-
-    "MODULE_TADT2"
-	{
-        "en" "{GRAY}Live players are more of you {LIGHTRED}do not hear{GRAY}!"
-		"ru" "{GRAY}Живые игроки вас больше {LIGHTRED}не слышат{GRAY}!"
+        "en"		"Disabled"
+		"ru"		"Выключено"
+		"ua"		"Вимкнено"
     }
 }

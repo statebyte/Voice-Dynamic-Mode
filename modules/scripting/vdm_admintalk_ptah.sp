@@ -7,6 +7,8 @@
 
 int g_iTarget = -1;
 
+char	g_sPrefix[32];
+
 public Plugin myinfo =
 {
 	name		=	"[VDM] Admin Talk (PTaH)",
@@ -17,6 +19,8 @@ public Plugin myinfo =
 
 public void OnPluginStart()
 {
+	LoadTranslations("vdm_admintalk_ptah.phrases");
+
 	PTaH(PTaH_ClientVoiceToPre, Hook, CVP);
 	HookEvent("round_start", Event_OnRoundStart, EventHookMode_PostNoCopy);
 
@@ -45,6 +49,7 @@ public void OnPluginEnd()
 public void VDM_OnCoreIsReady()
 {
 	VDM_AddFeature(FUNC_NAME, FUNC_PRIORITY, MENUTYPE_ADMINMENU, OnItemSelectMenu, OnItemDisplayMenu, OnItemDrawMenu);
+	VDM_GetPluginPrefix(g_sPrefix, sizeof(g_sPrefix));
 }
 
 bool OnItemSelectMenu(int iClient)
@@ -52,14 +57,14 @@ bool OnItemSelectMenu(int iClient)
 	if(g_iTarget == -1) g_iTarget = iClient;
 	else g_iTarget = -1;
 
-	CGOPrintToChatAll("{GREEN}[VDM] {DEFAULT}Администратор %N %s админский режим", iClient, g_iTarget == -1 ? "выключил" : "включил");
+	CGOPrintToChatAll("%s %t", g_sPrefix, "AdminTalk_Msg", iClient, g_iTarget == -1 ? "Msg_Off" : "Msg_On");
 	return true;
 }
 
 bool OnItemDisplayMenu(int iClient, char[] szDisplay, int iMaxLength)
 {
-	if(g_iTarget != -1) FormatEx(szDisplay, iMaxLength, "Режим Админа [ %N ]", g_iTarget);
-	else FormatEx(szDisplay, iMaxLength, "Режим Админа [ Выкл ]");
+	if(g_iTarget != -1) FormatEx(szDisplay, iMaxLength, "%T", "Mode_On", iClient, g_iTarget);
+	else FormatEx(szDisplay, iMaxLength, "%T", "Mode_Off", iClient);
 	return true;
 }
 
@@ -76,7 +81,7 @@ public Action CVP(int iClient, int iTarget, bool& bListen)
 		if(!IsClientInGame(iClient) || !IsClientInGame(iTarget)) return Plugin_Continue;
 		if(iClient != g_iTarget) return Plugin_Handled;
 
-		PrintHintTextToAll("Говорит %N | Режим админа", iClient);
+		PrintHintTextToAll("%T", "Admin_Say", iClient, iClient);
 	}
 
 	return Plugin_Continue;

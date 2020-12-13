@@ -16,6 +16,8 @@ public Plugin myinfo =
 
 public void OnPluginStart()
 {
+	LoadTranslations("vdm_core.phrases");
+
 	RegConsoleCmd(FUNC_COMMAND, cmd_VoChange);
 
 	if(VDM_GetVersion() < 020000) SetFailState("VDM Core is older to use this module.");
@@ -49,7 +51,7 @@ bool OnItemSelectMenu(int iClient)
 bool OnItemDisplayMenu(int iClient, char[] szDisplay, int iMaxLength)
 {
 	int iMode = VDM_GetVoiceMode();
-	FormatEx(szDisplay, iMaxLength, "Текущий режим [ %i ]", iMode);
+	FormatEx(szDisplay, iMaxLength, "%T", "VDM_CHANGEMODE_Mode", iClient, iMode);
 	return true;
 }
 

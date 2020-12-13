@@ -23,6 +23,8 @@ public Plugin myinfo =
 
 public void OnPluginStart()
 {
+	LoadTranslations("vdm_clutch.phrases");
+
 	if(VDM_GetVersion() < 020000) SetFailState("VDM Core is older to use this module.");
 	if(PTaH_Version() < 101000) SetFailState("PTaH is older to use this module.");
 	
@@ -78,12 +80,12 @@ bool OnItemSelectMenu(int iClient)
 
 	switch(g_iClutchMode[iClient])
 	{
-		case -1: sBuf = "Вы отключили клатч-режим.";
-		case 0: sBuf = "Теперь когда вы останитесь одни, вы не будете слышать других игроков.";
-		case 1: sBuf = "Теперь когда вы останитесь одни, вы не будете слышать мёртвых игроков.";
+		case -1: FormatEx(sBuf, sizeof(sBuf), "%T", "Clutch_Off", iClient);
+		case 0: FormatEx(sBuf, sizeof(sBuf), "%T", "Clutch_On_1", iClient);
+		case 1: FormatEx(sBuf, sizeof(sBuf), "%T", "Clutch_On_2", iClient);
 	}
 
-	CGOPrintToChat(iClient, "{LIGHTGREEN}%s {DEFAULT}%s", g_sPrefix, sBuf);
+	CGOPrintToChat(iClient, "%s %s", g_sPrefix, sBuf);
 
 	return true;
 }
@@ -93,12 +95,12 @@ bool OnItemDisplayMenu(int iClient, char[] szDisplay, int iMaxLength)
 	char sBuf[32];
 	switch(g_iClutchMode[iClient])
 	{
-		case -1: sBuf = "Выключено";
-		case 0: sBuf = "Всех";
-		case 1: sBuf = "Мертвых"
+		case -1: FormatEx(sBuf, sizeof(sBuf), "%T", "Mode_Off", iClient);
+		case 0: FormatEx(sBuf, sizeof(sBuf), "%T", "Mode_All", iClient);
+		case 1: FormatEx(sBuf, sizeof(sBuf), "%T", "Mode_Dead", iClient);
 	}
 
-	FormatEx(szDisplay, iMaxLength, "Режим Clutch [ %s ]", sBuf);
+	FormatEx(szDisplay, iMaxLength, "%T", "Mode", iClient, sBuf);
 	return true;
 }
 
@@ -141,8 +143,8 @@ void SetCluchMode(int iClient)
 
 	for(int i = 1; i <= MaxClients; i++) if(IsClientInGame(i) && !IsFakeClient(i))
 	{
-		if(iClient == i) CGOPrintToChat(i, "{LIGHTGREEN}%s {DEFAULT}Вы остались одни. Теперь Вы не слышите %s игроков", g_sPrefix, g_iClutchMode[iClient] == 1 ? "мертвых" : "всех");
-		else CGOPrintToChat(i, "{LIGHTGREEN}%s {DEFAULT}Игрок %N теперь не слышит %s игроков", g_sPrefix, iClient, g_iClutchMode[iClient] == 1 ? "мертвых" : "всех");
+		if(iClient == i) CGOPrintToChat(i, "%s %t", g_sPrefix, "Clutch_Msg_1", g_iClutchMode[iClient] == 1 ? "Mode_Dead" : "Mode_All");
+		else CGOPrintToChat(i, "%s %t", g_sPrefix, "Clutch_Msg_2", iClient, g_iClutchMode[iClient] == 1 ? "Mode_Dead" : "Mode_All");
 	}
 }
 
