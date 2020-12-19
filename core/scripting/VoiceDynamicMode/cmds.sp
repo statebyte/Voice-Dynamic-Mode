@@ -75,9 +75,23 @@ void ReloadConfig(int iClient)
 
 void ReloadModules(int iClient)
 {
+	if(g_iReloadModules)
+	{
+		int iSize = g_hNameItems.Length;
+		char szBuffer[PLATFORM_MAX_PATH];
+
+		any aArray[6];
+		for(int i; i < iSize; i++)
+		{
+			g_hItems.GetArray(i, aArray, 6);
+			GetPluginFilename(aArray[F_PLUGIN], szBuffer, sizeof(szBuffer));
+			ServerCommand("sm plugins reload %s", szBuffer);
+		}
+	}
+	
 	g_hNameItems.Clear();
 	g_hItems.Clear();
-	
+
 	CallForward_OnCoreIsReady();
 	if(iClient) CGOPrintToChat(iClient, "%s %t", g_sPrefix, "CHAT_MODULES_RELOADED");
 	PrintToServer("[VDM] - Modules reloaded...");

@@ -40,6 +40,8 @@ void LoadConfig()
 
 	g_iDynamicMenu = g_kvConfig.GetNum("menu_dynamic", 2);
 
+	g_iReloadModules = g_kvConfig.GetNum("reload_modules", 1);
+
 	g_bBlockEvents = view_as<bool>(g_kvConfig.GetNum("block_events", 0));
 	g_bHookCvars = view_as<bool>(g_kvConfig.GetNum("hook_events", 0));
 	g_bLogs = view_as<bool>(g_kvConfig.GetNum("logs", 0));

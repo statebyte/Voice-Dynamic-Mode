@@ -53,6 +53,7 @@ int				g_iMode, // Текущий режим
 				g_iDefaultMode, // Стандартный основной режим (изменяется только конфигом)
 				g_iLastMode, // Предыдущий режим
 				g_iChangeDynamicMode,
+				g_iReloadModules,
 				g_iDynamicMenu;
 
 bool			g_bCoreIsLoaded = false,
