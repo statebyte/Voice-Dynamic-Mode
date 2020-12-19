@@ -33,6 +33,11 @@ public void OnClientPutInServer(int iClient)
 	if(g_iTarget == iClient) g_iTarget = -1;
 }
 
+public void OnClientDisconnect(int iClient)
+{
+	if(iClient == g_iTarget) g_iTarget = -1;
+}
+
 public void Event_OnRoundStart(Event hEvent, char[] name, bool dontBroadcast)
 {
 	g_iTarget = -1;
@@ -83,6 +88,7 @@ public Action CVP(int iClient, int iTarget, bool& bListen)
 
 		PrintHintTextToAll("%T", "Admin_Say", iClient, iClient);
 	}
+
 
 	return Plugin_Continue;
 }
