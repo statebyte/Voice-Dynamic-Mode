@@ -52,7 +52,7 @@
 	}
 	"Clutch_Msg_2"
 	{
-		"#format"	"{1:N},{3:t}"
+		"#format"	"{1:N},{2:t}"
 		"en"		"Player {1} can no longer hear {2} players!"
 		"ru"		"Игрок {1} теперь не слышит {2} игроков!"
 		"ua"		"Гравець {1} тепер не чує {2} гравців!"
