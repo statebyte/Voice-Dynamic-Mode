@@ -168,9 +168,12 @@ public void OnPluginStart()
 
 	for(int i = 1; i <= MaxClients; i++) if(IsClientValid(i)) OnClientPutInServer(i);
 
-	CallForward_OnCoreIsReady();
-
 	AddCommandListener(MenuSelectListener, "menuselect");
+}
+
+public void OnAllPluginsLoaded()
+{
+	CallForward_OnCoreIsReady();
 }
 
 /* Фикс для динамичного отображения всех пунктов меню на любой странце меню.

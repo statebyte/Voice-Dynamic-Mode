@@ -51,14 +51,14 @@ void CreateNatives()
 
 void CreateGlobalForwards()
 {
-	g_hGlobalForvard_OnCoreIsReady = new GlobalForward("VDM_OnCoreIsReady", ET_Ignore);
-	g_hGlobalForvard_OnConfigReloaded = new GlobalForward("VDM_OnConfigReloaded", ET_Ignore, Param_Cell);
+	g_hGlobalForvard_OnCoreIsReady = CreateGlobalForward("VDM_OnCoreIsReady", ET_Ignore);
+	g_hGlobalForvard_OnConfigReloaded = CreateGlobalForward("VDM_OnConfigReloaded", ET_Ignore, Param_Cell);
 
-	g_hGlobalForvard_OnSetVoiceModePre = new GlobalForward("VDM_OnSetVoiceModePre", ET_Hook, Param_CellByRef, Param_Cell, Param_String);
-	g_hGlobalForvard_OnSetVoiceModePost = new GlobalForward("VDM_OnSetVoiceModePost", ET_Ignore, Param_Cell, Param_Cell, Param_String);
+	g_hGlobalForvard_OnSetVoiceModePre = CreateGlobalForward("VDM_OnSetVoiceModePre", ET_Hook, Param_CellByRef, Param_Cell, Param_String);
+	g_hGlobalForvard_OnSetVoiceModePost = CreateGlobalForward("VDM_OnSetVoiceModePost", ET_Ignore, Param_Cell, Param_Cell, Param_String);
 
-	g_hGlobalForvard_OnSetPlayerModePre = new GlobalForward("VDM_OnSetPlayerModePre", ET_Hook, Param_Cell, Param_CellByRef, Param_Cell, Param_String);
-	g_hGlobalForvard_OnSetPlayerModePost = new GlobalForward("VDM_OnSetPlayerModePost", ET_Ignore, Param_Cell, Param_Cell, Param_Cell, Param_String);
+	g_hGlobalForvard_OnSetPlayerModePre = CreateGlobalForward("VDM_OnSetPlayerModePre", ET_Hook, Param_Cell, Param_CellByRef, Param_Cell, Param_String);
+	g_hGlobalForvard_OnSetPlayerModePost = CreateGlobalForward("VDM_OnSetPlayerModePost", ET_Ignore, Param_Cell, Param_Cell, Param_Cell, Param_String);
 }
 
 int Native_GetConfig(Handle hPlugin, int numParams)
