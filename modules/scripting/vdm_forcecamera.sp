@@ -5,15 +5,16 @@
 #define FUNC_PRIORITY   10
 #define MESSAGE 		"{GREEN}[VDM] {DEFAULT}Режим Force Camera %s!"
 
-ConVar 		g_hCvar;
-int         g_iForceCameraMode,
-			g_iForceCameraQuota;
-bool        g_bForceCameraEnabled;
+ConVar		g_hCvar;
+int			g_iForceCameraQuota;
+
+bool		g_bForceCameraDefault,
+			g_bForceCamera;
 
 public Plugin myinfo =
 {
 	name		=	"[VDM] Force Camera",
-	version		=	"1.0",
+	version		=	"1.0.1",
 	author		=	"FIVE",
 	url			=	"Source: http://hlmod.ru | Support: https://discord.gg/ajW69wN"
 };
@@ -24,7 +25,7 @@ public void OnPluginStart()
 	
 	g_hCvar = FindConVar("mp_forcecamera");
 	HookEvent("round_start", Event_OnRoundStart, EventHookMode_PostNoCopy);
-	HookEvent("round_end", Event_OnRoundEnd, EventHookMode_PostNoCopy);
+	HookEvent("round_end", Event_OnRoundEnd, EventHookMode_Pre);
 
 	if(VDM_CoreIsLoaded()) VDM_OnCoreIsReady();
 }
@@ -47,20 +48,19 @@ public void VDM_OnCoreIsReady()
 public void VDM_OnConfigReloaded(KeyValues kv)
 {
 	GetSettings(kv);
-	SetForceCamera(view_as<int>(g_bForceCameraEnabled));
+	CheckPlayer();
 }
 
 bool OnItemSelectMenu(int iClient)
 {
-	g_bForceCameraEnabled = !g_bForceCameraEnabled;
-	SetForceCamera(view_as<int>(g_bForceCameraEnabled));
-	CGOPrintToChatAll(MESSAGE, g_bForceCameraEnabled ? "включён" : "выключен");
+	SetForceCamera(!g_bForceCamera);
+	CGOPrintToChatAll(MESSAGE, g_bForceCamera ? "включён" : "выключен");
 	return true;
 }
 
 bool OnItemDisplayMenu(int iClient, char[] szDisplay, int iMaxLength)
 {
-	FormatEx(szDisplay, iMaxLength, "Режим ForceCamera [ %s ]", g_bForceCameraEnabled ? "Вкл" : "Выкл");
+	FormatEx(szDisplay, iMaxLength, "Режим ForceCamera [ %s ]", g_bForceCamera ? "Вкл" : "Выкл");
 	return true;
 }
 
@@ -71,25 +71,33 @@ int OnItemDrawMenu(int iClient, int iStyle)
 
 public void Event_OnRoundStart(Event hEvent, char[] name, bool dontBroadcast)
 {
-	int iCount;
-	for(int i = 1; i <= MaxClients; i++) if(IsClientInGame(i) && !IsFakeClient(i)) iCount++;
+	CheckPlayer();
+}
 
-	if(g_iForceCameraQuota >= iCount) SetForceCamera(g_iForceCameraMode);
-	else SetForceCamera(!g_iForceCameraMode);
+void CheckPlayer()
+{
+	int iCount;
+	for(int i = 1; i <= MaxClients; i++) if(IsClientInGame(i) && !IsFakeClient(i) && GetClientTeam(i) > 1) iCount++;
+
+	if(iCount >= g_iForceCameraQuota) SetForceCamera(g_bForceCameraDefault);
+	else SetForceCamera(!g_bForceCameraDefault);
 }
 
 public void Event_OnRoundEnd(Event hEvent, char[] name, bool dontBroadcast) 
 { 
-	SetForceCamera(0);
+	// Фикс, чтобы игроки могли следить за всеми в конце раунда...
+	SetForceCamera(false);
 }
 
-void SetForceCamera(int iValue)
+void SetForceCamera(bool bState)
 {
-	if(g_bForceCameraEnabled) g_hCvar.SetInt(iValue);
+	int iValue = view_as<int>(bState);
+	g_bForceCamera = bState;
+	g_hCvar.SetInt(iValue);
 }
 
 void GetSettings(KeyValues kv)
 {
-	g_iForceCameraMode = kv.GetNum("m_forcecamera", 1);
+	g_bForceCameraDefault = view_as<bool>(kv.GetNum("m_forcecamera", 1));
 	g_iForceCameraQuota = kv.GetNum("m_forcecamera_quota", 8);
 }
