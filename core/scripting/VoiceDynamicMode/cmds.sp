@@ -2,6 +2,8 @@ Action cmd_Voice(int iClient, int iArgs)
 {
 	if(!iClient) return;
 	OpenMenu(iClient, MENUTYPE_MAINMENU);
+
+	return Plugin_Handled;
 }
 
 Action cmd_Admin(int iClient, int iArgs)
@@ -13,12 +15,16 @@ Action cmd_Admin(int iClient, int iArgs)
 		return;
 	}
 	OpenMenu(iClient, MENUTYPE_ADMINMENU);
+
+	return Plugin_Handled;
 }
 
 Action cmd_Reload(int iClient, int iArgs)
 {
 	ReloadConfig(iClient);
 	ReloadModules(iClient);
+
+	return Plugin_Handled;
 }
 
 Action cmd_Dump(int iClient, int iArgs)

@@ -192,7 +192,6 @@ Action MenuSelectListener(int iClient, char[] cmd, int argc)
 			case '7': 
 			{
 				if(Players[iClient].iMenuPage > 0) Players[iClient].iMenuPage -= 6;
-				else Players[iClient].iMenuPage = 0;
 			}
 			case '8': Players[iClient].iMenuPage += 6;
 		}
@@ -287,7 +286,10 @@ void SetPlayerMode(int iClient, int iMode)
 			case 0: SetClientListeningFlags(iClient, VOICE_NORMAL);     // Стандартный режим
 			case 1: SetClientListeningFlags(iClient, VOICE_LISTENALL); // Режим прослушивания
 			case 2: SetClientListeningFlags(iClient, VOICE_SPEAKALL); // Режим разговора
-			case 3: SetClientListeningFlags(iClient, VOICE_LISTENALL | VOICE_SPEAKALL); // Режим общего голосового чата
+			case 3: SetClientListeningFlags(iClient, VOICE_TEAM); // Режим прослушивания только команды
+			case 4: SetClientListeningFlags(iClient, VOICE_LISTENTEAM); // Режим разговора только c командой
+			case 5: SetClientListeningFlags(iClient, VOICE_TEAM | VOICE_LISTENTEAM); // Режим голосового чата только с командой
+			case 6: SetClientListeningFlags(iClient, VOICE_LISTENALL | VOICE_SPEAKALL); // Режим общего голосового чата
 		}
 
 		Players[iClient].iPlayerMode = iMode;
@@ -359,7 +361,7 @@ bool CheckPlayerListenStatus(int iClient, int iTarget = 0)
 	if(iClient == iTarget || !IsClientValid(iTarget) || !IsClientValid(iClient)) return false;
 
 	// Проверка на отключение голосового чата (или нахождение в другом канале)
-	if(Players[iClient].iPlayerMode == -1 && Players[iClient].iPlayerMode != Players[iTarget].iPlayerMode) return false;
+	if(Players[iClient].iPlayerMode == -1) return false;
 
 	if(IsClientMuted(iClient, iTarget)) return false;
 	
