@@ -68,18 +68,21 @@ void RegConsoleCmds()
 	char szBuffer[256], szCommands[16][16];
 	int iSize;
 	g_kvConfig.GetString("commands", szBuffer, sizeof szBuffer);
-	iSize = ExplodeString(szBuffer, ";", szCommands, sizeof szCommands, sizeof szCommands[]);
-
-	for(int i; i <= iSize; i++)
+	
+	if(szBuffer[0])
 	{
-		RegConsoleCmd(szCommands[i], cmd_Voice);
+		iSize = ExplodeString(szBuffer, ";", szCommands, sizeof szCommands, sizeof szCommands[]);
+		for(int i; i <= iSize; i++)
+		{
+			RegConsoleCmd(szCommands[i], cmd_Voice);
+		}
 	}
 
 	g_kvConfig.GetString("admin_commands", szBuffer, sizeof szBuffer);
-	iSize = ExplodeString(szBuffer, ";", szCommands, sizeof szCommands, sizeof szCommands[]);
-
+	
 	if(szBuffer[0])
 	{
+		iSize = ExplodeString(szBuffer, ";", szCommands, sizeof szCommands, sizeof szCommands[]);
 		for(int i; i <= iSize; i++)
 		{
 			RegConsoleCmd(szCommands[i], cmd_Admin);
