@@ -8,7 +8,8 @@
 ConVar 	g_hCvar;
 bool 	g_bClientEnable[MAXPLAYERS+1], 
 		g_bHookMsg[MAXPLAYERS+1], 
-		g_bMode[MAXPLAYERS+1];
+		g_bMode[MAXPLAYERS+1],
+		g_bDistanceEnabled;
 int		g_iDistance = 1000;
 
 public Plugin myinfo =
@@ -292,5 +293,9 @@ bool ClientVoiceProximity(int iClient, int iSet = -1)
 
 void GetSettings(KeyValues kv)
 {
+	g_bDistanceEnabled = view_as<bool>(kv.GetNum("m_distance_enabled", 1));
 	g_iDistance = kv.GetNum("m_distance", 1000);
+
+	if(g_bDistanceEnabled) GlobalVoiceProximity(g_iDistance);
+	else GlobalVoiceProximity(0);
 }
