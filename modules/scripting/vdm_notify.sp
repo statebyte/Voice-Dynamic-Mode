@@ -24,7 +24,26 @@ public void VDM_OnCoreIsReady()
 
 public void VDM_OnSetVoiceModePost(int iMode, int iPluginPriority, char[] szFeature)
 {
-    if(!strcmp(szFeature, "round_start")) CGOPrintToChatAll("%s %t", g_sPrefix, "Voice_Default");
-	else if(TranslationPhraseExists(szFeature)) CGOPrintToChatAll("%s %t", g_sPrefix, szFeature);
-	else CGOPrintToChatAll("%s %t", g_sPrefix, "Voice_Set", iMode, szFeature);
+	char sBuf[2][4];
+
+	IntToString(iMode, sBuf[0], sizeof(sBuf[]));
+	IntToString(iPluginPriority, sBuf[1], sizeof(sBuf[]));
+	
+	if(TranslationPhraseExists(szFeature)) NotifyAll(szFeature, sBuf[0], sBuf[1]);
+	else if(TranslationPhraseExists("default"))  NotifyAll("default", sBuf[0], sBuf[1]);
+}
+
+void NotifyAll(char[] szFeature, char[] sMode, char[] sPluginPriority)
+{
+	char szBuffer[256];
+	for(int i = 1; i <= MaxClients; i++) if(IsClientInGame(i) && !IsFakeClient(i))
+	{
+		SetGlobalTransTarget(i);
+		FormatEx(szBuffer, sizeof(szBuffer), "%t", szFeature);
+		ReplaceString(szBuffer, sizeof(szBuffer), "{FUNC}", szFeature);
+		ReplaceString(szBuffer, sizeof(szBuffer), "{MODE}", sMode);
+		ReplaceString(szBuffer, sizeof(szBuffer), "{PRIORITY}", sPluginPriority);
+
+		CGOPrintToChat(i, "%s %s", g_sPrefix, szBuffer);
+	}
 }

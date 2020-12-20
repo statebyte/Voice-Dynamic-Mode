@@ -1,4 +1,5 @@
 #include <vdm_core>
+#include <csgo_colors>
 
 #define FUNC_NAME       "changemode"
 #define FUNC_NAMETWO    "change_main_mode"
@@ -39,12 +40,14 @@ public void VDM_OnCoreIsReady()
 
 Action cmd_VoChange(int iClient, int iArgs)
 {
-	ChangeMode();
+	ChangeMode(iClient);
+
+	return Plugin_Handled
 }
 
 bool OnItemSelectMenu(int iClient)
 {
-	ChangeMode();
+	ChangeMode(iClient);
 	return true;
 }
 
@@ -60,7 +63,7 @@ int OnItemDrawMenu(int iClient, int iStyle)
 	return ITEMDRAW_DEFAULT;
 }
 
-void ChangeMode(int iModeType = 0)
+void ChangeMode(int iClient, int iModeType = 0)
 {
 	int iMode = VDM_GetVoiceMode();
 
@@ -71,5 +74,27 @@ void ChangeMode(int iModeType = 0)
 		VDM_SetVoiceMode(iMode, iModeType);
 	}
 
-	
+	Notify(iClient);
+}
+
+void Notify(int iClient)
+{
+	char szBuffer[256];
+
+	SetGlobalTransTarget(iClient);
+
+	switch(VDM_GetVoiceMode())
+	{
+		case VMODE_NOVOICE: 						FormatEx(szBuffer, sizeof(szBuffer), "%t", "Noone");
+		case VMODE_ALIVE_OR_DEAD_TEAM: 				FormatEx(szBuffer, sizeof(szBuffer), "ALIVE: %t\nDEAD: %t", "YH_1_2A", "YH_1_3");
+		case VMODE_ALIVE_OR_DEAD_ENEMY: 			FormatEx(szBuffer, sizeof(szBuffer), "ALIVE: %t\nDEAD: %t", "YH_1_2A", "YH_2");
+		case VMODE_TEAM_ONLY: 						FormatEx(szBuffer, sizeof(szBuffer), "ALIVE: %t\nDEAD: %t", "YH_3_4A", "YH_1_3");
+		case VMODE_ALIVE_ONLY: 						FormatEx(szBuffer, sizeof(szBuffer), "ALIVE: %t\nDEAD: %t", "YH_3_4A", "YH_4_5");
+		case VMODE_ALIVE_DEAD_WITH_ENEMY: 			FormatEx(szBuffer, sizeof(szBuffer), "ALIVE: %t\nDEAD: %t", "YH_5_6A", "YH_4_5");
+		case VMODE_ALIVE_OR_DEAD_TEAM_WITH_ENEMY: 	FormatEx(szBuffer, sizeof(szBuffer), "ALIVE: %t\nDEAD: %t", "YH_5_6A", "YH_6");
+		case VMODE_ALLTALK: 						FormatEx(szBuffer, sizeof(szBuffer), "%t", "YH_7");
+		case VMODE_FULL_ALLTALK: 					FormatEx(szBuffer, sizeof(szBuffer), "%t", "YH_8");
+	}
+
+	CGOPrintToChat(iClient, szBuffer);
 }
