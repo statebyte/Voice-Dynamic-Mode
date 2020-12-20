@@ -1,6 +1,6 @@
 Action cmd_Voice(int iClient, int iArgs)
 {
-	if(!iClient) return;
+	if(!iClient) return Plugin_Handled;
 	OpenMenu(iClient, MENUTYPE_MAINMENU);
 
 	return Plugin_Handled;
@@ -8,11 +8,11 @@ Action cmd_Voice(int iClient, int iArgs)
 
 Action cmd_Admin(int iClient, int iArgs)
 {
-	if(!iClient) return;
+	if(!iClient) return Plugin_Handled;
 	if(!CheckAdminAccess(iClient))
 	{
 		CGOPrintToChat(iClient, "%s %T", g_sPrefix, "NO_ACCESS", iClient);
-		return;
+		return Plugin_Handled;
 	}
 	OpenMenu(iClient, MENUTYPE_ADMINMENU);
 
