@@ -29,7 +29,7 @@
 #define			DEBUG_MODE 			0
 
 #define			MAX_MODES           8
-#define			MAX_PLAYERMODES     4
+#define			MAX_PLAYERMODES     6
 #define			PATH_TO_CONFIG      "configs/vdm_config.ini"
 #define			PATH_TO_SORTMENU    "configs/vdm_sortmenu.ini"
 #define			PATH_TO_LOGS        "logs/vdm_core.log"
@@ -274,7 +274,7 @@ void SetPlayerMode(int iClient, int iMode)
 	if(IsClientValid(iClient))
 	{
 		if(iMode < -1) iMode = -1;
-		if(iMode > 3) iMode = 3;
+		if(iMode > MAX_PLAYERMODES) iMode = MAX_PLAYERMODES;
 
 		switch(iMode)
 		{
