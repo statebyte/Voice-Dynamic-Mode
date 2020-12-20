@@ -14,10 +14,18 @@ void OpenMenu(int iClient, FeatureMenus eMenuType = MENUTYPE_MAINMENU, int iPage
 		case MENUTYPE_SPEAKLIST:		ShowSpeakList(iClient);
 		case MENUTYPE_LISTININGLIST:	ShowListningList(iClient);
 	}
-	Players[iClient].bMenuIsOpen = true;
+	//Players[iClient].bMenuIsOpen = true;
 	Players[iClient].iMenuType = view_as<int>(eMenuType);
 	Players[iClient].bLastAdminMenu = bLastAdminMenu;
 	Players[iClient].iMenuPage = iPage;
+
+	RequestFrame(FixMenuBack, iClient);
+}
+
+// Фиксит menuselect так как вызов нового меню происходит быстрее...
+void FixMenuBack(int iClient)
+{
+	Players[iClient].bMenuIsOpen = true;
 }
 
 public void OnLibraryRemoved(const char[] szName)
