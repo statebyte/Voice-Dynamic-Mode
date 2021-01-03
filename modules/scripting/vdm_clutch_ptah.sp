@@ -137,7 +137,7 @@ public Action Event_OnPlayerDeath(Event hEvent, char[] name, bool dontBroadcast)
 
 void SetCluchMode(int iClient)
 {
-	if(g_iClutchMode[iClient] == -1) return;
+	if(g_iClutchMode[iClient] == -1 || g_bClutchModeActive[iClient]) return;
 
 	g_bClutchModeActive[iClient] = true;
 
