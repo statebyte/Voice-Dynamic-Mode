@@ -11,8 +11,8 @@ void OpenMenu(int iClient, FeatureMenus eMenuType = MENUTYPE_MAINMENU, int iPage
 		case MENUTYPE_MAINMENU:			ShowMainMenu(iClient);
 		case MENUTYPE_SETTINGSMENU:		ShowSettingsMenu(iClient, iPage);
 		case MENUTYPE_ADMINMENU:		ShowAdminMenu(iClient, iPage);
-		case MENUTYPE_SPEAKLIST:		ShowSpeakList(iClient);
-		case MENUTYPE_LISTININGLIST:	ShowListningList(iClient);
+		case MENUTYPE_SPEAKLIST:		ShowSpeakList(iClient, iPage);
+		case MENUTYPE_LISTININGLIST:	ShowListningList(iClient, iPage);
 	}
 	//Players[iClient].bMenuIsOpen = true;
 	Players[iClient].iMenuType = view_as<int>(eMenuType);
@@ -277,7 +277,7 @@ int Handler_SettingsMenu(Menu hMenu, MenuAction action, int iClient, int iItem)
 	return FeatureHandler(hMenu, action, iClient, iItem, MENUTYPE_SETTINGSMENU);
 }
 
-void ShowListningList(int iClient)
+void ShowListningList(int iClient, int iPage = 0)
 {
 	Menu hMenu = new Menu(Handler_ListningListMenu);
 	SetGlobalTransTarget(iClient);
@@ -304,7 +304,7 @@ void ShowListningList(int iClient)
 
 	hMenu.ExitButton = true;
 	hMenu.ExitBackButton = true;
-	hMenu.Display(iClient, MENU_TIME_FOREVER);
+	hMenu.DisplayAt(iClient, iPage, MENU_TIME_FOREVER);
 }
 
 int Handler_ListningListMenu(Menu hMenu, MenuAction action, int iClient, int iItem)
@@ -323,7 +323,7 @@ int Handler_ListningListMenu(Menu hMenu, MenuAction action, int iClient, int iIt
 	}
 }
 
-void ShowSpeakList(int iClient)
+void ShowSpeakList(int iClient, int iPage = 0)
 {
 	Menu hMenu = new Menu(Handler_SpeakListMenu);
 	SetGlobalTransTarget(iClient);
@@ -350,7 +350,7 @@ void ShowSpeakList(int iClient)
 
 	hMenu.ExitButton = true;
 	hMenu.ExitBackButton = true;
-	hMenu.Display(iClient, MENU_TIME_FOREVER);
+	hMenu.DisplayAt(iClient, iPage, MENU_TIME_FOREVER);
 }
 
 int Handler_SpeakListMenu(Menu hMenu, MenuAction action, int iClient, int iItem)

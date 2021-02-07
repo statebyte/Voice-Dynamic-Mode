@@ -26,7 +26,8 @@ static Handle		g_hGlobalForvard_OnCoreIsReady,
 					g_hGlobalForvard_OnSetVoiceModePost,
 					g_hGlobalForvard_OnSetPlayerModePre,
 					g_hGlobalForvard_OnSetPlayerModePost,
-					g_hGlobalForvard_OnConfigReloaded;
+					g_hGlobalForvard_OnConfigReloaded,
+					g_hGlobalForvard_OnCheckPlayerListenStatusPre;
 
 void CreateNatives()
 {
@@ -59,6 +60,8 @@ void CreateGlobalForwards()
 
 	g_hGlobalForvard_OnSetPlayerModePre = CreateGlobalForward("VDM_OnSetPlayerModePre", ET_Hook, Param_Cell, Param_CellByRef, Param_Cell, Param_String);
 	g_hGlobalForvard_OnSetPlayerModePost = CreateGlobalForward("VDM_OnSetPlayerModePost", ET_Ignore, Param_Cell, Param_Cell, Param_Cell, Param_String);
+
+	g_hGlobalForvard_OnCheckPlayerListenStatusPre = CreateGlobalForward("VDM_OnCheckPlayerListenStatusPre", ET_Ignore, Param_Cell, Param_Cell, Param_CellByRef);
 }
 
 int Native_GetConfig(Handle hPlugin, int numParams)
@@ -363,6 +366,17 @@ Action CallForward_OnSetPlayerModePre(int iClient, int& iMode, int iPluginPriori
 	Call_PushCellRef(iMode);
 	Call_PushCell(iPluginPriority);
 	Call_PushString(szFeature);
+	Call_Finish();
+	return Result;
+}
+
+Action CallForward_CheckPlayerListenStatusPre(int iClient, int iTarget, bool& bListen)
+{
+	Action Result = Plugin_Continue;
+	Call_StartForward(g_hGlobalForvard_OnCheckPlayerListenStatusPre);
+	Call_PushCell(iClient);
+	Call_PushCell(iTarget);
+	Call_PushCellRef(bListen);
 	Call_Finish();
 	return Result;
 }

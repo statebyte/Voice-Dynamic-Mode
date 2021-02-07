@@ -254,7 +254,7 @@ forward void VDM_OnCoreIsReady();
 */
 forward void VDM_OnConfigReloaded(KeyValues g_hConfig);
 
-/** Вызывается при установке голосового режима сервера
+/** Вызывается перед установкой голосового режима сервера
 *
 * @param iMode				Индекс режима
 * @param iPluginPriority	Приоритет плагина, устанавливающий режим.
@@ -276,7 +276,7 @@ forward Action VDM_OnSetVoiceModePre(int& iMode, int iPluginPriority, char[] szF
 */
 forward void VDM_OnSetVoiceModePost(int iMode, int iPluginPriority, char[] szFeature);
 
-/** Вызывается при установке голосового режима игроку
+/** Вызывается перед установкой голосового режима игроку
 *
 * @param iClient			Индекс игрока
 * @param iMode				Индекс режима
@@ -299,3 +299,17 @@ forward Action VDM_OnSetPlayerModePre(int iClient, int& iMode, int iPluginPriori
 * @noreturn
 */
 forward void VDM_OnSetPlayerModePost(int iClient, int iMode, int iPluginPriority, char[] szFeature);
+
+/** Вызывается при проверке, слышыт ли игрок А игрока B
+*
+* @param iClient			Индекс игрока A
+* @param iTarget			Индекс игрока B
+*
+* @param bListen			true - iClient слышыт iTarget
+*							false - iClient не слышыт iTarget
+*							Модули могут изменять данный параметр,
+*							но это повлияет на работу как и ядра, так и на другие модули...
+*
+* @noreturn
+*/
+forward Action VDM_OnCheckPlayerListenStatusPre(int iClient, int iTarget, bool& bListen);

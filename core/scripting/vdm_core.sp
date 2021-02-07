@@ -2,6 +2,7 @@
 #pragma newdecls required
 
 #include <sourcemod>
+#include <cstrike>
 #include <sdktools>
 #include <csgo_colors>
 #undef REQUIRE_PLUGIN
@@ -296,78 +297,73 @@ void SetPlayerMode(int iClient, int iMode)
 	}
 }
 
-/*
 // Проверка зависимости голосового чата между двумя игроками в данный момент.
 // Чтобы проверить что игрок слышит другого или поменять их местами чтобы увидить, кто тебя слышыт :)
 // true - iClient слышыт iTarget
 // false - iClient не слышыт iTarget
 bool CheckPlayerListenStatus(int iClient, int iTarget = 0)
 {
-	if(!IsClientValid(iTarget) || !IsClientValid(iClient)) return false;
+	bool bListen = true;
 	
-	int iTeam = GetClientTeam(iClient),
-		iTeam2 = GetClientTeam(iTarget);
+	if(iClient == iTarget || !IsClientValid(iTarget) || !IsClientValid(iClient)) 
+	{
+		return false;
+	}
 
 	// Проверка на отключение голосового чата
-	if(Players[iClient].iPlayerMode == -1) return false;
+	if(Players[iClient].iPlayerMode == -1) bListen = false;
 	// Проверка на режим разговора
-	if(Players[iTarget].iPlayerMode >= 2) return true;
+	if(Players[iTarget].iPlayerMode >= 2) bListen = true;
 	// Проверка на прослушывание
-	if(Players[iClient].iPlayerMode == 1 || Players[iClient].iPlayerMode == 3) return true;
+	if(Players[iClient].iPlayerMode == 1 || Players[iClient].iPlayerMode == 3) bListen = true;
+
+	// Проверка на отключение голосового чата (или нахождение в другом канале)
+	if(Players[iClient].iPlayerMode == -1) bListen = false;
+
+	if(IsClientMuted(iClient, iTarget)) bListen = false;
+	
+	if(GetListenOverride(iClient, iTarget) == Listen_No) bListen = false;
+
+	int iTeam = GetClientTeam(iClient),
+		iTeam2 = GetClientTeam(iTarget);
 
 	// Проверка по режимам
 	switch(g_iMode)
 	{
 		case 0: 
 		{
-			return false;
+			bListen = false;
 		}
 		case 1:
 		{
 			if(iTeam == iTeam2)
 			{
-				if(IsPlayerAlive(iClient) && !IsPlayerAlive(iTarget)) return false;
+				if(IsPlayerAlive(iClient) && !IsPlayerAlive(iTarget)) bListen = false;
 			}
-			else return false;
+			else bListen = false;
 		}
+		case 3: if(iTeam != iTeam2) bListen = false;
 		case 2, 4: 
 		{
 			if(iTeam != iTeam2)
 			{
-				if(IsPlayerAlive(iClient) && !IsPlayerAlive(iTarget)) return false;
+				if(IsPlayerAlive(iClient) && !IsPlayerAlive(iTarget)) bListen = false;
 			}
 		}
 		case 6:
 		{
-			if(IsPlayerAlive(iClient) != IsPlayerAlive(iTarget)) return false;
+			if(IsPlayerAlive(iClient) != IsPlayerAlive(iTarget)) bListen = false;
 		}
 		case 7:
 		{
-			if(iTeam2 == CS_TEAM_SPECTATOR) return false;
+			if(iTeam2 == CS_TEAM_SPECTATOR) bListen = false;
 		}
 		// 8 - тут всё ясно)
 	}
 
-	return true;
-}
-*/
+	CallForward_CheckPlayerListenStatusPre(iClient, iTarget, bListen);
 
-// Проверка зависимости голосового чата между двумя игроками в данный момент.
-// Чтобы проверить что игрок слышит другого или поменять их местами чтобы увидить, кто тебя слышыт :)
-// true - iClient слышыт iTarget
-// false - iClient не слышыт iTarget
-bool CheckPlayerListenStatus(int iClient, int iTarget = 0)
-{
-	if(iClient == iTarget || !IsClientValid(iTarget) || !IsClientValid(iClient)) return false;
-
-	// Проверка на отключение голосового чата (или нахождение в другом канале)
-	if(Players[iClient].iPlayerMode == -1) return false;
-
-	if(IsClientMuted(iClient, iTarget)) return false;
-	
-	if(GetListenOverride(iClient, iTarget) == Listen_No) return false;
-
-	return true;
+	return bListen;
 }
 
 void SetMode(int iMode)
