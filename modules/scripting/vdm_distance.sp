@@ -1,5 +1,6 @@
 #include <vdm_core>
 #include <csgo_colors>
+#include <sdktools_engine>
 
 #define FUNC_NAME       "distance"
 #define CLIENTFUNC_NAME "distance_client"
@@ -34,6 +35,32 @@ public void OnPluginStart()
 	AddCommandListener(Command_Say, "say_team");
 
 	RegConsoleCmd("sm_vo_debugde", cmd_Com);
+}
+
+public Action VDM_OnCheckPlayerListenStatusPre(int iClient, int iTarget, bool& bListen)
+{
+	float fDistance = float(g_iDistance);
+	if(IsPlayerAlive(iClient) && IsPlayerAlive(iTarget) && GlobalVoiceProximity() && GetDistance(iClient, iTarget) > fDistance) 
+	{
+		//PrintToChatAll("%N не слышыт %N (%f)", iClient, iTarget, GetDistance(iClient, iTarget));
+		bListen = false;
+	}
+}
+
+stock float GetDistance(int client, int target, bool eye = false)
+{
+	static float pos1[3], pos2[3];
+	if(eye)
+	{
+		GetClientEyePosition(client, pos1);
+		GetClientEyePosition(target, pos2);
+	}
+	else
+	{
+		GetClientAbsOrigin(client, pos1);
+		GetClientAbsOrigin(target, pos2);
+	}
+	return GetVectorDistance(pos1, pos2);
 }
 
 Action Command_Say(int iClient, const char[] sCommand, int iArgs)
