@@ -156,6 +156,8 @@ public void Event_OnRoundEnd(Event hEvent, char[] name, bool dontBroadcast)
 public Action CVP(int iClient, int iTarget, bool& bListen)
 {
 	if(!IsClientInGame(iClient) || !IsClientInGame(iTarget)) return Plugin_Continue;
+
+	bListen = VDM_GetPlayerListenStatus(iClient, iTarget);
 	
 	//PrintHintText(iTarget, "--- Вы слушаете: %N", iClient);
 

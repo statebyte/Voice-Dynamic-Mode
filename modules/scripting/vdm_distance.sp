@@ -39,11 +39,11 @@ public void OnPluginStart()
 
 public Action VDM_OnCheckPlayerListenStatusPre(int iClient, int iTarget, bool& bListen)
 {
-	float fDistance = float(g_iDistance);
-	if(IsPlayerAlive(iClient) && IsPlayerAlive(iTarget) && GlobalVoiceProximity() && GetDistance(iClient, iTarget) > fDistance) 
+	if(IsPlayerAlive(iClient) && IsPlayerAlive(iTarget) && GetDistance(iClient, iTarget) >= float(g_iDistance)) 
 	{
 		//PrintToChatAll("%N не слышыт %N (%f)", iClient, iTarget, GetDistance(iClient, iTarget));
-		bListen = false;
+		if(GlobalVoiceProximity()) bListen = false;
+		if(ClientVoiceProximity(iClient)) bListen = false;
 	}
 }
 

@@ -81,6 +81,7 @@ int OnItemDrawMenu(int iClient, int iStyle)
 
 public Action CVP(int iClient, int iTarget, bool& bListen)
 {
+	bListen = VDM_GetPlayerListenStatus(iClient, iTarget);
 	if(g_iTarget != -1)
 	{
 		if(!IsClientInGame(iClient) || !IsClientInGame(iTarget)) return Plugin_Continue;

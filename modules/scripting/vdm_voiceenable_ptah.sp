@@ -78,6 +78,7 @@ public void Event_OnRoundStart(Event hEvent, char[] name, bool dontBroadcast)
 public Action CVP(int iClient, int iTarget, bool& bListen)
 {
 	if(!IsClientInGame(iClient) || !IsClientInGame(iTarget)) return Plugin_Continue;
+	bListen = VDM_GetPlayerListenStatus(iClient, iTarget);
 	if(g_bVoiceDisable[iTarget]) return Plugin_Handled;
 
 	return Plugin_Continue;
