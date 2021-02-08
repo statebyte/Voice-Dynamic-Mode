@@ -288,7 +288,7 @@ void ShowListningList(int iClient, int iPage = 0)
 
 	for(int i = 1; i <= MaxClients; i++)
 	{
-		if(CheckPlayerListenStatus(i, iClient))
+		if(CheckPlayerListenStatus(iClient, i))
 		{
 			FormatEx(szBuffer, sizeof szBuffer, "%N", i);
 			hMenu.AddItem(NULL_STRING, szBuffer, ITEMDRAW_DISABLED);
@@ -334,7 +334,7 @@ void ShowSpeakList(int iClient, int iPage = 0)
 
 	for(int i = 1; i <= MaxClients; i++)
 	{
-		if(CheckPlayerListenStatus(iClient, i))
+		if(CheckPlayerListenStatus(i, iClient))
 		{
 			FormatEx(szBuffer, sizeof szBuffer, "%N", i);
 			hMenu.AddItem(NULL_STRING, szBuffer, ITEMDRAW_DISABLED);

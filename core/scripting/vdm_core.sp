@@ -45,7 +45,7 @@ ConVar			g_hCvar1,
 				g_hCvar6,
 				g_hCvar7;
 
-TopMenu     	g_hTopMenu = null;
+TopMenu			g_hTopMenu = null;
 ArrayList		g_hItems, g_hNameItems, g_hSortItems;
 KeyValues		g_kvConfig;
 
@@ -91,13 +91,13 @@ enum FeatureMenus
 
 enum struct Player
 {
-	int 	iClient;
-	int 	iPlayerMode;
-	int 	iLastPlayerMode;
+	int		iClient;
+	int		iPlayerMode;
+	int		iLastPlayerMode;
 
-	bool 	bMenuIsOpen;
+	bool	bMenuIsOpen;
 	bool	bLastAdminMenu;
-	int 	iMenuType;
+	int		iMenuType;
 	int		iMenuPage;
 
 	bool MenuIsOpen()
@@ -310,12 +310,61 @@ bool CheckPlayerListenStatus(int iClient, int iTarget = 0)
 		return false;
 	}
 
-	// Проверка на отключение голосового чата
-	if(Players[iClient].iPlayerMode == -1) bListen = false;
-	// Проверка на режим разговора
-	if(Players[iTarget].iPlayerMode >= 2) bListen = true;
-	// Проверка на прослушывание
-	if(Players[iClient].iPlayerMode == 1 || Players[iClient].iPlayerMode == 3) bListen = true;
+	int iTeam = GetClientTeam(iClient),
+		iTeam2 = GetClientTeam(iTarget);
+
+	// Проверка по режимам
+	switch(g_iMode)
+	{
+		case 0: bListen = false;
+		case 1:
+		{
+			bListen = false;
+			
+			if(iTeam2 != CS_TEAM_SPECTATOR)
+			{
+				if(iTeam == iTeam2 && ((IsPlayerAlive(iClient) && IsPlayerAlive(iTarget)) || (!IsPlayerAlive(iClient) && !IsPlayerAlive(iTarget)))) bListen = true;
+			} 
+		}
+		case 2: 
+		{
+			bListen = false;
+			if(iTeam2 != CS_TEAM_SPECTATOR)
+			{
+				if(iTeam == iTeam2 && IsPlayerAlive(iClient) && IsPlayerAlive(iTarget)) bListen = true;
+				if(!IsPlayerAlive(iClient)) bListen = true;
+			}
+		}
+		case 3: if(iTeam != iTeam2) bListen = false;
+		case 4: 
+		{
+			bListen = false;
+			if(iTeam2 != CS_TEAM_SPECTATOR)
+			{
+				if(IsPlayerAlive(iClient) && iTeam == iTeam2) bListen = true;
+				if(!IsPlayerAlive(iClient))
+				{
+					bListen = true;
+					if(IsPlayerAlive(iTarget) && iTeam != iTeam2) bListen = false;
+				}
+			}
+		}
+		case 5:
+		{
+			bListen = false;
+			if(iTeam2 != CS_TEAM_SPECTATOR )
+			{
+				if(IsPlayerAlive(iClient) && !IsPlayerAlive(iTarget)) bListen = true;
+				if(!IsPlayerAlive(iClient) && !IsPlayerAlive(iTarget) && iTeam == iTeam2) bListen = true;
+			} 
+		}
+		case 6: if(iTeam2 == CS_TEAM_SPECTATOR || (IsPlayerAlive(iClient) && !IsPlayerAlive(iTarget))) bListen = false;
+		case 7: 
+		{
+			if(iTeam2 == CS_TEAM_SPECTATOR) bListen = false;
+		}
+		// case 8: bListen = true; - тут всё ясно)
+	}
 
 	// Проверка на отключение голосового чата (или нахождение в другом канале)
 	if(Players[iClient].iPlayerMode == -1) bListen = false;
@@ -323,43 +372,6 @@ bool CheckPlayerListenStatus(int iClient, int iTarget = 0)
 	if(IsClientMuted(iClient, iTarget)) bListen = false;
 	
 	if(GetListenOverride(iClient, iTarget) == Listen_No) bListen = false;
-
-	int iTeam = GetClientTeam(iClient),
-		iTeam2 = GetClientTeam(iTarget);
-
-	// Проверка по режимам
-	switch(g_iMode)
-	{
-		case 0: 
-		{
-			bListen = false;
-		}
-		case 1:
-		{
-			if(iTeam == iTeam2)
-			{
-				if(IsPlayerAlive(iClient) && !IsPlayerAlive(iTarget)) bListen = false;
-			}
-			else bListen = false;
-		}
-		case 3: if(iTeam != iTeam2) bListen = false;
-		case 2, 4: 
-		{
-			if(iTeam != iTeam2)
-			{
-				if(IsPlayerAlive(iClient) && !IsPlayerAlive(iTarget)) bListen = false;
-			}
-		}
-		case 6:
-		{
-			if(IsPlayerAlive(iClient) != IsPlayerAlive(iTarget)) bListen = false;
-		}
-		case 7:
-		{
-			if(iTeam2 == CS_TEAM_SPECTATOR) bListen = false;
-		}
-		// 8 - тут всё ясно)
-	}
 
 	CallForward_CheckPlayerListenStatusPre(iClient, iTarget, bListen);
 
