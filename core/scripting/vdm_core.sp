@@ -26,7 +26,8 @@
 */
 
 #define			VDM_VERSION         "2.0 R" // D - Developer Preview | B - BETA | R - RELEASE
-#define 		VDM_INT_VERSION 	020000
+#define			VDM_INT_VERSION 	020000
+#define			VDM_DYNAMIC_MENU	1.0 	// Уменьшение этого параметра может привести к лагам на сервере
 #define			DEBUG_MODE 			0
 
 #define			MAX_MODES           8
@@ -42,8 +43,7 @@ ConVar			g_hCvar1,
 				g_hCvar3,
 				g_hCvar4,
 				g_hCvar5,
-				g_hCvar6,
-				g_hCvar7;
+				g_hCvar6;
 
 TopMenu			g_hTopMenu = null;
 ArrayList		g_hItems, g_hNameItems, g_hSortItems;
@@ -166,7 +166,7 @@ public void OnPluginStart()
 	HookEvent("round_start", Event_OnRoundStart, EventHookMode_PostNoCopy);
 	HookEvent("server_cvar", Event_Cvar, EventHookMode_Pre);
 
-	CreateTimer(1.0, CheckTime, _, TIMER_REPEAT);
+	CreateTimer(VDM_DYNAMIC_MENU, CheckTime, _, TIMER_REPEAT);
 
 	for(int i = 1; i <= MaxClients; i++) if(IsClientValid(i)) OnClientPutInServer(i);
 
@@ -260,14 +260,12 @@ void GetCvars()
 	g_hCvar5 = FindConVar("sv_full_alltalk");
 
 	g_hCvar6 = FindConVar("sv_auto_full_alltalk_during_warmup_half_end");
-	g_hCvar7 = FindConVar("sv_talk_after_dying_time");
 
 	HookConVarChange(g_hCvar1, Update_CV);
 	HookConVarChange(g_hCvar2, Update_CV);
 	HookConVarChange(g_hCvar3, Update_CV);
 	HookConVarChange(g_hCvar4, Update_CV);
 	HookConVarChange(g_hCvar5, Update_CV);
-	HookConVarChange(g_hCvar7, Update_CV);
 }
 
 void SetPlayerMode(int iClient, int iMode)

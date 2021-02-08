@@ -496,7 +496,7 @@ int GetCountMenuItems(FeatureMenus eMenuType)
 * @param maxSize            Общее кол-во элементов.
 * @return                    True on success, false on failure.
 * @error                    Invalid Handle or clear menu или если у элемента нет пары (One, Two, One)
-*/
+
 stock bool StaticNumInsertItem(Menu menu, int startNum, const char[][] sItem, int maxSize)
 {
     if (menu != INVALID_HANDLE)
@@ -598,3 +598,4 @@ stock bool StaticNumInsertItem(Menu menu, int startNum, const char[][] sItem, in
     }
     return false;
 }
+*/
