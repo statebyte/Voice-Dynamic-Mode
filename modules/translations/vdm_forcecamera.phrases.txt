@@ -1,0 +1,28 @@
+"Phrases"
+{
+	"Mode"
+	{
+		"en"		"Force Camera Mode"
+		"ru"		"Режим Force Camera"
+		"ua"		"Режим Force Camera"
+	}
+	"Msg_Off"
+	{
+		"en"		"off"
+		"ru"		"выкл"
+		"ua"		"вимк"
+	}
+	"Msg_On"
+	{
+		"en"		"on"
+		"ru"		"вкл"
+		"ua"		"вкл"
+	}
+	"ForceCamera_Msg"
+	{
+		"#format"	"{1:t}"
+		"en"		"Force Camera mode is {1}"
+		"ru"		"Режим Force Camera {1}"
+		"ua"		"Режим Force Camera {1}"
+	}
+}

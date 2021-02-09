@@ -3,7 +3,6 @@
 
 #define FUNC_NAME       "force_camera"
 #define FUNC_PRIORITY   10
-#define MESSAGE 		"{GREEN}[VDM] {DEFAULT}Режим Force Camera %s!"
 
 ConVar		g_hCvar;
 int			g_iForceCameraQuota;
@@ -11,16 +10,20 @@ int			g_iForceCameraQuota;
 bool		g_bForceCameraDefault,
 			g_bForceCamera;
 
+char		g_sPrefix[32];
+
 public Plugin myinfo =
 {
 	name		=	"[VDM] Force Camera",
-	version		=	"1.0.1",
+	version		=	"1.0.2",
 	author		=	"FIVE",
 	url			=	"Source: http://hlmod.ru | Support: https://discord.gg/ajW69wN"
 };
 
 public void OnPluginStart()
 {
+	LoadTranslations("vdm_forcecamera.phrases");
+
 	if(VDM_GetVersion() < 020000) SetFailState("VDM Core is older to use this module.");
 	
 	g_hCvar = FindConVar("mp_forcecamera");
@@ -41,6 +44,7 @@ public void OnPluginEnd()
 public void VDM_OnCoreIsReady()
 {
 	VDM_AddFeature(FUNC_NAME, FUNC_PRIORITY, MENUTYPE_ADMINMENU, OnItemSelectMenu, OnItemDisplayMenu, OnItemDrawMenu);
+	VDM_GetPluginPrefix(g_sPrefix, sizeof(g_sPrefix));
 
 	GetSettings(VDM_GetConfig());
 }
@@ -54,13 +58,15 @@ public void VDM_OnConfigReloaded(KeyValues kv)
 bool OnItemSelectMenu(int iClient)
 {
 	SetForceCamera(!g_bForceCamera);
-	CGOPrintToChatAll(MESSAGE, g_bForceCamera ? "включён" : "выключен");
+	CGOPrintToChatAll("%s %t", g_sPrefix, "ForceCamera_Msg", g_bForceCamera ? "Msg_On" : "Msg_Off");
+	
 	return true;
 }
 
 bool OnItemDisplayMenu(int iClient, char[] szDisplay, int iMaxLength)
 {
-	FormatEx(szDisplay, iMaxLength, "Режим ForceCamera [ %s ]", g_bForceCamera ? "Вкл" : "Выкл");
+	FormatEx(szDisplay, iMaxLength, "%T [%T]", "Mode", iClient, g_bForceCamera ? "Msg_On" : "Msg_Off", iClient);
+
 	return true;
 }
 

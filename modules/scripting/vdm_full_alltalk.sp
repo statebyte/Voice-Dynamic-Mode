@@ -4,20 +4,22 @@
 #define FUNC_NAME       "full_alltalk"
 #define FUNC_PRIORITY   11
 
-#define MESSAGE  "{GREEN}[VDM] {DEFAULT}Общий голосовой чат %s!"
-
 bool g_bFullAllTalk;
+
+char g_sPrefix[32];
 
 public Plugin myinfo =
 {
 	name		=	"[VDM] Full AllTalk",
-	version		=	"1.0",
+	version		=	"1.0.1",
 	author		=	"FIVE",
 	url			=	"Source: http://hlmod.ru | Support: https://discord.gg/ajW69wN"
 };
 
 public void OnPluginStart()
 {
+	LoadTranslations("vdm_fullalltalk.phrases");
+
 	if(VDM_GetVersion() < 020000) SetFailState("VDM Core is older to use this module.");
 
 	if(VDM_CoreIsLoaded()) VDM_OnCoreIsReady();
@@ -35,7 +37,6 @@ public Action VDM_OnSetVoiceModePre(int& iMode, int iPluginPriority, char[] szFe
 {
 	if(FUNC_PRIORITY > iPluginPriority && g_bFullAllTalk)
 	{
-		//PrintToChatAll("Попытка изменения режима - плагин (%s)", szFeature);
 		iMode = VMODE_FULL_ALLTALK;
 		return Plugin_Changed;
 	}	
@@ -45,12 +46,13 @@ public Action VDM_OnSetVoiceModePre(int& iMode, int iPluginPriority, char[] szFe
 
 public void Event_OnRoundStart(Event hEvent, char[] name, bool dontBroadcast)
 {
-	CGOPrintToChatAll(MESSAGE, g_bFullAllTalk ? "включён" : "выключен");
+	CGOPrintToChatAll("%s %t", g_sPrefix, "FullAlltalk_Msg", g_bFullAllTalk ? "Msg_On" : "Msg_Off");
 }
 
 public void VDM_OnCoreIsReady()
 {
 	VDM_AddFeature(FUNC_NAME, FUNC_PRIORITY, MENUTYPE_ADMINMENU, OnItemSelectMenu, OnItemDisplayMenu, OnItemDrawMenu);
+	VDM_GetPluginPrefix(g_sPrefix, sizeof(g_sPrefix));
 }
 
 bool OnItemSelectMenu(int iClient)
@@ -59,13 +61,13 @@ bool OnItemSelectMenu(int iClient)
 
 	if(g_bFullAllTalk) VDM_SetVoiceMode(8);
 
-	CGOPrintToChatAll(MESSAGE, g_bFullAllTalk ? "включён" : "выключен");
+	CGOPrintToChatAll("%s %t", g_sPrefix, "FullAlltalk_Msg", g_bFullAllTalk ? "Msg_On" : "Msg_Off");
 	return true;
 }
 
 bool OnItemDisplayMenu(int iClient, char[] szDisplay, int iMaxLength)
 {
-	FormatEx(szDisplay, iMaxLength, "Общий голосовой чат [ %s ]", (VDM_GetVoiceMode() == VMODE_FULL_ALLTALK && g_bFullAllTalk) ? "Вкл" : "Выкл");
+	FormatEx(szDisplay, iMaxLength, "%T [%T]", "Mode", iClient, (VDM_GetVoiceMode() == VMODE_FULL_ALLTALK && g_bFullAllTalk) ? "Msg_On" : "Msg_Off", iClient);
 	return true;
 }
 
