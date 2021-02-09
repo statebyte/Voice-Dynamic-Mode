@@ -1,0 +1,28 @@
+"Phrases"
+{
+	"Mode"
+	{
+		"en"		"Full AllTalk"
+		"ru"		"Режим Full AllTalk"
+		"ua"		"Режим Full AllTalk"
+	}
+	"Msg_Off"
+	{
+		"en"		"off"
+		"ru"		"выкл"
+		"ua"		"вимк"
+	}
+	"Msg_On"
+	{
+		"en"		"on"
+		"ru"		"вкл"
+		"ua"		"вкл"
+	}
+	"FullAlltalk_Msg"
+	{
+		"#format"	"{1:t}"
+		"en"		"Full AllTalk mode is {1}"
+		"ru"		"Общий голосовой чат {1}"
+		"ua"		"Общий голосовой чат {1}"
+	}
+}
