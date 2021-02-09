@@ -87,7 +87,7 @@ public Action CVP(int iClient, int iTarget, bool& bListen)
 		if(!IsClientInGame(iClient) || !IsClientInGame(iTarget)) return Plugin_Continue;
 		if(iClient != g_iTarget) return Plugin_Handled;
 
-		PrintHintTextToAll("%T", "Admin_Say", iClient, iClient);
+		PrintHintTextToAll("%T", "Admin_Say", iClient, g_iTarget);
 	}
 
 
