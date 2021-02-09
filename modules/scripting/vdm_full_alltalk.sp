@@ -4,8 +4,6 @@
 #define FUNC_NAME       "full_alltalk"
 #define FUNC_PRIORITY   11
 
-//#define MESSAGE  "{GREEN}[VDM] {DEFAULT}Общий голосовой чат %s!"
-
 bool g_bFullAllTalk;
 
 char g_sPrefix[32];
