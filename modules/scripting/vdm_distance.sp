@@ -16,7 +16,7 @@ int		g_iDistance = 1000;
 public Plugin myinfo =
 {
 	name		=	"[VDM] Distance",
-	version		=	"1.0",
+	version		=	"1.0.1",
 	author		=	"FIVE",
 	url			=	"Source: http://hlmod.ru | Support: https://discord.gg/ajW69wN"
 };
@@ -127,7 +127,7 @@ bool ClientOnItemSelectMenu(int iClient)
 	if((bState = ClientVoiceProximity(iClient))) ClientVoiceProximity(iClient, 0);
 	else ClientVoiceProximity(iClient, g_iDistance);
 
-	CGOPrintToChatAll("{GREEN}[VDM] {DEFAULT}Вы %s режим дистанции", bState ? "выключил" : "включил");
+	CGOPrintToChat(iCliemt, "{GREEN}[VDM] {DEFAULT}Вы %s режим дистанции", bState ? "выключили" : "включили");
 	return true;
 }
 
@@ -223,7 +223,7 @@ int Handler_Menu(Menu hMenu, MenuAction action, int iClient, int iItem)
 				if((bState = GlobalVoiceProximity())) GlobalVoiceProximity(0);
 				else GlobalVoiceProximity(g_iDistance);
 
-				CGOPrintToChat(iClient, "{GREEN}[VDM] {DEFAULT}Администратор %N %s режим дистанции", iClient, bState ? "выключили" : "включили");
+				CGOPrintToChatAll("{GREEN}[VDM] {DEFAULT}Администратор %N %s режим дистанции", iClient, bState ? "выключили" : "включили");
 
 				OpenMenu(iClient);
 				return 0;
@@ -240,7 +240,7 @@ int Handler_Menu(Menu hMenu, MenuAction action, int iClient, int iItem)
 			if(ClientVoiceProximity(iTarget)) ClientVoiceProximity(iTarget, 0);
 			else ClientVoiceProximity(iTarget, g_iDistance);
 
-			CGOPrintToChat(iClient, "{GREEN}[VDM] {DEFAULT}Администратор %N %s режим дистанции игроку %N", iClient, ClientVoiceProximity(iTarget) ? "выключили" : "включили", iTarget);
+			CGOPrintToChatAll("{GREEN}[VDM] {DEFAULT}Администратор %N %s режим дистанции игроку %N", iClient, ClientVoiceProximity(iTarget) ? "выключили" : "включили", iTarget);
 
 			OpenMenu(iClient);
 		}
