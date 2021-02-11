@@ -127,7 +127,7 @@ bool ClientOnItemSelectMenu(int iClient)
 	if((bState = ClientVoiceProximity(iClient))) ClientVoiceProximity(iClient, 0);
 	else ClientVoiceProximity(iClient, g_iDistance);
 
-	CGOPrintToChat(iCliemt, "{GREEN}[VDM] {DEFAULT}Вы %s режим дистанции", bState ? "выключили" : "включили");
+	CGOPrintToChat(iClient, "{GREEN}[VDM] {DEFAULT}Вы %s режим дистанции", bState ? "выключили" : "включили");
 	return true;
 }
 
