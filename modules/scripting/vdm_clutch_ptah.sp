@@ -49,12 +49,9 @@ public void OnClientCookiesCached(int iClient)
 
 public void OnClientDisconnect(int iClient)
 {
-	if(g_iClutchMode[iClient] > -1) 
-	{
-		char sBuf[4];
-		IntToString(g_iClutchMode[iClient], sBuf, sizeof(sBuf));
-		SetClientCookie(iClient, hCookie, sBuf);
-	}
+	char sBuf[4];
+	IntToString(g_iClutchMode[iClient], sBuf, sizeof(sBuf));
+	SetClientCookie(iClient, hCookie, sBuf);
 }
 
 public void OnPluginEnd()
@@ -163,7 +160,7 @@ public Action VDM_OnCheckPlayerListenStatusPre(int iClient, int iTarget, bool& b
 {
 	if(g_iClutchMode[iClient] > -1 && g_bClutchModeActive[iClient])
 	{
-		if(g_iClutchMode[iClient] == 0) bListen = false;
+		if(g_iClutchMode[iClient] == 0)
 		{
 			bListen = false;
 		}
