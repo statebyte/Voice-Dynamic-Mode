@@ -1,14 +1,14 @@
 #include <cstrike>
-#include <vdm_core>
-#include <csgo_colors>
-#include <PTaH>
 #include <clientprefs>
+#include <csgo_colors>
+#include <vdm_core>
+#include <PTaH>
 
-#define FUNC_NAME       "clutch_mode_ptah"
-#define FUNC_PRIORITY   10
+#define FUNC_NAME		"clutch_mode_ptah"
+#define FUNC_PRIORITY	10
 
-int     g_iClutchMode[MAXPLAYERS+1];
-bool    g_bClutchModeActive[MAXPLAYERS+1];
+int		g_iClutchMode[MAXPLAYERS+1], g_iDefValue;
+bool	g_bClutchModeActive[MAXPLAYERS+1];
 
 Handle  hCookie;
 char	g_sPrefix[32];
@@ -16,7 +16,7 @@ char	g_sPrefix[32];
 public Plugin myinfo =
 {
 	name		=	"[VDM] Clutch Mode (PTaH Edition)",
-	version		=	"1.0",
+	version		=	"1.1",
 	author		=	"FIVE",
 	url			=	"Source: http://hlmod.ru | Support: https://discord.gg/ajW69wN"
 };
@@ -44,7 +44,7 @@ public void OnClientCookiesCached(int iClient)
 	GetClientCookie(iClient, hCookie, szBuffer, sizeof(szBuffer));
 
 	if(szBuffer[0]) g_iClutchMode[iClient] = StringToInt(szBuffer);
-	else g_iClutchMode[iClient] = -1;
+	else g_iClutchMode[iClient] = g_iDefValue;
 }
 
 public void OnClientDisconnect(int iClient)
@@ -69,6 +69,12 @@ public void VDM_OnCoreIsReady()
 {
 	VDM_AddFeature(FUNC_NAME, FUNC_PRIORITY, MENUTYPE_SETTINGSMENU, OnItemSelectMenu, OnItemDisplayMenu, OnItemDrawMenu);
 	VDM_GetPluginPrefix(g_sPrefix, sizeof(g_sPrefix));
+	GetSettings(VDM_GetConfig());
+}
+
+void GetSettings(KeyValues kv)
+{
+	g_iDefValue = kv.GetNum("m_clutch", 1);
 }
 
 bool OnItemSelectMenu(int iClient)
@@ -153,26 +159,31 @@ public void Event_OnRoundEnd(Event hEvent, char[] name, bool dontBroadcast)
 	for(int i = 1; i <= MaxClients; i++) g_bClutchModeActive[i] = false;
 }
 
+public Action VDM_OnCheckPlayerListenStatusPre(int iClient, int iTarget, bool& bListen)
+{
+	if(g_iClutchMode[iClient] > -1 && g_bClutchModeActive[iClient])
+	{
+		if(g_iClutchMode[iClient] == 0) bListen = false;
+		{
+			bListen = false;
+		}
+		if(g_iClutchMode[iClient] == 1 && !IsPlayerAlive(iTarget))
+		{
+			bListen = false;
+		}
+	}
+}
+
 public Action CVP(int iClient, int iTarget, bool& bListen)
 {
 	if(!IsClientInGame(iClient) || !IsClientInGame(iTarget)) return Plugin_Continue;
 
-	bListen = VDM_GetPlayerListenStatus(iClient, iTarget);
+	bool bCheck = VDM_GetPlayerListenStatus(iTarget, iClient);
 	
-	//PrintHintText(iTarget, "--- Вы слушаете: %N", iClient);
-
-	if(g_iClutchMode[iTarget] > -1 && g_bClutchModeActive[iTarget])
+	if(!bCheck)
 	{
-		if(g_iClutchMode[iTarget] == 0) 
-		{
-			//PrintToConsole(iTarget, "STOP VOICE: %N", iClient);
-			return Plugin_Handled;
-		}
-		if(g_iClutchMode[iTarget] == 1 && !IsPlayerAlive(iClient))
-		{
-			//PrintToConsole(iTarget, "STOP VOICE: %N", iClient);
-			return Plugin_Handled;
-		}
+		bListen = false;
+		return Plugin_Handled;
 	}
 
 	return Plugin_Continue;
