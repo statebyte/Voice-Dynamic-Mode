@@ -25,7 +25,7 @@
 * - Create modules
 */
 
-#define			VDM_VERSION         "2.0 R" // D - Developer Preview | B - BETA | R - RELEASE
+#define			VDM_VERSION         "2.0.1 B" // D - Developer Preview | B - BETA | R - RELEASE
 #define			VDM_INT_VERSION 	020000
 #define			VDM_DYNAMIC_MENU	1.0 	// Уменьшение этого параметра может привести к лагам на сервере
 #define			DEBUG_MODE 			0

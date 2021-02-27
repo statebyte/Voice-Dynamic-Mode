@@ -74,7 +74,7 @@ void RegConsoleCmds()
 	if(szBuffer[0])
 	{
 		iSize = ExplodeString(szBuffer, ";", szCommands, sizeof szCommands, sizeof szCommands[]);
-		for(int i; i <= iSize; i++)
+		for(int i; i < iSize; i++)
 		{
 			RegConsoleCmd(szCommands[i], cmd_Voice);
 		}
@@ -85,7 +85,7 @@ void RegConsoleCmds()
 	if(szBuffer[0])
 	{
 		iSize = ExplodeString(szBuffer, ";", szCommands, sizeof szCommands, sizeof szCommands[]);
-		for(int i; i <= iSize; i++)
+		for(int i; i < iSize; i++)
 		{
 			RegConsoleCmd(szCommands[i], cmd_Admin);
 		}
