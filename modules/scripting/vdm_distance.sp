@@ -11,12 +11,13 @@ bool 	g_bClientEnable[MAXPLAYERS+1],
 		g_bHookMsg[MAXPLAYERS+1], 
 		g_bMode[MAXPLAYERS+1],
 		g_bDistanceEnabled;
-int		g_iDistance = 1000;
+int		g_iDistance = 1000,
+		g_iQuota;
 
 public Plugin myinfo =
 {
 	name		=	"[VDM] Distance",
-	version		=	"1.0.1",
+	version		=	"1.1",
 	author		=	"FIVE",
 	url			=	"Source: http://hlmod.ru | Support: https://discord.gg/ajW69wN"
 };
@@ -34,6 +35,7 @@ public void OnPluginStart()
 	AddCommandListener(Command_Say, "say2");
 	AddCommandListener(Command_Say, "say_team");
 
+	RegAdminCmd("sm_voice_distance", cmd_OpenMenu, ADMFLAG_CHAT);
 	RegConsoleCmd("sm_vo_debugde", cmd_Com);
 }
 
@@ -61,6 +63,12 @@ stock float GetDistance(int client, int target, bool eye = false)
 		GetClientAbsOrigin(target, pos2);
 	}
 	return GetVectorDistance(pos1, pos2);
+}
+
+Action cmd_OpenMenu(int iClient, int iArgs)
+{
+	OpenMenu(iClient);
+	return Plugin_Handled;
 }
 
 Action Command_Say(int iClient, const char[] sCommand, int iArgs)
@@ -104,8 +112,17 @@ public void OnPluginEnd()
 public void Event_OnRoundStart(Event hEvent, char[] name, bool dontBroadcast)
 {
 	GlobalVoiceProximity(0);
+	int iCount;
+	for(int i = 1; i <= MaxClients; i++) if(IsClientInGame(i) && !IsFakeClient(i)) 
+	{
+		iCount++;
+		ClientVoiceProximity(i, 0);
+	}
 
-	for(int i = 1; i <= MaxClients; i++) if(IsClientInGame(i) && !IsFakeClient(i)) ClientVoiceProximity(i, 0);
+	if(g_iQuota > 0 && iCount >= g_iQuota)
+	{
+		GlobalVoiceProximity(g_iDistance);
+	}
 }
 
 public void VDM_OnCoreIsReady()
@@ -322,6 +339,7 @@ void GetSettings(KeyValues kv)
 {
 	g_bDistanceEnabled = view_as<bool>(kv.GetNum("m_distance_enabled", 1));
 	g_iDistance = kv.GetNum("m_distance", 1000);
+	g_iQuota = kv.GetNum("m_distance_quota", 0);
 
 	if(g_bDistanceEnabled) GlobalVoiceProximity(g_iDistance);
 	else GlobalVoiceProximity(0);
