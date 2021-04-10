@@ -234,7 +234,7 @@ native void VDM_MoveToMenu(int iClient, FeatureMenus eMenuType, int iPage = 0);
 *
 * @noreturn
 */
-native void VDM_LogMessage(char szBuffer);
+native void VDM_LogMessage(char[] szBuffer);
 
 ////////////////////////////////// FORWARDS //////////////////////////////////////////////
 
