@@ -11,7 +11,7 @@ int		g_iClutchMode[MAXPLAYERS+1], g_iDefValue;
 bool	g_bClutchModeActive[MAXPLAYERS+1];
 
 Handle  hCookie;
-char	g_sPrefix[32];
+char	g_sPrefix[128];
 
 public Plugin myinfo =
 {

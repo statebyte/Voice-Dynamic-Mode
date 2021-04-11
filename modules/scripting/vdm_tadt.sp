@@ -13,7 +13,7 @@ bool		g_bUnHookCvar,
 			g_bFixTimers[MAXPLAYERS+1];
 int 		g_iValue;
 Handle		g_hTimerAfterDying[MAXPLAYERS+1] = {INVALID_HANDLE, ...};
-char		g_sPrefix[32];
+char		g_sPrefix[128];
 
 public Plugin myinfo =
 {

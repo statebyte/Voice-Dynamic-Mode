@@ -7,7 +7,7 @@
 
 int g_iTarget = -1;
 
-char	g_sPrefix[32];
+char	g_sPrefix[128];
 
 public Plugin myinfo =
 {
