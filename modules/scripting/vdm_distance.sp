@@ -218,7 +218,11 @@ void AddPlayerList(Menu hMenu, bool bState)
 		iCount++;
 	}
 
-	if(iCount == 0) hMenu.AddItem(NULL_STRING, "No players...", ITEMDRAW_DISABLED);
+	if(iCount == 0) 
+	{
+		FormatEx(szBuffer[0], sizeof(szBuffer[]), "%t", "NoPlayers");
+		hMenu.AddItem(NULL_STRING, szBuffer[0], ITEMDRAW_DISABLED);
+	}
 }
 
 int Handler_Menu(Menu hMenu, MenuAction action, int iClient, int iItem)
@@ -275,13 +279,15 @@ int Handler_Menu(Menu hMenu, MenuAction action, int iClient, int iItem)
 
 void HookMsg(int iClient)
 {
+	char szBuffer[128];
 	g_bHookMsg[iClient] = true;
 
 	Menu hMenu = new Menu(Handler_HookMenu);
 
 	hMenu.SetTitle("[VDM] Distance\n \n");
-
-	hMenu.AddItem(NULL_STRING, "Enter a new value in the chat...", ITEMDRAW_DISABLED);
+	
+	FormatEx(szBuffer, sizeof(szBuffer), "%t", "NewValueChat");
+	hMenu.AddItem(NULL_STRING, szBuffer, ITEMDRAW_DISABLED);
 
 	hMenu.ExitButton = true;
 	hMenu.ExitBackButton = true;

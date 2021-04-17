@@ -83,4 +83,14 @@
 		"en"		"Administrator {1} {2} distance mode to player {3} by value {4}"
 		"ru"		"Администратор {1} {2} режим дистанции игроку {3} на значение {4}"
 	}
+	"NoPlayers"
+	{
+		"en"		"No players..."
+		"ru"		"Нет игроков..."
+	}
+	"NewValueChat"
+	{
+		"en"		"Enter a new value in the chat..."
+		"ru"		"Введите в чат новое значение..."
+	}
 }
