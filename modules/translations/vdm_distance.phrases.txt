@@ -57,7 +57,7 @@
 	}
 	"DistanceDisplay"
 	{
-		"#format"	"{1:s}"
+		"#format"	"{1:t}"
 		"en"		"Display: {1}\n \n"
 		"ru"		"Отображение: {1}\n \n"
 	}
