@@ -24,7 +24,7 @@
 	}
 	"DistanceUser"
 	{
-		"#format"	"{1:i}"
+		"#format"	"{1:d}"
 		"en"		"Distance [ {1} ]"
 		"ru"		"Дистанция [ {1} ]"
 	}
@@ -35,7 +35,7 @@
 	}
 	"ModeDistance"
 	{
-		"#foramt"	"{1:i}"
+		"#foramt"	"{1:d}"
 		"en"		"Distance Mode [ {1} ]
 		"ru"		"Режим Дистанции [ {1} ]"
 	}
