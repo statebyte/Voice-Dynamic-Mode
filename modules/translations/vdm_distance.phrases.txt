@@ -2,7 +2,7 @@
 {
 	"NewValue"
 	{
-		"#format"	"{1:i}"
+		"#format"	"{1:d}"
 		"en"		"You set the new value to {1}"
 		"ru"		"Вы установили новое значение на {1}"
 	}
@@ -41,7 +41,7 @@
 	}
 	"DistanceValue"
 	{
-		"#foramt"	"{1:i}"
+		"#foramt"	"{1:d}"
 		"en"		"Value: {1}"
 		"ru"		"Значение: {1}"
 	}
@@ -73,13 +73,13 @@
 	}
 	"AdminSetMode"
 	{
-		"#format"	"{1:N},{2:s},{3:i}"
+		"#format"	"{1:N},{2:t},{3:d}"
 		"en"		"Administrator {1} {2} distance mode per value ({3})"
 		"ru"		"Администратор {1} {2} режим дистанции на значение ({3})"
 	}
 	"AdminSetModeUser"
 	{
-		"#foramt"	"{1:N},{2:s},{3:N},{4:i}"
+		"#foramt"	"{1:N},{2:t},{3:N},{4:d}"
 		"en"		"Administrator {1} {2} distance mode to player {3} by value {4}"
 		"ru"		"Администратор {1} {2} режим дистанции игроку {3} на значение {4}"
 	}
