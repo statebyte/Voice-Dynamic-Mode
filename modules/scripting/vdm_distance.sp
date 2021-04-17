@@ -14,21 +14,24 @@ bool 	g_bClientEnable[MAXPLAYERS+1],
 int		g_iDistance = 1000,
 		g_iQuota;
 
+char	g_sPrefix[128];
+
 public Plugin myinfo =
 {
 	name		=	"[VDM] Distance",
-	version		=	"1.1",
+	version		=	"1.2",
 	author		=	"FIVE",
 	url			=	"Source: http://hlmod.ru | Support: https://discord.gg/ajW69wN"
 };
 
 public void OnPluginStart()
 {
+	LoadTranslations("vdm_distance.phrases");
+
+	if(VDM_GetVersion() < 020000) SetFailState("VDM Core is older to use this module.");
 	g_hCvar = FindConVar("sv_voice_proximity");
 
 	HookEvent("round_start", Event_OnRoundStart, EventHookMode_PostNoCopy);
-
-	if(VDM_GetVersion() < 020000) SetFailState("VDM Core is older to use this module.");
 	if(VDM_CoreIsLoaded()) VDM_OnCoreIsReady();
 
 	AddCommandListener(Command_Say, "say");
@@ -80,7 +83,7 @@ Action Command_Say(int iClient, const char[] sCommand, int iArgs)
 		GetCmdArg(1, sValue, sizeof(sValue));
 		
 		g_iDistance = StringToInt(sValue);
-		CGOPrintToChat(iClient, "[VDM] Вы установили новое значение на %i", g_iDistance);
+		CGOPrintToChat(iClient, "%s %t", g_sPrefix, "NewValue", g_iDistance);
 		UnHookMsg(iClient);
 		return Plugin_Handled;
 	}
@@ -111,7 +114,7 @@ public void OnPluginEnd()
 
 public void Event_OnRoundStart(Event hEvent, char[] name, bool dontBroadcast)
 {
-	GlobalVoiceProximity(0);
+	if(!g_bDistanceEnabled) GlobalVoiceProximity(0);
 	int iCount;
 	for(int i = 1; i <= MaxClients; i++) if(IsClientInGame(i) && !IsFakeClient(i)) 
 	{
@@ -131,6 +134,7 @@ public void VDM_OnCoreIsReady()
 	
 	VDM_AddFeature(FUNC_NAME, FUNC_PRIORITY, MENUTYPE_ADMINMENU, OnItemSelectMenu, OnItemDisplayMenu);
 	VDM_AddFeature(CLIENTFUNC_NAME, FUNC_PRIORITY, MENUTYPE_SETTINGSMENU, ClientOnItemSelectMenu, ClientOnItemDisplayMenu);
+	VDM_GetPluginPrefix(g_sPrefix, sizeof(g_sPrefix));
 }
 
 public void VDM_OnConfigReloaded(KeyValues kv)
@@ -144,14 +148,14 @@ bool ClientOnItemSelectMenu(int iClient)
 	if((bState = ClientVoiceProximity(iClient))) ClientVoiceProximity(iClient, 0);
 	else ClientVoiceProximity(iClient, g_iDistance);
 
-	CGOPrintToChat(iClient, "{GREEN}[VDM] {DEFAULT}Вы %s режим дистанции", bState ? "выключили" : "включили");
+	CGOPrintToChat(iClient, "%s %t", g_sPrefix, "SelectMode", bState ? "Mode_Off" : "Mode_On");
 	return true;
 }
 
 bool ClientOnItemDisplayMenu(int iClient, char[] szDisplay, int iMaxLength)
 {
-	if(ClientVoiceProximity(iClient)) FormatEx(szDisplay, iMaxLength, "Дистанция [ %i ]", g_iDistance);
-	else FormatEx(szDisplay, iMaxLength, "Дистанция [ Выкл ]");
+	if(ClientVoiceProximity(iClient)) FormatEx(szDisplay, iMaxLength, "%t", "DistanceUser", g_iDistance);
+	else FormatEx(szDisplay, iMaxLength, "%t", "DistanceOff");
 	return true;
 }
 
@@ -164,7 +168,7 @@ bool OnItemSelectMenu(int iClient)
 
 bool OnItemDisplayMenu(int iClient, char[] szDisplay, int iMaxLength)
 {
-	FormatEx(szDisplay, iMaxLength, "Режим Дистанции [ %i ]", g_iDistance);
+	FormatEx(szDisplay, iMaxLength, "%t", "ModeDistance", g_iDistance);
 	return true;
 }
 
@@ -176,20 +180,20 @@ void OpenMenu(int iClient)
 	hMenu.SetTitle("[VDM] Distance\n \n");
 
 	char szBuffer[256];
-	FormatEx(szBuffer, sizeof(szBuffer), "Значение: %i", g_iDistance);
+	FormatEx(szBuffer, sizeof(szBuffer), "%t", "DistanceValue", g_iDistance);
 	hMenu.AddItem("value", szBuffer);
 	
 	if(GlobalVoiceProximity()) 
 	{
-		FormatEx(szBuffer, sizeof(szBuffer), "Глобально: [Вкл]");
+		FormatEx(szBuffer, sizeof(szBuffer), "%t", "DistanceGlobalOn");
 		hMenu.AddItem("global", szBuffer);
 	}
 	else 
 	{
-		FormatEx(szBuffer, sizeof(szBuffer), "Глобально: [Выкл]");
+		FormatEx(szBuffer, sizeof(szBuffer), "%t", "DistanceGlobalOff");
 		hMenu.AddItem("global", szBuffer);
 
-		FormatEx(szBuffer, sizeof(szBuffer), "Отображение: %s\n \n", g_bMode[iClient] ? "игроки с вкл." : "игроки с выкл.");
+		FormatEx(szBuffer, sizeof(szBuffer), "%t", "DistanceDisplay", g_bMode[iClient] ? "PlayersOn" : "PlayersOff");
 		hMenu.AddItem("mode", szBuffer);
 
 		AddPlayerList(hMenu, g_bMode[iClient]);
@@ -214,7 +218,11 @@ void AddPlayerList(Menu hMenu, bool bState)
 		iCount++;
 	}
 
-	if(iCount == 0) hMenu.AddItem(NULL_STRING, "Нет игроков...", ITEMDRAW_DISABLED);
+	if(iCount == 0) 
+	{
+		FormatEx(szBuffer[0], sizeof(szBuffer[]), "%t", "NoPlayers");
+		hMenu.AddItem(NULL_STRING, szBuffer[0], ITEMDRAW_DISABLED);
+	}
 }
 
 int Handler_Menu(Menu hMenu, MenuAction action, int iClient, int iItem)
@@ -225,7 +233,7 @@ int Handler_Menu(Menu hMenu, MenuAction action, int iClient, int iItem)
 		case MenuAction_Cancel: if(iItem == MenuCancel_ExitBack) VDM_MoveToMenu(iClient, MENUTYPE_ADMINMENU);
 		case MenuAction_Select:
 		{
-			char szInfo[64], szTitle[128];
+			char szInfo[64], szTitle[128], szBuffer[256];
 			hMenu.GetItem(iItem, szInfo, sizeof(szInfo), _, szTitle, sizeof(szTitle));
 
 			if(!strcmp(szInfo, "value"))
@@ -240,8 +248,9 @@ int Handler_Menu(Menu hMenu, MenuAction action, int iClient, int iItem)
 				if((bState = GlobalVoiceProximity())) GlobalVoiceProximity(0);
 				else GlobalVoiceProximity(g_iDistance);
 
-				CGOPrintToChatAll("{GREEN}[VDM] {DEFAULT}Администратор %N %s режим дистанции", iClient, bState ? "выключили" : "включили");
-
+				CGOPrintToChatAll("%s %t", g_sPrefix, "AdminSetMode", iClient, bState ? "Mode_Off" : "Mode_On", g_iDistance);
+				Format(szBuffer, sizeof(szBuffer), "%s %t", g_sPrefix, "AdminSetMode", iClient, bState ? "Mode_Off" : "Mode_On", g_iDistance);
+				VDM_LogMessage(szBuffer);
 				OpenMenu(iClient);
 				return 0;
 			}
@@ -257,7 +266,9 @@ int Handler_Menu(Menu hMenu, MenuAction action, int iClient, int iItem)
 			if(ClientVoiceProximity(iTarget)) ClientVoiceProximity(iTarget, 0);
 			else ClientVoiceProximity(iTarget, g_iDistance);
 
-			CGOPrintToChatAll("{GREEN}[VDM] {DEFAULT}Администратор %N %s режим дистанции игроку %N", iClient, ClientVoiceProximity(iTarget) ? "выключили" : "включили", iTarget);
+			CGOPrintToChatAll("%s %t", g_sPrefix, "AdminSetModeUser", iClient, ClientVoiceProximity(iTarget) ? "Mode_Off" : "Mode_On", iTarget, g_iDistance);
+			Format(szBuffer, sizeof(szBuffer), "%s %t", g_sPrefix, "AdminSetModeUser", iClient, ClientVoiceProximity(iTarget) ? "Mode_Off" : "Mode_On", iTarget, g_iDistance);
+			VDM_LogMessage(szBuffer);
 
 			OpenMenu(iClient);
 		}
@@ -268,13 +279,15 @@ int Handler_Menu(Menu hMenu, MenuAction action, int iClient, int iItem)
 
 void HookMsg(int iClient)
 {
+	char szBuffer[128];
 	g_bHookMsg[iClient] = true;
 
 	Menu hMenu = new Menu(Handler_HookMenu);
 
 	hMenu.SetTitle("[VDM] Distance\n \n");
-
-	hMenu.AddItem(NULL_STRING, "Введите в чат новое значение...", ITEMDRAW_DISABLED);
+	
+	FormatEx(szBuffer, sizeof(szBuffer), "%t", "NewValueChat");
+	hMenu.AddItem(NULL_STRING, szBuffer, ITEMDRAW_DISABLED);
 
 	hMenu.ExitButton = true;
 	hMenu.ExitBackButton = true;
@@ -337,7 +350,7 @@ bool ClientVoiceProximity(int iClient, int iSet = -1)
 
 void GetSettings(KeyValues kv)
 {
-	g_bDistanceEnabled = view_as<bool>(kv.GetNum("m_distance_enabled", 1));
+	g_bDistanceEnabled = view_as<bool>(kv.GetNum("m_distance_enabled", 0));
 	g_iDistance = kv.GetNum("m_distance", 1000);
 	g_iQuota = kv.GetNum("m_distance_quota", 0);
 

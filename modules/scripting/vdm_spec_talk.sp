@@ -5,7 +5,7 @@
 #define FUNC_NAME       "spec_talk"
 #define FUNC_PRIORITY   10
 
-char		g_sPrefix[32];
+char		g_sPrefix[128];
 bool        bState[MAXPLAYERS+1];
 
 public Plugin myinfo =

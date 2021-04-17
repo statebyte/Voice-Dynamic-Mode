@@ -8,7 +8,7 @@
 #define REMIND_MESSAGE  "{GREEN}%s {LIGHTRED}Не забудьте, что вы выключили голосовой чат!"
 #define MESSAGE 		"{GREEN}%s {DEFAULT}Вы %s {DEFAULT}голосовой чат!"
 
-char		g_sPrefix[32];
+char		g_sPrefix[128];
 bool 		g_bVoiceDisable[MAXPLAYERS+1];
 
 public Plugin myinfo =

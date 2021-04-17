@@ -6,7 +6,7 @@
 
 bool g_bFullAllTalk;
 
-char g_sPrefix[32];
+char g_sPrefix[128];
 
 public Plugin myinfo =
 {

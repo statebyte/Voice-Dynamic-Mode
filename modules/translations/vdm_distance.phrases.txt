@@ -1,0 +1,96 @@
+"Phrases"
+{
+	"NewValue"
+	{
+		"#format"	"{1:i}"
+		"en"		"You set the new value to {1}"
+		"ru"		"Вы установили новое значение на {1}"
+	}
+	"Mode_Off"
+	{
+		"en"		"turned off"
+		"ru"		"выключили"
+	}
+	"Mode_On"
+	{
+		"en"		"turned on"
+		"ru"		"включили"
+	}
+	"SelectMode"
+	{
+		"#format"	"{1:t}"
+		"en"		"You are {1} distance mode"
+		"ru"		"Вы {1} режим дистанции"
+	}
+	"DistanceUser"
+	{
+		"#format"	"{1:i}"
+		"en"		"Distance [ {1} ]"
+		"ru"		"Дистанция [ {1} ]"
+	}
+	"DistanceOff"
+	{
+		"en"		"Distance [ Off ]"
+		"ru"		"Дистанция [ Выкл ]"
+	}
+	"ModeDistance"
+	{
+		"#format"	"{1:i}"
+		"en"		"Distance Mode [ {1} ]
+		"ru"		"Режим Дистанции [ {1} ]"
+	}
+	"DistanceValue"
+	{
+		"#format"	"{1:i}"
+		"en"		"Value: {1}"
+		"ru"		"Значение: {1}"
+	}
+	"DistanceGlobalOn"
+	{
+		"en"		"Globally: [On]"
+		"ru"		"Глобально: [Вкл]"
+	}
+	"DistanceGlobalOff"
+	{
+		"en"		"Globally: [Off]"
+		"ru"		"Глобально: [Выкл]"
+	}
+	"DistanceDisplay"
+	{
+		"#format"	"{1:t}"
+		"en"		"Display: {1}\n \n"
+		"ru"		"Отображение: {1}\n \n"
+	}
+	"PlayersOn"
+	{
+		"en"		"players with on."
+		"ru"		"игроки с вкл."
+	}
+	"PlayersOff"
+	{
+		"en"		"players with off."
+		"ru"		"игроки с выкл."
+	}
+	"AdminSetMode"
+	{
+		"#format"	"{1:N},{2:t},{3:i}"
+		"en"		"Administrator {1} {2} distance mode per value ({3})"
+		"ru"		"Администратор {1} {2} режим дистанции на значение ({3})"
+	}
+	"AdminSetModeUser"
+	{
+		"#foramt"	"{1:N},{2:t},{3:N},{4:i}"
+		"en"		"Administrator {1} {2} distance mode to player {3} by value {4}"
+		"ru"		"Администратор {1} {2} режим дистанции игроку {3} на значение {4}"
+	}
+	"NoPlayers"
+	{
+		"en"		"No players..."
+		"ru"		"Нет игроков..."
+	}
+	"NewValueChat"
+	{
+		"en"		"Enter a new value in the chat..."
+		"ru"		"Введите в чат новое значение..."
+	}
+}

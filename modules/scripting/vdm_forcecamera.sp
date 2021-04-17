@@ -10,7 +10,7 @@ int			g_iForceCameraQuota;
 bool		g_bForceCameraDefault,
 			g_bForceCamera;
 
-char		g_sPrefix[32];
+char		g_sPrefix[128];
 
 public Plugin myinfo =
 {
