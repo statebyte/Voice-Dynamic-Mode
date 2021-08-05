@@ -28,13 +28,13 @@
 	"MODULE_TADT"	
 	{	
 		"#format" "{1:i}"	
-		"en" "{GRAY}You have {DEFAULT}{1} {GRAY}sec to communicate with live players..."	
-		"ru" "{GRAY}У вас есть {DEFAULT}{1} {GRAY}сек на общение с живыми игроками..."	
+		"en" "{GRAY}You have {DEFAULT}{1} {GRAY}seconds left to communicate with alive players"	
+		"ru" "{GRAY}У вас есть {DEFAULT}{1} {GRAY}секунд на общение с живыми игроками..."	
 	}	
 
 	"MODULE_TADT2"	
 	{	
-		"en" "{GRAY}Live players are more of you {LIGHTRED}do not hear{GRAY}!"	
+		"en" "{GRAY}Alive players are {LIGHTRED}not able to hear u{GRAY}from now on!"	
 		"ru" "{GRAY}Живые игроки вас больше {LIGHTRED}не слышат{GRAY}!"	
 	}
 }
